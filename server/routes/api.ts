@@ -9,6 +9,7 @@ import { EXPLORER_VEHICLES } from '../data/initialData';
 import { balanceTourismDemand, balanceTourismDemandML } from '../services/demandBalancerService';
 import { searchCulturalSpecialties, getAlternativeRecommendations, getIndiaExplorerHierarchy } from '../services/culturalService';
 import { searchFlights, searchHotels } from '../services/amadeusService';
+import { createRazorpayOrder, verifyRazorpayPayment } from '../services/razorpayService';
 
 export const apiRouter = Router();
 
@@ -1049,5 +1050,10 @@ apiRouter.get('/destinations/:id/local-economy', (req: Request, res: Response) =
 // 7. Amadeus Travel Search APIs (Flights & Hotels)
 apiRouter.get('/amadeus/flights', searchFlights);
 apiRouter.get('/amadeus/hotels', searchHotels);
+
+// 8. Razorpay Payment Gateway APIs
+apiRouter.post('/razorpay/create-order', createRazorpayOrder);
+apiRouter.post('/razorpay/verify-payment', verifyRazorpayPayment);
+
 
 

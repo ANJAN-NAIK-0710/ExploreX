@@ -275,4 +275,11 @@ export const api = {
   },
   optimizeItinerary: (packageId: string, body?: { numDays?: number; maxHoursPerDay?: number; categoryPreferences?: string[] }) =>
     request<OptimizedItineraryResponse>(`/packages/${packageId}/optimize-itinerary`, { method: 'POST', body: JSON.stringify(body || {}) }),
+
+  // Razorpay Integration
+  createRazorpayOrder: (amount: number, currency = 'INR', receipt?: string) =>
+    request<{ success: boolean; keyId: string; order: any }>('/razorpay/create-order', { method: 'POST', body: JSON.stringify({ amount, currency, receipt }) }),
+  verifyRazorpayPayment: (details: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    request<{ verified: boolean; message: string; paymentId?: string; orderId?: string }>('/razorpay/verify-payment', { method: 'POST', body: JSON.stringify(details) }),
 };
+

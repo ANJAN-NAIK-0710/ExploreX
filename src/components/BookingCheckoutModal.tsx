@@ -40,7 +40,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
   ]);
   const [promoCode, setPromoCode] = useState<string>('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number } | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'card_demo' | 'upi_demo'>('wallet');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'wallet' | 'card_demo' | 'upi_demo'>('razorpay');
   const [loading, setLoading] = useState<boolean>(false);
 
   if (!isOpen) return null;
@@ -85,35 +85,106 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
     }
   };
 
+  const executeBooking = async (payMethod: string, rzpDetails?: any) => {
+    const created = await api.createBooking({
+      serviceType,
+      title,
+      destinationName,
+      travelDate,
+      returnDate: returnDate || undefined,
+      passengersCount,
+      passengerDetails,
+      totalAmount: grandTotal,
+      paymentMethod: payMethod as any,
+      promoCode: appliedPromo?.code,
+      details: {
+        ...details,
+        duration,
+        ...(rzpDetails || {})
+      }
+    });
+
+    await refreshProfile();
+    success('Booking Confirmed!', `Booking reference #${created.id} active via ${payMethod.toUpperCase()}.`);
+    onBookingSuccess(created);
+    onClose();
+  };
+
   const handleConfirmBooking = async () => {
     if (isWalletInsufficient) {
-      error('Insufficient Wallet Balance', 'Please top up your wallet or choose Card/UPI Demo simulation.');
+      error('Insufficient Wallet Balance', 'Please top up your wallet or choose Razorpay / UPI.');
       return;
     }
 
     setLoading(true);
     try {
-      const created = await api.createBooking({
-        serviceType,
-        title,
-        destinationName,
-        travelDate,
-        returnDate: returnDate || undefined,
-        passengersCount,
-        passengerDetails,
-        totalAmount: grandTotal,
-        paymentMethod,
-        promoCode: appliedPromo?.code,
-        details: {
-          ...details,
-          duration
+      if (paymentMethod === 'razorpay') {
+        // Step 1: Create Razorpay Order from backend
+        const orderRes = await api.createRazorpayOrder(grandTotal, 'INR');
+        
+        if (!orderRes.success || !orderRes.order) {
+          throw new Error('Failed to create Razorpay Order');
         }
-      });
 
-      await refreshProfile();
-      success('Booking Confirmed!', `Booking reference #${created.id} is active.`);
-      onBookingSuccess(created);
-      onClose();
+        const RazorpaySDK = (window as any).Razorpay;
+        if (RazorpaySDK) {
+          const options = {
+            key: orderRes.keyId,
+            amount: orderRes.order.amount,
+            currency: orderRes.order.currency,
+            name: 'ExploreX Travel Platform',
+            description: `${title} - ${destinationName}`,
+            order_id: orderRes.order.id,
+            handler: async (response: any) => {
+              try {
+                // Step 2: Verify Payment Signature via Backend
+                const verifyRes = await api.verifyRazorpayPayment({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature || 'mock_signature',
+                });
+
+                if (verifyRes.verified) {
+                  await executeBooking('razorpay', {
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                  });
+                } else {
+                  error('Payment Failed', 'Razorpay signature verification failed.');
+                }
+              } catch (verifyErr: any) {
+                error('Verification Error', verifyErr.message);
+              }
+            },
+            prefill: {
+              name: user?.name || 'Traveler',
+              email: user?.email || 'traveler@explorex.com',
+            },
+            theme: {
+              color: '#0284c7',
+            },
+          };
+
+          const rzpInstance = new RazorpaySDK(options);
+          rzpInstance.open();
+        } else {
+          // Sandbox direct completion fallback
+          const verifyRes = await api.verifyRazorpayPayment({
+            razorpay_order_id: orderRes.order.id,
+            razorpay_payment_id: `pay_rzp_${Date.now()}`,
+            razorpay_signature: 'mock_signature',
+          });
+
+          if (verifyRes.verified) {
+            await executeBooking('razorpay', {
+              razorpayPaymentId: verifyRes.paymentId,
+              razorpayOrderId: orderRes.order.id,
+            });
+          }
+        }
+      } else {
+        await executeBooking(paymentMethod);
+      }
     } catch (err: any) {
       error('Booking Failed', err.message || 'Failed to complete booking');
     } finally {
@@ -270,7 +341,24 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
             {/* Payment Method Selector */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-2">Payment Method</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('razorpay')}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    paymentMethod === 'razorpay'
+                      ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <CreditCard className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-bold text-slate-900">Razorpay Gateway</span>
+                    <span className="text-[9px] font-extrabold text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">UPI / Cards</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500">Live & Test Gateway</div>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('wallet')}
@@ -287,38 +375,6 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                   <div className="text-[11px] text-slate-500">
                     Balance: <span className="font-semibold text-slate-900">${walletBalance.toFixed(2)}</span>
                   </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('card_demo')}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    paymentMethod === 'card_demo'
-                      ? 'border-sky-600 bg-sky-50/60 ring-2 ring-sky-500/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <CreditCard className="w-4 h-4 text-indigo-600" />
-                    <span className="text-xs font-bold text-slate-800">Credit / Debit</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500">Demo Simulation</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('upi_demo')}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    paymentMethod === 'upi_demo'
-                      ? 'border-sky-600 bg-sky-50/60 ring-2 ring-sky-500/20'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span className="text-xs font-bold text-slate-800">Instant UPI</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500">QR / VPA Simulation</div>
                 </button>
               </div>
             </div>
