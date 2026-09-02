@@ -99,7 +99,11 @@ export const WalletView: React.FC = () => {
       await api.topupWallet(topupAmount);
       await refreshProfile();
       await loadAll();
+<<<<<<< HEAD
       success('Top-up Successful!', `$${topupAmount} added to your Wander Wallet.`);
+=======
+      success('Top-up Successful!', `$${topupAmount} added to your ExploreX Wallet.`);
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
     } catch (err: any) {
       error('Top-up Failed', err.message);
     } finally {
@@ -177,7 +181,11 @@ export const WalletView: React.FC = () => {
       }
       await refreshProfile();
       await loadAll();
+<<<<<<< HEAD
       success('Debt Settled!', `Transferred $${amount} seamlessly via Wander Wallet.`);
+=======
+      success('Debt Settled!', `Transferred $${amount} seamlessly via ExploreX Wallet.`);
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
     } catch (err: any) {
       error('Settlement Error', err.message);
     }
@@ -196,7 +204,11 @@ export const WalletView: React.FC = () => {
             Financial Infrastructure & Expense Splitting
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+<<<<<<< HEAD
             Wander Wallet & Group Expense Splitter
+=======
+            ExploreX Wallet & Group Expense Splitter
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
           </h1>
         </div>
 
@@ -232,7 +244,11 @@ export const WalletView: React.FC = () => {
                   <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
                     <Wallet className="w-4 h-4" />
                   </div>
+<<<<<<< HEAD
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">Wander Wallet</span>
+=======
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">ExploreX Wallet</span>
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
                 </div>
                 <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-full">
                   Verified Active

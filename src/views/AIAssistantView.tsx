@@ -39,10 +39,17 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
   const [activeSubTab, setActiveSubTab] = useState<'concierge' | 'autopilot' | 'whatif'>('concierge');
 
   // 1. Chat State
+<<<<<<< HEAD
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string; time: string; groundingSources?: string[] }>>([
     {
       role: 'assistant',
       text: "Hello! I am your WanderAI Concierge. I can optimize your itineraries, forecast weather & crowds, suggest local hidden gems, and re-route your trip dynamically. How can I assist you today?",
+=======
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string; time: string }>>([
+    {
+      role: 'assistant',
+      text: "Hello! I am your ExploreX Concierge. I can optimize your itineraries, forecast weather & crowds, suggest local hidden gems, and re-route your trip dynamically. How can I assist you today?",
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
       time: 'Just now'
     }
   ]);
@@ -105,8 +112,12 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
         {
           role: 'assistant',
           text: res.reply,
+<<<<<<< HEAD
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           groundingSources: res.grounding?.sources
+=======
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
         }
       ]);
     } catch (err: any) {
@@ -279,6 +290,7 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                       : 'bg-slate-50 border border-slate-100 text-slate-800 rounded-tl-none leading-relaxed whitespace-pre-line'
                   }`}>
                     <div>{m.text}</div>
+<<<<<<< HEAD
                     {/* ML Grounding Badges */}
                     {m.role === 'assistant' && m.groundingSources && m.groundingSources.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 mt-2">
@@ -302,6 +314,8 @@ export const AIAssistantView: React.FC<AIAssistantViewProps> = ({
                         })}
                       </div>
                     )}
+=======
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
                     <span className={`text-[10px] block ${m.role === 'user' ? 'text-slate-400' : 'text-slate-400'}`}>
                       {m.time}
                     </span>

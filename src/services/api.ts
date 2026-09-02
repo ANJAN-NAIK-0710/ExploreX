@@ -11,10 +11,14 @@ import {
   WalletTransaction, 
   GroupTrip, 
   SettlementDebt,
+<<<<<<< HEAD
   WhatIfSimulationResult,
   DynamicPriceResponse,
   OptimizedItineraryResponse,
   AIChatResponse
+=======
+  WhatIfSimulationResult
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 } from '../types';
 
 const API_BASE = '/api/v1';
@@ -200,12 +204,21 @@ export const api = {
 
   // AI Services
   askAssistant: (message: string, destinationId?: string, history?: any[]) => 
+<<<<<<< HEAD
     request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, destinationId, history }) }),
   askAIChat: (options: any, destinationId?: string, history?: any[]) => {
     if (typeof options === 'object' && options !== null) {
       return request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify(options) });
     }
     return request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message: options, destinationId, history }) });
+=======
+    request<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, destinationId, history }) }),
+  askAIChat: (options: any, destinationId?: string, history?: any[]) => {
+    if (typeof options === 'object' && options !== null) {
+      return request<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify(options) });
+    }
+    return request<{ reply: string }>('/ai/chat', { method: 'POST', body: JSON.stringify({ message: options, destinationId, history }) });
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
   },
   autopilotReplan: (destinationName: string, trigger?: string, currentSchedule?: string[]) => 
     request<any>('/ai/autopilot/replan', { method: 'POST', body: JSON.stringify({ destinationName, trigger, currentSchedule }) }),
@@ -265,6 +278,7 @@ export const api = {
   getDestinationBestTime: (destId: string) =>
     request<any>(`/destinations/${destId}/best-time`),
   getDestinationLocalEconomy: (destId: string) =>
+<<<<<<< HEAD
     request<any>(`/destinations/${destId}/local-economy`),
 
   // ML Service Endpoints
@@ -275,4 +289,7 @@ export const api = {
   },
   optimizeItinerary: (packageId: string, body?: { numDays?: number; maxHoursPerDay?: number; categoryPreferences?: string[] }) =>
     request<OptimizedItineraryResponse>(`/packages/${packageId}/optimize-itinerary`, { method: 'POST', body: JSON.stringify(body || {}) }),
+=======
+    request<any>(`/destinations/${destId}/local-economy`)
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 };

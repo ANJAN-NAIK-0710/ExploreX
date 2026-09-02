@@ -81,10 +81,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
             className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
+<<<<<<< HEAD
               W
             </div>
             <div className="flex items-center gap-1">
               <span className="font-bold text-lg tracking-tight text-slate-900">WANDER<span className="text-blue-600">.AI</span></span>
+=======
+              E
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-lg tracking-tight text-slate-900">EXPLORE<span className="text-blue-600">X</span></span>
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
               <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-700 rounded border border-blue-100 uppercase tracking-wider">
                 Pro
               </span>
@@ -208,7 +215,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
                       className="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium"
                     >
                       <Wallet className="w-4 h-4 text-slate-400" />
+<<<<<<< HEAD
                       Wander Wallet & Splitter
+=======
+                      ExploreX Wallet & Splitter
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
                     </button>
 
                     <div className="border-t border-slate-100 my-1" />

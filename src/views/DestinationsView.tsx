@@ -25,7 +25,11 @@ import {
   Shirt,
   Calendar
 } from 'lucide-react';
+<<<<<<< HEAD
 import { Destination, TravelPackage, Review, DynamicPriceResponse } from '../types';
+=======
+import { Destination, TravelPackage, Review } from '../types';
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { NavTab } from '../components/Navbar';
@@ -68,6 +72,7 @@ export const DestinationsView: React.FC<DestinationsViewProps> = ({
   const [modalTab, setModalTab] = useState<'overview' | 'culture' | 'local_economy' | 'best_time' | 'packages' | 'reviews'>('overview');
   const [reviewModalOpen, setReviewModalOpen] = useState<boolean>(false);
   const [contextualSuggestions, setContextualSuggestions] = useState<any[]>([]);
+<<<<<<< HEAD
   const [dynamicPrices, setDynamicPrices] = useState<Record<string, DynamicPriceResponse>>({});
 
   // Fetch dynamic prices for visible destinations (lazy, cached)
@@ -85,6 +90,8 @@ export const DestinationsView: React.FC<DestinationsViewProps> = ({
       });
     });
   }, [destinations]);
+=======
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 
   useEffect(() => {
     if (selectedDestinationFromParent) {
@@ -377,6 +384,7 @@ export const DestinationsView: React.FC<DestinationsViewProps> = ({
                       <span className="text-sm font-black text-slate-900">
                         {isIndian ? `₹${(dest.startingPrice * 75).toLocaleString('en-IN')}` : `$${dest.startingPrice}`}
                       </span>
+<<<<<<< HEAD
                       {dynamicPrices[dest.id] && (
                         <div className="flex items-center gap-1 mt-0.5">
                           <span className="text-[10px] font-bold text-emerald-700">
@@ -390,6 +398,8 @@ export const DestinationsView: React.FC<DestinationsViewProps> = ({
                           )}
                         </div>
                       )}
+=======
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
                     </div>
 
                     <div className="flex items-center gap-2">

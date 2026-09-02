@@ -43,7 +43,11 @@ export const AdminView: React.FC = () => {
 
   // New Promo Code Form state
   const [newPromoModalOpen, setNewPromoModalOpen] = useState(false);
+<<<<<<< HEAD
   const [promoCode, setPromoCode] = useState('WANDER2026');
+=======
+  const [promoCode, setPromoCode] = useState('EXPLORE2026');
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
   const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>('percentage');
   const [discountValue, setDiscountValue] = useState(15);
 

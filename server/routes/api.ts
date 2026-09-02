@@ -6,7 +6,11 @@ import { db } from '../db';
 import { askTravelAssistant, generateAutopilotReplan, runWhatIfSimulation } from '../gemini';
 import { Booking, ExplorerRide, MagicMomentAlbum, MagicMomentPhoto, Review, GroupTrip, GroupExpense, UserProfile } from '../../src/types';
 import { EXPLORER_VEHICLES } from '../data/initialData';
+<<<<<<< HEAD
 import { balanceTourismDemand, balanceTourismDemandML } from '../services/demandBalancerService';
+=======
+import { balanceTourismDemand } from '../services/demandBalancerService';
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 import { searchCulturalSpecialties, getAlternativeRecommendations, getIndiaExplorerHierarchy } from '../services/culturalService';
 
 export const apiRouter = Router();
@@ -768,7 +772,11 @@ apiRouter.post('/ai/chat', async (req: Request, res: Response) => {
     const user = db.getUser(userId);
     const { message, destinationId, history } = req.body;
 
+<<<<<<< HEAD
     const result = await askTravelAssistant({
+=======
+    const reply = await askTravelAssistant({
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
       message,
       history,
       destinationId,
@@ -779,7 +787,11 @@ apiRouter.post('/ai/chat', async (req: Request, res: Response) => {
       }
     });
 
+<<<<<<< HEAD
     res.json({ reply: result.reply, grounding: result.grounding });
+=======
+    res.json({ reply });
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'AI Assistant service error' });
   }
@@ -919,6 +931,7 @@ apiRouter.post('/expenses/groups/:id/settle', (req: Request, res: Response) => {
    12. INDIA AI TOURISM DEMAND BALANCER & LOCAL CULTURE ENGINE
    ============================================================ */
 
+<<<<<<< HEAD
 // 1. AI Tourism Demand Balancer (ML-enhanced with rule-based fallback)
 apiRouter.post('/ai/demand-balancer', async (req: Request, res: Response) => {
   try {
@@ -930,12 +943,20 @@ apiRouter.post('/ai/demand-balancer', async (req: Request, res: Response) => {
       console.warn('ML demand balancer unavailable, using rule-based fallback:', (mlErr as Error).message);
       results = balanceTourismDemand(query);
     }
+=======
+// 1. AI Tourism Demand Balancer
+apiRouter.post('/ai/demand-balancer', (req: Request, res: Response) => {
+  try {
+    const query = req.body || {};
+    const results = balanceTourismDemand(query);
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
     res.json(results);
   } catch (err: any) {
     res.status(500).json({ error: err.message || 'Error executing AI Demand Balancer' });
   }
 });
 
+<<<<<<< HEAD
 // 1b. Dynamic Pricing — ML Service (INTEGRATION.md §4)
 apiRouter.get('/destinations/:id/dynamic-price', async (req: Request, res: Response) => {
   try {
@@ -983,6 +1004,8 @@ apiRouter.post('/packages/:id/optimize-itinerary', async (req: Request, res: Res
   }
 });
 
+=======
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 // 2. India Culture & Specialty Discovery Search
 apiRouter.get('/culture/search', (req: Request, res: Response) => {
   try {

@@ -580,6 +580,7 @@ export interface WhatIfSimulationResult {
     reason: string;
   }[];
 }
+<<<<<<< HEAD
 
 // ─── ML Service Response Types ───────────────────────────────────────────────
 
@@ -643,3 +644,5 @@ export interface AIChatResponse {
   grounding?: AIGrounding;
 }
 
+=======
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933

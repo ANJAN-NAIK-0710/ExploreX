@@ -50,6 +50,7 @@ async function startServer() {
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 WanderAI Server running on port ${PORT}`);
+<<<<<<< HEAD
     checkMLServiceHealth();
   });
 }
@@ -71,4 +72,9 @@ async function checkMLServiceHealth() {
   }
 }
 
+=======
+  });
+}
+
+>>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 startServer();
