@@ -1,0 +1,278 @@
+import { 
+  Destination, 
+  TravelPackage, 
+  UserProfile, 
+  Booking, 
+  ExplorerRide, 
+  ExplorerVehicleOption, 
+  MagicMomentAlbum, 
+  MagicMomentPhoto, 
+  Review, 
+  WalletTransaction, 
+  GroupTrip, 
+  SettlementDebt,
+  WhatIfSimulationResult,
+  DynamicPriceResponse,
+  OptimizedItineraryResponse,
+  AIChatResponse
+} from '../types';
+
+const API_BASE = '/api/v1';
+
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': 'usr-current',
+      ...(options?.headers || {})
+    }
+  });
+
+  if (!res.ok) {
+    let errMsg = `Request failed with status ${res.status}`;
+    try {
+      const errJson = await res.json();
+      if (errJson.error) errMsg = errJson.error;
+    } catch {}
+    throw new Error(errMsg);
+  }
+
+  return res.json();
+}
+
+export const api = {
+  // Auth & Profile
+  login: (email: string, password: string) => 
+    request<{ token: string; user: UserProfile }>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  signup: (name: string, email: string, password: string) => 
+    request<{ token: string; user: UserProfile }>('/auth/signup', { method: 'POST', body: JSON.stringify({ name, email, password }) }),
+  logout: () => 
+    request<{ success: boolean; message: string }>('/auth/logout', { method: 'POST' }),
+  forgotPassword: (email: string) => 
+    request<{ success: boolean; message: string }>('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  getProfile: () => 
+    request<UserProfile>('/auth/profile'),
+  updateProfile: (updates: Partial<UserProfile>) => 
+    request<UserProfile>('/auth/profile', { method: 'PUT', body: JSON.stringify(updates) }),
+  updatePreferences: (preferences: UserProfile['preferences']) => 
+    request<UserProfile>('/auth/preferences', { method: 'POST', body: JSON.stringify({ preferences }) }),
+  toggleSaveDestination: (destinationId: string) => 
+    request<UserProfile>('/auth/toggle-save-destination', { method: 'POST', body: JSON.stringify({ destinationId }) }),
+  toggleSavePackage: (packageId: string) => 
+    request<UserProfile>('/auth/toggle-save-package', { method: 'POST', body: JSON.stringify({ packageId }) }),
+  deleteAccount: () => 
+    request<{ success: boolean; message: string }>('/auth/account', { method: 'DELETE' }),
+
+  // Destinations
+  getDestinations: (params?: { search?: string; vibe?: string; type?: 'all' | 'domestic' | 'international' }) => {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.vibe && params.vibe !== 'all') query.set('vibe', params.vibe);
+    if (params?.type && params.type !== 'all') query.set('type', params.type);
+    return request<Destination[]>(`/destinations?${query.toString()}`);
+  },
+  getDestinationById: (id: string) => 
+    request<Destination>(`/destinations/${id}`),
+  createDestination: (dest: Partial<Destination>) => 
+    request<Destination>('/destinations', { method: 'POST', body: JSON.stringify(dest) }),
+  updateDestination: (id: string, updates: Partial<Destination>) => 
+    request<Destination>(`/destinations/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
+  deleteDestination: (id: string) => 
+    request<{ success: boolean }>(`/destinations/${id}`, { method: 'DELETE' }),
+
+  // Packages
+  getPackages: (params?: { destinationId?: string; theme?: string; maxPrice?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.destinationId) query.set('destinationId', params.destinationId);
+    if (params?.theme && params.theme !== 'all') query.set('theme', params.theme);
+    if (params?.maxPrice) query.set('maxPrice', params.maxPrice.toString());
+    return request<TravelPackage[]>(`/packages?${query.toString()}`);
+  },
+  getPackageById: (id: string) => 
+    request<TravelPackage>(`/packages/${id}`),
+  comparePackages: (packageIds: string[]) => 
+    request<TravelPackage[]>('/packages/compare', { method: 'POST', body: JSON.stringify({ packageIds }) }),
+  createPackage: (pkg: Partial<TravelPackage>) => 
+    request<TravelPackage>('/packages', { method: 'POST', body: JSON.stringify(pkg) }),
+  updatePackage: (id: string, updates: Partial<TravelPackage>) => 
+    request<TravelPackage>(`/packages/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
+  deletePackage: (id: string) => 
+    request<{ success: boolean }>(`/packages/${id}`, { method: 'DELETE' }),
+
+  // The Explorer
+  getExplorerVehicles: () => 
+    request<ExplorerVehicleOption[]>('/explorer/vehicles'),
+  getFareEstimate: (body: { pickupCoords: { lat: number; lng: number }; dropCoords: { lat: number; lng: number }; vehicleType: string }) => 
+    request<{ distanceKm: number; fare: number; durationMins: number; etaMins: number; vehicle: ExplorerVehicleOption }>('/explorer/fare-estimate', { method: 'POST', body: JSON.stringify(body) }),
+  bookRide: (body: any) => 
+    request<ExplorerRide>('/explorer/book', { method: 'POST', body: JSON.stringify(body) }),
+  getRides: () => 
+    request<ExplorerRide[]>('/explorer/rides'),
+  getRideById: (id: string) => 
+    request<ExplorerRide>(`/explorer/rides/${id}`),
+  advanceRideStatus: (id: string) => 
+    request<ExplorerRide>(`/explorer/rides/${id}/status-advance`, { method: 'POST' }),
+  cancelRide: (id: string) => 
+    request<{ success: boolean; ride: ExplorerRide }>(`/explorer/rides/${id}/cancel`, { method: 'POST' }),
+
+  // Bookings
+  getBookings: () => 
+    request<Booking[]>('/bookings'),
+  getBookingById: (id: string) => 
+    request<Booking>(`/bookings/${id}`),
+  createBooking: (bookingData: any) => 
+    request<Booking>('/bookings', { method: 'POST', body: JSON.stringify(bookingData) }),
+  cancelBooking: (id: string) => 
+    request<{ booking: Booking; refundAmount: number }>(`/bookings/${id}/cancel`, { method: 'POST' }),
+
+  // Magic Moments
+  getAlbums: () => 
+    request<MagicMomentAlbum[]>('/moments/albums'),
+  createAlbum: (body: { title: string; destinationName?: string; tripStartDate?: string; tripEndDate?: string }) => 
+    request<MagicMomentAlbum>('/moments/albums', { method: 'POST', body: JSON.stringify(body) }),
+  deleteAlbum: (id: string) => 
+    request<{ success: boolean }>('/moments/albums/' + id, { method: 'DELETE' }),
+  getPhotos: (albumId: string) => 
+    request<MagicMomentPhoto[]>(`/moments/albums/${albumId}/photos`),
+  getStorageUsage: () => 
+    request<{ usedBytes: number; quotaBytes: number; percentage: number }>('/moments/usage'),
+  getStorageQuota: () => 
+    request<{ usedBytes: number; quotaBytes: number; percentage: number }>('/moments/usage'),
+  uploadPhoto: async (formData: FormData) => {
+    const res = await fetch(`${API_BASE}/moments/upload`, {
+      method: 'POST',
+      headers: {
+        'x-user-id': 'usr-current'
+      },
+      body: formData
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to upload image');
+    }
+    return res.json() as Promise<MagicMomentPhoto>;
+  },
+  deletePhoto: (id: string) => 
+    request<{ success: boolean }>(`/moments/photos/${id}`, { method: 'DELETE' }),
+  enhancePhoto: (photoId: string, style: string) => 
+    request<{ success: boolean; filterApplied: string; enhancedUrl: string }>('/moments/enhance', { method: 'POST', body: JSON.stringify({ photoId, style }) }),
+
+  // Reviews
+  getReviews: (targetType?: string, targetId?: string) => {
+    const q = new URLSearchParams();
+    if (targetType) q.set('targetType', targetType);
+    if (targetId) q.set('targetId', targetId);
+    return request<Review[]>(`/reviews?${q.toString()}`);
+  },
+  createReview: (reviewData: Partial<Review>) => 
+    request<Review>('/reviews', { method: 'POST', body: JSON.stringify(reviewData) }),
+  updateReview: (id: string, updates: Partial<Review>) => 
+    request<Review>(`/reviews/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
+  deleteReview: (id: string) => 
+    request<{ success: boolean }>(`/reviews/${id}`, { method: 'DELETE' }),
+
+  // Wallet
+  getWallet: () => 
+    request<{ balance: number; transactions: WalletTransaction[] }>('/wallet'),
+  getWalletTransactions: async () => {
+    const res = await request<{ balance: number; transactions: WalletTransaction[] }>('/wallet');
+    return res.transactions || [];
+  },
+  topupWallet: (amount: number, method?: string) => 
+    request<{ user: UserProfile; transaction: WalletTransaction }>('/wallet/topup', { method: 'POST', body: JSON.stringify({ amount, method }) }),
+
+  // Group Expenses
+  getGroupTrips: () => 
+    request<GroupTrip[]>('/expenses/groups'),
+  getGroupTripById: (id: string) => 
+    request<{ trip: GroupTrip; settlement: { balances: Record<string, number>; settlements: SettlementDebt[] } }>(`/expenses/groups/${id}`),
+  createGroupTrip: (body: { title?: string; name?: string; destinationName?: string; members?: any[] }) => 
+    request<GroupTrip>('/expenses/groups', { method: 'POST', body: JSON.stringify({ title: body.title || body.name || 'Group Trip', destinationName: body.destinationName, members: body.members }) }),
+  addExpense: (groupId: string, expenseData: any) => 
+    request<{ trip: GroupTrip; settlement: any }>(`/expenses/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(expenseData) }),
+  addGroupExpense: (groupId: string, expenseData: any) => 
+    request<{ trip: GroupTrip; settlement: any }>(`/expenses/groups/${groupId}/expenses`, { method: 'POST', body: JSON.stringify(expenseData) }),
+  deleteExpense: (groupId: string, expenseId: string) => 
+    request<{ trip: GroupTrip; settlement: any }>(`/expenses/groups/${groupId}/expenses/${expenseId}`, { method: 'DELETE' }),
+  settleGroupDebt: (groupId: string, debtorId: string, creditorId: string, amount: number) => 
+    request<{ trip: GroupTrip; settlement: any }>(`/expenses/groups/${groupId}/settle`, { method: 'POST', body: JSON.stringify({ debtorId, creditorId, amount }) }),
+
+  // AI Services
+  askAssistant: (message: string, destinationId?: string, history?: any[]) => 
+    request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message, destinationId, history }) }),
+  askAIChat: (options: any, destinationId?: string, history?: any[]) => {
+    if (typeof options === 'object' && options !== null) {
+      return request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify(options) });
+    }
+    return request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message: options, destinationId, history }) });
+  },
+  autopilotReplan: (destinationName: string, trigger?: string, currentSchedule?: string[]) => 
+    request<any>('/ai/autopilot/replan', { method: 'POST', body: JSON.stringify({ destinationName, trigger, currentSchedule }) }),
+  runTripAutopilot: (options: any, trigger?: string, currentSchedule?: string[]) => {
+    if (typeof options === 'object' && options !== null) {
+      return request<any>('/ai/autopilot/replan', { method: 'POST', body: JSON.stringify({
+        destinationName: options.destination || options.destinationName,
+        trigger: options.disruption || options.trigger,
+        currentSchedule: options.currentSchedule
+      }) });
+    }
+    return request<any>('/ai/autopilot/replan', { method: 'POST', body: JSON.stringify({ destinationName: options, trigger, currentSchedule }) });
+  },
+  runWhatIf: (scenario: string, destinationName: string, baseBudget?: number, groupSize?: number, durationDays?: number) => 
+    request<WhatIfSimulationResult>('/ai/what-if', { method: 'POST', body: JSON.stringify({ scenario, destinationName, baseBudget, groupSize, durationDays }) }),
+  simulateWhatIf: (options: any, destinationName?: string, baseBudget?: number, groupSize?: number, durationDays?: number) => {
+    if (typeof options === 'object' && options !== null) {
+      return request<WhatIfSimulationResult>('/ai/what-if', { method: 'POST', body: JSON.stringify({
+        scenario: options.scenario,
+        destinationName: options.destination || options.destinationName,
+        baseBudget: options.budget || options.baseBudget,
+        groupSize: options.groupSize,
+        durationDays: options.durationDays
+      }) });
+    }
+    return request<WhatIfSimulationResult>('/ai/what-if', { method: 'POST', body: JSON.stringify({ scenario: options, destinationName, baseBudget, groupSize, durationDays }) });
+  },
+  updateTravelDNA: (answers: Record<string, number>) => 
+    request<UserProfile['travelDNA']>('/ai/travel-dna', { method: 'POST', body: JSON.stringify({ answers }) }),
+  getContextualSuggestions: (destinationId?: string) => 
+    request<any[]>(`/ai/contextual-suggestions?destinationId=${destinationId || ''}`),
+
+  // Admin
+  getAdminAnalytics: () => 
+    request<any>('/admin/analytics'),
+  getAdminStats: () => 
+    request<any>('/admin/analytics'),
+  getOffers: () => 
+    request<any[]>('/admin/offers'),
+  resetDatabase: () => 
+    request<{ success: boolean; message: string }>('/admin/reset-db', { method: 'POST' }),
+
+  // India Demand Balancer & Culture Engine
+  balanceTourismDemand: (query: any) =>
+    request<any[]>('/ai/demand-balancer', { method: 'POST', body: JSON.stringify(query) }),
+  searchCulturalSpecialties: (params?: { q?: string; category?: string; state?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.q) query.append('q', params.q);
+    if (params?.category) query.append('category', params.category);
+    if (params?.state) query.append('state', params.state);
+    return request<any[]>(`/culture/search?${query.toString()}`);
+  },
+  getIndiaHierarchy: () =>
+    request<any>('/culture/hierarchy'),
+  getDestinationAlternatives: (destIdOrName: string) =>
+    request<any>(`/destinations/${destIdOrName}/alternatives`),
+  getDestinationBestTime: (destId: string) =>
+    request<any>(`/destinations/${destId}/best-time`),
+  getDestinationLocalEconomy: (destId: string) =>
+    request<any>(`/destinations/${destId}/local-economy`),
+
+  // ML Service Endpoints
+  getDynamicPrice: (destinationId: string, params?: { date?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.date) query.set('date', params.date);
+    return request<DynamicPriceResponse>(`/destinations/${destinationId}/dynamic-price?${query.toString()}`);
+  },
+  optimizeItinerary: (packageId: string, body?: { numDays?: number; maxHoursPerDay?: number; categoryPreferences?: string[] }) =>
+    request<OptimizedItineraryResponse>(`/packages/${packageId}/optimize-itinerary`, { method: 'POST', body: JSON.stringify(body || {}) }),
+};
