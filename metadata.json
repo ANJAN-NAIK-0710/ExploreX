@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
   "name": "WanderAI - Smart Tourism Platform",
-=======
-  "name": "ExploreX - Smart Tourism Platform",
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
   "description": "AI-Powered Personalized Tourism & Travel Optimization Platform featuring intelligent itinerary autopilot, multi-modal travel bookings, The Explorer micro-mobility, group expense splitter, magic moments gallery, and real-time destination analytics.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

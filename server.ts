@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -5,7 +6,7 @@ import { createServer as createViteServer } from 'vite';
 import { apiRouter } from './server/routes/api';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Body parsers
 app.use(express.json({ limit: '20mb' }));
@@ -22,7 +23,7 @@ app.use('/uploads', express.static(uploadDir));
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
-    platform: 'WanderAI - Smart Tourism Platform',
+    platform: 'ExploreX - Smart Tourism Platform',
     timestamp: new Date().toISOString()
   });
 });
@@ -48,9 +49,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 WanderAI Server running on port ${PORT}`);
-<<<<<<< HEAD
+  app.listen(Number(PORT), '0.0.0.0', () => {
+    console.log(`🚀 ExploreX Server running on port ${PORT}`);
     checkMLServiceHealth();
   });
 }
@@ -72,9 +72,5 @@ async function checkMLServiceHealth() {
   }
 }
 
-=======
-  });
-}
-
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 startServer();
+

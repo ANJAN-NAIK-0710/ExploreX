@@ -15,17 +15,10 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => onSelectTab('home')}>
               <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
-<<<<<<< HEAD
                 W
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-xl font-bold text-white tracking-tight">WANDER<span className="text-blue-400">.AI</span></span>
-=======
-                E
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-xl font-bold text-white tracking-tight">EXPLORE<span className="text-blue-400">X</span></span>
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
                 <span className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-950 text-blue-300 rounded border border-blue-800 uppercase tracking-wider">
                   Pro
                 </span>
@@ -69,11 +62,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Services & Tools</h4>
             <ul className="space-y-2 text-xs text-slate-400">
               <li><button onClick={() => onSelectTab('mytrips')} className="hover:text-blue-400 transition-colors">My Trips Dashboard</button></li>
-<<<<<<< HEAD
               <li><button onClick={() => onSelectTab('wallet')} className="hover:text-blue-400 transition-colors">Wander Wallet & Reload</button></li>
-=======
-              <li><button onClick={() => onSelectTab('wallet')} className="hover:text-blue-400 transition-colors">ExploreX Wallet & Reload</button></li>
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
               <li><button onClick={() => onSelectTab('wallet')} className="hover:text-blue-400 transition-colors">Group Expense Splitter</button></li>
               <li><button onClick={() => onSelectTab('profile')} className="hover:text-blue-400 transition-colors">Profile & Preferences</button></li>
               <li><button onClick={() => onSelectTab('admin')} className="hover:text-blue-400 transition-colors font-medium text-slate-300">Admin Control Center</button></li>
@@ -83,11 +72,7 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
 
         {/* Bottom copyright & disclaimer */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-<<<<<<< HEAD
           <p>© 2026 WanderAI Platform. Built for Next-Generation Tourism Optimization.</p>
-=======
-          <p>© 2026 ExploreX Platform. Built for Next-Generation Tourism Optimization.</p>
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
           <div className="flex items-center gap-6">
             <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
             <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>

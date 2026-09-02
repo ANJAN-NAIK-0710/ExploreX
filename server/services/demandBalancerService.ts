@@ -1,7 +1,6 @@
 import { Destination, DemandBalancerQuery, DemandBalancerResult } from '../../src/types';
 import { db } from '../db';
 
-<<<<<<< HEAD
 const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
 
 /**
@@ -57,8 +56,6 @@ export async function balanceTourismDemandML(query: DemandBalancerQuery): Promis
   });
 }
 
-=======
->>>>>>> 5761e1be8e8eb21e40f31a92e4c8a271991f2933
 /**
  * AI Tourism Demand Balancer Service
  * Evaluates candidate destinations based on:
