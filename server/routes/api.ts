@@ -8,6 +8,7 @@ import { Booking, ExplorerRide, MagicMomentAlbum, MagicMomentPhoto, Review, Grou
 import { EXPLORER_VEHICLES } from '../data/initialData';
 import { balanceTourismDemand, balanceTourismDemandML } from '../services/demandBalancerService';
 import { searchCulturalSpecialties, getAlternativeRecommendations, getIndiaExplorerHierarchy } from '../services/culturalService';
+import { searchFlights, searchHotels } from '../services/amadeusService';
 
 export const apiRouter = Router();
 
@@ -1044,4 +1045,9 @@ apiRouter.get('/destinations/:id/local-economy', (req: Request, res: Response) =
     localEconomy: dest.localEconomy
   });
 });
+
+// 7. Amadeus Travel Search APIs (Flights & Hotels)
+apiRouter.get('/amadeus/flights', searchFlights);
+apiRouter.get('/amadeus/hotels', searchHotels);
+
 

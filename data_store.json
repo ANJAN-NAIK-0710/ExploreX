@@ -9,7 +9,7 @@
       "bio": "Passionate travel photographer, cultural foodie & mountain enthusiast exploring breathtaking corners of our planet.",
       "homeCity": "San Francisco, CA",
       "joinedDate": "January 2025",
-      "walletBalance": 450,
+      "walletBalance": 1750,
       "preferences": {
         "vibes": [
           "mountain",
@@ -4909,9 +4909,9 @@
         }
       ],
       "totalAmount": 1300,
-      "status": "confirmed",
+      "status": "cancelled",
       "paymentMethod": "wallet",
-      "paymentStatus": "paid",
+      "paymentStatus": "refunded",
       "isSimulation": true,
       "details": {
         "providerName": "WanderAI Luxury Escapes",
@@ -5118,6 +5118,17 @@
     }
   ],
   "walletTransactions": [
+    {
+      "id": "txn-ref-1788332328468",
+      "userId": "usr-current",
+      "amount": 1300,
+      "type": "credit",
+      "source": "refund",
+      "description": "Full refund for cancelled booking #BKG-2026-8812",
+      "timestamp": "2026-09-02T06:58:48.468Z",
+      "status": "success",
+      "referenceId": "BKG-2026-8812"
+    },
     {
       "id": "txn-101",
       "userId": "usr-current",
