@@ -67,7 +67,7 @@ export const AuthModal: React.FC = () => {
               <Compass className="w-6 h-6 text-sky-200" />
             </div>
             <h3 className="text-xl font-bold">
-              {authModalMode === 'login' && 'Welcome Back to WanderAI'}
+              {authModalMode === 'login' && 'Welcome Back to ExploreX'}
               {authModalMode === 'signup' && 'Start Your Smart Journey'}
               {authModalMode === 'forgot' && 'Reset Your Password'}
             </h3>
@@ -106,7 +106,7 @@ export const AuthModal: React.FC = () => {
                   required
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="traveler@wanderai.com"
+                  placeholder="traveler@explorex.com"
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all"
                 />
               </div>

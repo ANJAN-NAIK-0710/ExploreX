@@ -11,6 +11,7 @@ import {
   Zap
 } from 'lucide-react';
 import { BestTimeEngineData, Destination } from '../types';
+import { formatINR } from '../utils/currency';
 
 interface BestTimeEngineProps {
   destination: Destination;
@@ -136,11 +137,11 @@ export const BestTimeEngineCard: React.FC<BestTimeEngineProps> = ({ destination 
             <div className="bg-white p-4 rounded-lg border border-slate-200 text-xs text-slate-600 space-y-2">
               <div className="flex justify-between">
                 <span>Budget Homestay Tier:</span>
-                <span className="font-bold text-emerald-700">₹{destination.startingPrice * 18}/day</span>
+                <span className="font-bold text-emerald-700">{formatINR(Math.round(destination.startingPrice * 0.35))}/day</span>
               </div>
               <div className="flex justify-between">
                 <span>Comfort Boutique Tier:</span>
-                <span className="font-bold text-blue-700">₹{destination.startingPrice * 35}/day</span>
+                <span className="font-bold text-blue-700">{formatINR(Math.round(destination.startingPrice * 0.70))}/day</span>
               </div>
             </div>
           )}

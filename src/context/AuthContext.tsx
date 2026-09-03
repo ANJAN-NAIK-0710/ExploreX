@@ -24,26 +24,35 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem('explorex_session_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const { success, error } = useToast();
 
   const refreshProfile = useCallback(async () => {
+    const saved = localStorage.getItem('explorex_session_user');
+    if (!saved) {
+      setUser(null);
+      return;
+    }
     try {
       const data = await api.getProfile();
-      setUser(data);
+      if (data && data.id) {
+        setUser(data);
+        localStorage.setItem('explorex_session_user', JSON.stringify(data));
+      }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    refreshProfile();
-  }, [refreshProfile]);
 
   const openAuthModal = (mode: 'login' | 'signup' | 'forgot' = 'login') => {
     setAuthModalMode(mode);
@@ -57,12 +66,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string): Promise<boolean> => {
     try {
       const res = await api.login(email, pass);
-      setUser(res.user);
-      closeAuthModal();
-      success('Welcome back!', `Logged in as ${res.user.name}`);
-      return true;
+      if (res.user) {
+        setUser(res.user);
+        localStorage.setItem('explorex_session_user', JSON.stringify(res.user));
+        if (res.token) localStorage.setItem('explorex_auth_token', res.token);
+        closeAuthModal();
+        success('Welcome back!', `Signed in as ${res.user.name}`);
+        return true;
+      }
+      return false;
     } catch (err: any) {
-      error('Login Failed', err.message || 'Invalid credentials');
+      error('Login Failed', err.message || 'Invalid email or password');
       return false;
     }
   };
@@ -70,10 +84,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (name: string, email: string, pass: string): Promise<boolean> => {
     try {
       const res = await api.signup(name, email, pass);
-      setUser(res.user);
-      closeAuthModal();
-      success('Account Created!', `Welcome to WanderAI, ${name}!`);
-      return true;
+      if (res.user) {
+        setUser(res.user);
+        localStorage.setItem('explorex_session_user', JSON.stringify(res.user));
+        if (res.token) localStorage.setItem('explorex_auth_token', res.token);
+        closeAuthModal();
+        success('Account Created!', `Welcome to ExploreX, ${name}!`);
+        return true;
+      }
+      return false;
     } catch (err: any) {
       error('Signup Failed', err.message || 'Could not create account');
       return false;
@@ -83,12 +102,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await api.logout();
-      setUser(null);
-      success('Logged out', 'You have been safely logged out.');
-      // Refresh dummy user profile
-      refreshProfile();
     } catch (err) {
       console.error(err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('explorex_session_user');
+      localStorage.removeItem('explorex_auth_token');
+      success('Signed out', 'You have been safely signed out.');
     }
   };
 
@@ -96,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const updated = await api.updateProfile(updates);
       setUser(updated);
+      localStorage.setItem('explorex_session_user', JSON.stringify(updated));
       success('Profile Updated', 'Your profile details were saved successfully.');
     } catch (err: any) {
       error('Update Failed', err.message || 'Failed to update profile');
@@ -106,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const updated = await api.updatePreferences(prefs);
       setUser(updated);
+      localStorage.setItem('explorex_session_user', JSON.stringify(updated));
       success('Preferences Saved', 'AI personalized recommendations updated.');
     } catch (err: any) {
       error('Update Failed', err.message);
@@ -117,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = await api.toggleSaveDestination(destinationId);
       const isSaved = updated.savedDestinations.includes(destinationId);
       setUser(updated);
+      localStorage.setItem('explorex_session_user', JSON.stringify(updated));
       success(isSaved ? 'Destination Saved' : 'Removed from Saved', isSaved ? 'Added to your travel wishlist' : 'Removed from wishlist');
     } catch (err: any) {
       error('Error', err.message);
@@ -128,6 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = await api.toggleSavePackage(packageId);
       const isSaved = updated.savedPackages.includes(packageId);
       setUser(updated);
+      localStorage.setItem('explorex_session_user', JSON.stringify(updated));
       success(isSaved ? 'Package Saved' : 'Removed from Saved', isSaved ? 'Added to saved packages' : 'Removed from saved');
     } catch (err: any) {
       error('Error', err.message);

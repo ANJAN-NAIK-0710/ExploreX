@@ -35,6 +35,41 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onNavigate }) => {
   const [homeCity, setHomeCity] = useState(user?.homeCity || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
 
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6 bg-white">
+        <div className="w-16 h-16 bg-[#F7F7F4] text-[#91482D] rounded-2xl flex items-center justify-center mx-auto border border-[#E4E4DF] shadow-2xs">
+          <User className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-[#91482D] font-bold">
+            Curator Profile
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-[#242424]">
+            Traveler Profile & Travel DNA
+          </h2>
+          <p className="font-prose text-sm text-[#6B6B67] max-w-md mx-auto italic">
+            Please sign in to view and customize your travel preferences, saved trips, and passport details.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+          <button
+            onClick={() => onNavigate('login')}
+            className="px-6 py-2.5 bg-[#242424] hover:bg-[#91482D] text-[#FFFFFF] text-xs font-mono uppercase tracking-wider font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => onNavigate('signup')}
+            className="px-6 py-2.5 bg-white hover:bg-[#F7F7F4] text-[#242424] text-xs font-mono uppercase tracking-wider font-bold rounded-xl border border-[#E4E4DF] transition-colors cursor-pointer"
+          >
+            Create an Account
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Preferences State
   const [travelPace, setTravelPace] = useState<'relaxed' | 'moderate' | 'fast_paced'>(user?.preferences?.pace || 'moderate');
   const [budgetLevel, setBudgetLevel] = useState<'budget' | 'moderate' | 'luxury' | 'ultra_luxury'>(user?.preferences?.budgetLevel || 'moderate');
@@ -145,65 +180,68 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onNavigate }) => {
   };
 
   const availableVibes: { key: TravelVibe; label: string }[] = [
-    { key: 'mountain', label: '⛰️ Mountain' },
-    { key: 'beach', label: '🏖️ Beach' },
-    { key: 'heritage', label: '🏛️ Heritage' },
-    { key: 'nature', label: '🌲 Nature' },
-    { key: 'culinary', label: '🍜 Culinary' },
-    { key: 'adventure', label: '🧗 Adventure' },
-    { key: 'luxury', label: '💎 Luxury' },
-    { key: 'wellness', label: '🧘 Wellness' },
-    { key: 'urban', label: '🌆 Urban' }
+    { key: 'mountain', label: 'Alpine & Highlands' },
+    { key: 'beach', label: 'Coastal & Islands' },
+    { key: 'heritage', label: 'Heritage & Living Ateliers' },
+    { key: 'nature', label: 'Wilderness & Sanctuaries' },
+    { key: 'culinary', label: 'Terroirs & Gastronomy' },
+    { key: 'adventure', label: 'High Adventure' },
+    { key: 'luxury', label: 'Curated Luxury' },
+    { key: 'wellness', label: 'Ayurvedic Retreats' },
+    { key: 'urban', label: 'Historic Quarters' }
   ];
 
   const availableDiets = ['Vegetarian Friendly', 'Vegan', 'Halal', 'Gluten-Free', 'Seafood', 'Kosher', 'Nut-Free'];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-16">
+    <div className="page-container space-y-8 pb-16 bg-white">
       {/* Header */}
-      <div className="pt-4">
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 uppercase tracking-wider">
-          <User className="w-4 h-4" />
-          Account & AI DNA Hub
+      <div className="pt-4 border-b border-[#E4E4DF] pb-6">
+        <div className="inline-flex items-center gap-2 text-[10px] font-mono tracking-widest uppercase text-[#91482D] font-bold">
+          <User className="w-3.5 h-3.5" />
+          The Curator Folio
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-          Traveler Profile & Neural Preferences
+        <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#242424] tracking-tight mt-1">
+          Traveler Profile & Curator DNA
         </h1>
+        <p className="font-prose text-sm sm:text-base text-[#6B6B67] mt-1 italic">
+          Configure your personal travel archetype, dietary preferences, and pacing to calibrate AI recommendations.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Profile Card */}
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6 text-center sm:text-left">
+          <div className="bg-white p-6 rounded-2xl border border-[#E4E4DF] shadow-editorial space-y-6 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <img
                 src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
                 alt={user?.name}
-                className="w-20 h-20 rounded-2xl object-cover border-2 border-sky-400 shadow-md"
+                className="w-20 h-20 rounded-xl object-cover border border-[#E4E4DF] shadow-xs"
               />
               <div className="space-y-1">
                 <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <h3 className="text-lg font-black text-slate-900">{user?.name}</h3>
-                  <span className="px-2 py-0.5 bg-sky-100 text-sky-800 text-[10px] font-extrabold rounded-full uppercase">
+                  <h3 className="font-display text-lg font-bold text-[#242424]">{user?.name}</h3>
+                  <span className="px-2 py-0.5 bg-[#F7F7F4] text-[#242424] text-[10px] font-mono font-bold rounded uppercase border border-[#E4E4DF]">
                     {user?.role || 'user'}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">{user?.email}</p>
-                <p className="text-xs text-slate-500 font-mono">{user?.phone || 'No phone added'}</p>
+                <p className="text-xs font-mono text-[#6B6B67]">{user?.email}</p>
+                <p className="text-xs font-mono text-[#6B6B67]">{user?.phone || 'No phone added'}</p>
               </div>
             </div>
 
             {user?.bio && (
-              <p className="text-xs text-slate-600 italic bg-slate-50 p-3 rounded-2xl border border-slate-100">
+              <p className="text-xs font-prose text-[#6B6B67] italic bg-[#FFFFFF] p-3.5 rounded-xl border border-[#E4E4DF]">
                 "{user.bio}"
               </p>
             )}
 
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <div className="pt-4 border-t border-[#F7F7F4] flex items-center justify-between text-xs text-[#6B6B67] font-mono">
               <span>Member Since: {user?.joinedDate || '2025'}</span>
               <button
                 onClick={() => setIsEditingProfile(!isEditingProfile)}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-bold transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 bg-[#F7F7F4] hover:bg-[#E4E4DF] text-[#242424] rounded-lg font-mono text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-1 cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 <span>{isEditingProfile ? 'Close' : 'Edit Profile'}</span>

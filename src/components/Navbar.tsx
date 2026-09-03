@@ -13,11 +13,11 @@ import {
   Menu, 
   X, 
   Camera, 
-  Heart, 
   LogOut,
   ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { formatINR } from '../utils/currency';
 
 export type NavTab = 
   | 'home' 
@@ -31,7 +31,9 @@ export type NavTab =
   | 'moments' 
   | 'wallet' 
   | 'profile' 
-  | 'admin';
+  | 'admin'
+  | 'login'
+  | 'signup';
 
 interface NavbarProps {
   currentTab?: NavTab;
@@ -47,11 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   const handleOpenAuth = (mode: 'login' | 'signup') => {
-    if (onOpenAuth) {
-      onOpenAuth(mode);
-    } else {
-      openAuthModal(mode);
-    }
+    onSelectTab(mode);
   };
 
   const navItems = [
@@ -62,8 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
     { id: 'bookings', label: 'Bookings', icon: Ticket },
     { id: 'mytrips', label: 'My Trips', icon: Briefcase },
     { id: 'explorer', label: 'The Explorer', icon: Car },
-    { id: 'ai', label: 'AI Assistant', icon: Sparkles, badge: 'AI' },
-    { id: 'moments', label: 'Moments', icon: Camera }
+    { id: 'ai', label: 'AI Assistant', icon: Sparkles, badge: 'AI' }
   ];
 
   const handleNavClick = (tabId: string) => {
@@ -72,27 +69,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E4E4DF] shadow-xs transition-colors w-full overflow-x-clip">
+      <div className="w-full px-3 sm:px-4 lg:px-5 xl:px-8 max-w-[1760px] mx-auto">
+        <div className="flex items-center justify-between h-16 sm:h-17 gap-2">
+          
+          {/* 1. LEFT SIDE — BRAND */}
           <div 
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-3 cursor-pointer group shrink-0"
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group flex-shrink-0"
           >
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              W
+            <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 bg-[#242424] text-white rounded-md flex items-center justify-center font-display text-sm sm:text-base font-bold group-hover:bg-[#B45F3C] transition-colors">
+              X
             </div>
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-lg tracking-tight text-slate-900">WANDER<span className="text-blue-600">.AI</span></span>
-              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-700 rounded border border-blue-100 uppercase tracking-wider">
-                Pro
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#242424]">
+                  Explore<span className="text-[#B45F3C]">X</span>
+                </span>
+                <span className="hidden xl:inline-block px-1.5 py-0.5 text-[8px] font-mono tracking-wider uppercase bg-[#F7F7F4] text-[#6B6B67] rounded border border-[#E4E4DF]">
+                  MAGAZINE
+                </span>
+              </div>
+              <span className="text-[7.5px] sm:text-[8px] font-mono tracking-widest uppercase text-[#6B6B67] leading-none mt-0.5 hidden md:block">
+                TRAVEL JOURNAL & ATELIER
               </span>
             </div>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
+          {/* 2. CENTER — MAIN NAVIGATION */}
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-1.5 mx-1 xl:mx-2 flex-shrink min-w-0">
             {navItems.map(item => {
               const Icon = item.icon;
               const isActive = effectiveTab === item.id;
@@ -100,16 +105,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`h-16 px-3 flex items-center gap-1.5 text-xs font-semibold transition-all relative ${
+                  className={`h-8.5 xl:h-9 px-2 xl:px-2.5 2xl:px-3 flex items-center gap-1.5 text-[12px] xl:text-[12.5px] 2xl:text-[13px] font-medium rounded-lg transition-all relative shrink-0 cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'text-blue-600 font-bold border-b-2 border-blue-600 bg-blue-50/40'
-                      : 'text-slate-500 hover:text-blue-600 hover:bg-slate-50'
+                      ? 'text-[#242424] font-semibold bg-[#F7F7F4] border border-[#E4E4DF]'
+                      : 'text-[#6B6B67] hover:text-[#242424] hover:bg-[#F7F7F4]/80'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-blue-600'}`} />
+                  <Icon className={`w-3.5 h-3.5 xl:w-3.5 xl:h-3.5 ${isActive ? 'text-[#B45F3C]' : 'text-[#6B6B67]'}`} />
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="px-1.5 py-0.2 bg-blue-600 text-white text-[9px] font-bold rounded-full">
+                    <span className="px-1.5 py-0.2 bg-[#5F7564] text-white text-[8px] font-mono font-bold rounded leading-tight">
                       {item.badge}
                     </span>
                   )}
@@ -118,145 +123,183 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
             })}
           </nav>
 
-          {/* Right Action Bar */}
-          <div className="hidden sm:flex items-center gap-3">
-            {/* AI Autopilot Live Pill */}
-            <div className="bg-slate-100 rounded-full px-3.5 py-1.5 flex items-center gap-2 border border-slate-200/80">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-[11px] font-bold text-slate-600 tracking-wide uppercase">AI Autopilot On</span>
-            </div>
-
-            {/* Wallet Balance Chip */}
-            <button
-              onClick={() => handleNavClick('wallet')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-all group"
-            >
-              <div className="w-6 h-6 rounded-md bg-blue-100 text-blue-700 flex items-center justify-center">
-                <Wallet className="w-3.5 h-3.5" />
-              </div>
-              <div className="text-left">
-                <div className="text-[9px] text-slate-400 font-semibold uppercase leading-none">Wallet</div>
-                <div className="text-xs font-bold text-slate-800 group-hover:text-blue-700 leading-tight">
-                  ${(user?.walletBalance || 0).toFixed(2)}
-                </div>
-              </div>
-            </button>
-
-            {/* Admin Badge link */}
-            <button
-              onClick={() => handleNavClick('admin')}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 border transition-all ${
-                effectiveTab === 'admin'
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
-              }`}
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Admin</span>
-            </button>
-
-            {/* User Profile or Sign In */}
+          {/* 3. RIGHT SIDE — USER CONTROLS */}
+          <div className="hidden sm:flex items-center gap-2 xl:gap-2.5 flex-shrink-0">
             {isAuthenticated && user ? (
-              <div className="relative">
+              <>
+                {/* Wallet Balance Chip */}
                 <button
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full hover:bg-slate-50 border border-slate-200 transition-colors"
+                  onClick={() => handleNavClick('wallet')}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white hover:bg-[#F7F7F4] border border-[#E4E4DF] transition-all group shrink-0 cursor-pointer text-left"
+                  title="ExploreX In-App Wallet"
                 >
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-7 h-7 rounded-full object-cover border border-blue-300"
-                  />
-                  <span className="text-xs font-semibold text-slate-800 max-w-[90px] truncate">{user.name}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="w-5 h-5 rounded bg-[#F7F7F4] text-[#B45F3C] flex items-center justify-center border border-[#E4E4DF]">
+                    <Wallet className="w-3 h-3" />
+                  </div>
+                  <div>
+                    <div className="text-[7.5px] font-mono text-[#6B6B67] uppercase leading-none">Wallet</div>
+                    <div className="text-[11.5px] font-mono font-bold text-[#242424] group-hover:text-[#B45F3C] leading-tight">
+                      {formatINR(user.walletBalance || 0)}
+                    </div>
+                  </div>
                 </button>
 
-                {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                      <div className="text-[11px] text-slate-400 truncate">{user.email}</div>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        handleNavClick('profile');
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium"
-                    >
-                      <User className="w-4 h-4 text-slate-400" />
-                      View Profile & Travel DNA
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        handleNavClick('mytrips');
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium"
-                    >
-                      <Briefcase className="w-4 h-4 text-slate-400" />
-                      My Trips & Active Bookings
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        handleNavClick('wallet');
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 font-medium"
-                    >
-                      <Wallet className="w-4 h-4 text-slate-400" />
-                      Wander Wallet & Splitter
-                    </button>
-
-                    <div className="border-t border-slate-100 my-1" />
-
-                    <button
-                      onClick={() => {
-                        logout();
-                        setProfileDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-xs text-rose-600 hover:bg-rose-50 flex items-center gap-2 font-semibold"
-                    >
-                      <LogOut className="w-4 h-4 text-rose-500" />
-                      Sign Out
-                    </button>
-                  </div>
+                {/* ADMIN Badge (ONLY VISIBLE FOR ADMIN ROLE) */}
+                {user.role === 'admin' && (
+                  <button
+                    onClick={() => handleNavClick('admin')}
+                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 border transition-all shrink-0 cursor-pointer ${
+                      effectiveTab === 'admin'
+                        ? 'bg-[#242424] text-white border-[#242424]'
+                        : 'bg-white text-[#555555] border-[#E4E4DF] hover:bg-[#F7F7F4] hover:text-[#242424]'
+                    }`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#B45F3C]" />
+                    <span>ADMIN</span>
+                  </button>
                 )}
-              </div>
+
+                {/* User Profile Dropdown */}
+                <div className="relative shrink-0">
+                  <button
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    className="flex items-center gap-1.5 p-1 pl-1.5 pr-2.5 rounded-lg hover:bg-[#F7F7F4] border border-[#E4E4DF] transition-colors bg-white cursor-pointer"
+                  >
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-6 h-6 rounded-full object-cover border border-[#E4E4DF] shrink-0"
+                    />
+                    <span className="text-xs font-semibold text-[#242424] max-w-[70px] lg:max-w-[85px] xl:max-w-[110px] 2xl:max-w-[130px] truncate">
+                      {user.name}
+                    </span>
+                    <ChevronDown className="w-3 h-3 text-[#6B6B67] shrink-0" />
+                  </button>
+
+                  {profileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-editorial border border-[#E4E4DF] py-1.5 z-50 animate-in fade-in">
+                      <div className="px-4 py-2 border-b border-[#E4E4DF]">
+                        <div className="text-xs font-display font-bold text-[#242424]">{user.name}</div>
+                        <div className="text-[10px] font-mono text-[#6B6B67] truncate">{user.email}</div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          handleNavClick('profile');
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-[#555555] hover:bg-[#F7F7F4] hover:text-[#242424] flex items-center gap-2.5 font-medium cursor-pointer"
+                      >
+                        <User className="w-3.5 h-3.5 text-[#6B6B67]" />
+                        Curator Profile & DNA
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleNavClick('mytrips');
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-[#555555] hover:bg-[#F7F7F4] hover:text-[#242424] flex items-center gap-2.5 font-medium cursor-pointer"
+                      >
+                        <Briefcase className="w-3.5 h-3.5 text-[#6B6B67]" />
+                        My Journeys & Vouchers
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleNavClick('moments');
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-[#555555] hover:bg-[#F7F7F4] hover:text-[#242424] flex items-center gap-2.5 font-medium cursor-pointer"
+                      >
+                        <Camera className="w-3.5 h-3.5 text-[#6B6B67]" />
+                        Magic Moments
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          handleNavClick('wallet');
+                          setProfileDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-[#555555] hover:bg-[#F7F7F4] hover:text-[#242424] flex items-center gap-2.5 font-medium cursor-pointer"
+                      >
+                        <Wallet className="w-3.5 h-3.5 text-[#6B6B67]" />
+                        Expedition Ledger & Split
+                      </button>
+
+                      {user.role === 'admin' && (
+                        <button
+                          onClick={() => {
+                            handleNavClick('admin');
+                            setProfileDropdownOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left text-xs text-[#B45F3C] hover:bg-[#F7F7F4] flex items-center gap-2.5 font-semibold cursor-pointer border-t border-[#F7F7F4] mt-1 pt-2"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5 text-[#B45F3C]" />
+                          Admin Console
+                        </button>
+                      )}
+
+                      <div className="border-t border-[#E4E4DF] my-1" />
+
+                      <button
+                        onClick={() => {
+                          logout();
+                          setProfileDropdownOpen(false);
+                          handleNavClick('home');
+                        }}
+                        className="w-full px-4 py-2 text-left text-xs text-rose-700 hover:bg-rose-50 flex items-center gap-2.5 font-semibold cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5 text-rose-600" />
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             ) : (
-              <button
-                onClick={() => handleOpenAuth('login')}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm shadow-blue-500/20 transition-all"
-              >
-                Sign In
-              </button>
+              /* LOGGED OUT / GUEST VISITOR CONTROLS */
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleNavClick('login')}
+                  className="px-3.5 py-1.5 text-xs font-mono uppercase tracking-wider font-bold text-[#242424] hover:text-[#B45F3C] hover:bg-[#F7F7F4] rounded-lg transition-colors cursor-pointer"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => handleNavClick('signup')}
+                  className="px-3.5 py-1.5 bg-[#242424] hover:bg-[#B45F3C] text-white text-xs font-mono uppercase tracking-wider font-bold rounded-lg transition-colors cursor-pointer"
+                >
+                  Sign Up
+                </button>
+              </div>
             )}
           </div>
 
           {/* Mobile menu hamburger */}
           <div className="flex lg:hidden items-center gap-2">
-            <button
-              onClick={() => handleNavClick('wallet')}
-              className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700"
-            >
-              <Wallet className="w-4 h-4 text-blue-600" />
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => handleNavClick('wallet')}
+                className="p-2 rounded-xl bg-white border border-[#E4E4DF] text-[#91482D] cursor-pointer shadow-2xs"
+              >
+                <Wallet className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+              className="p-2 rounded-xl bg-white border border-[#E4E4DF] text-[#242424] hover:bg-[#F7F7F4] transition-colors cursor-pointer shadow-2xs"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-1 animate-in slide-in-from-top-4">
+        <div className="lg:hidden bg-white border-b border-[#E4E4DF] px-4 pt-3 pb-6 space-y-1 animate-in slide-in-from-top-4 shadow-xs">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = effectiveTab === item.id;
@@ -264,16 +307,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full px-4 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-between ${
-                  isActive ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50'
+                className={`w-full px-4 py-2.5 rounded-lg text-xs font-medium flex items-center justify-between cursor-pointer transition-colors ${
+                  isActive 
+                    ? 'bg-[#F7F7F4] text-[#242424] font-semibold border border-[#E4E4DF]' 
+                    : 'text-[#6B6B67] hover:bg-[#F7F7F4] hover:text-[#242424]'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                <div className="flex items-center gap-3">
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-[#B45F3C]' : 'text-[#6B6B67]'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded-full">
+                  <span className="px-1.5 py-0.2 bg-[#5F7564] text-white text-[9px] font-mono font-bold rounded">
                     {item.badge}
                   </span>
                 )}
@@ -281,21 +326,60 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, activeTab, onSelectT
             );
           })}
 
-          <div className="pt-3 border-t border-slate-100 space-y-1">
-            <button
-              onClick={() => handleNavClick('profile')}
-              className="w-full px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
-            >
-              <User className="w-4 h-4 text-slate-400" />
-              <span>Profile & Travel DNA</span>
-            </button>
-            <button
-              onClick={() => handleNavClick('admin')}
-              className="w-full px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5"
-            >
-              <ShieldCheck className="w-4 h-4 text-slate-400" />
-              <span>Admin Management Dashboard</span>
-            </button>
+          <div className="pt-3 border-t border-[#E4E4DF] space-y-1">
+            {isAuthenticated && user ? (
+              <>
+                <button
+                  onClick={() => handleNavClick('moments')}
+                  className="w-full px-4 py-2.5 rounded-xl text-xs font-medium text-[#6B6B67] hover:bg-[#F7F7F4] flex items-center gap-3 cursor-pointer"
+                >
+                  <Camera className="w-4 h-4 text-[#6B6B67]" />
+                  <span>Magic Moments</span>
+                </button>
+                <button
+                  onClick={() => handleNavClick('profile')}
+                  className="w-full px-4 py-2.5 rounded-xl text-xs font-medium text-[#6B6B67] hover:bg-[#F7F7F4] flex items-center gap-3 cursor-pointer"
+                >
+                  <User className="w-4 h-4 text-[#6B6B67]" />
+                  <span>Profile & Travel DNA</span>
+                </button>
+                {user.role === 'admin' && (
+                  <button
+                    onClick={() => handleNavClick('admin')}
+                    className="w-full px-4 py-2.5 rounded-xl text-xs font-medium text-[#91482D] hover:bg-[#F7F7F4] flex items-center gap-3 cursor-pointer"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-[#91482D]" />
+                    <span>Admin Command Console</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                    handleNavClick('home');
+                  }}
+                  className="w-full px-4 py-2.5 rounded-xl text-xs font-medium text-rose-700 hover:bg-rose-50 flex items-center gap-3 cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4 text-rose-600" />
+                  <span>Sign Out ({user.name})</span>
+                </button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <button
+                  onClick={() => handleNavClick('login')}
+                  className="w-full py-2.5 bg-[#F7F7F4] hover:bg-[#E4E4DF] text-[#242424] font-mono text-xs uppercase tracking-wider font-bold rounded-xl transition-colors text-center cursor-pointer border border-[#E4E4DF]"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => handleNavClick('signup')}
+                  className="w-full py-2.5 bg-[#242424] hover:bg-[#91482D] text-[#FFFFFF] font-mono text-xs uppercase tracking-wider font-bold rounded-xl transition-colors text-center cursor-pointer"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

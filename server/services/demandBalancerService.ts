@@ -1,7 +1,8 @@
 import { Destination, DemandBalancerQuery, DemandBalancerResult } from '../../src/types';
 import { db } from '../db';
+import { ENV } from '../config/env';
 
-const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+const ML_URL = ENV.ML_SERVICE_URL;
 
 /**
  * ML-powered Tourism Demand Balancer.

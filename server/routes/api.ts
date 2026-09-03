@@ -9,7 +9,12 @@ import { EXPLORER_VEHICLES } from '../data/initialData';
 import { balanceTourismDemand, balanceTourismDemandML } from '../services/demandBalancerService';
 import { searchCulturalSpecialties, getAlternativeRecommendations, getIndiaExplorerHierarchy } from '../services/culturalService';
 import { searchFlights, searchHotels } from '../services/amadeusService';
-import { createRazorpayOrder, verifyRazorpayPayment } from '../services/razorpayService';
+import { createRazorpayOrder, verifyRazorpayPayment, createPaymentIntentHandler, razorpayWebhookHandler } from '../services/razorpayService';
+import { packageService } from '../services/packageService';
+import { exploreService } from '../services/exploreService';
+import { itineraryService } from '../services/itineraryService';
+import { itineraryValidator } from '../services/itineraryValidator';
+import { ENV } from '../config/env';
 
 export const apiRouter = Router();
 
@@ -36,8 +41,8 @@ const upload = multer({
 });
 
 // Helper for getting current user ID
-const getCurrentUserId = (req: Request): string => {
-  return (req.headers['x-user-id'] as string) || 'usr-current';
+const getCurrentUserId = (req: Request): string | null => {
+  return (req.headers['x-user-id'] as string) || null;
 };
 
 /* ============================================================
@@ -49,25 +54,90 @@ apiRouter.post('/auth/login', (req: Request, res: Response) => {
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
-  const user = db.getUser('usr-current');
+
+  const cleanEmail = email.trim().toLowerCase();
+  
+  // Check if admin credentials
+  if (cleanEmail === 'admin@explorex.com' || cleanEmail.startsWith('admin@')) {
+    let adminUser = db.findUserByEmail('admin@explorex.com');
+    if (!adminUser) {
+      adminUser = {
+        ...db.getUser('usr-current'),
+        id: 'usr-admin-1',
+        name: 'ExploreX Platform Admin',
+        email: 'admin@explorex.com',
+        role: 'admin',
+        walletBalance: 75000
+      };
+      db.createUser(adminUser);
+    }
+    return res.json({
+      token: 'jwt-admin-session-token',
+      user: adminUser
+    });
+  }
+
+  // Find existing user by email
+  let existingUser = db.findUserByEmail(cleanEmail);
+  
+  if (!existingUser) {
+    // Generate new account for this email
+    const id = `usr-${Date.now()}`;
+    const namePart = cleanEmail.split('@')[0];
+    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    existingUser = {
+      ...db.getUser('usr-current'),
+      id,
+      name: formattedName,
+      email: cleanEmail,
+      role: 'user',
+      walletBalance: 5000,
+      joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    };
+    db.createUser(existingUser);
+  }
+
   res.json({
-    token: 'jwt-simulated-token-99182',
-    user
+    token: `jwt-user-${existingUser.id}`,
+    user: existingUser
   });
 });
 
 apiRouter.post('/auth/signup', (req: Request, res: Response) => {
   const { name, email, password } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required' });
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Name, email, and password are required' });
   }
-  const newUser = db.updateUser('usr-current', {
-    name,
-    email,
+
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanName = name.trim();
+
+  // Check if account already exists
+  const existing = db.findUserByEmail(cleanEmail);
+  if (existing) {
+    return res.status(400).json({ error: 'An account with this email already exists. Please sign in.' });
+  }
+
+  // Create new unique user
+  const id = `usr-${Date.now()}`;
+  const isAdmin = cleanEmail === 'admin@explorex.com';
+
+  const newUser: UserProfile = {
+    ...db.getUser('usr-current'),
+    id,
+    name: cleanName,
+    email: cleanEmail,
+    role: isAdmin ? 'admin' : 'user',
+    walletBalance: 5000,
+    savedDestinations: [],
+    savedPackages: [],
     joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-  });
+  };
+
+  db.createUser(newUser);
+
   res.json({
-    token: 'jwt-simulated-token-99182',
+    token: `jwt-user-${id}`,
     user: newUser
   });
 });
@@ -84,6 +154,9 @@ apiRouter.post('/auth/forgot-password', (req: Request, res: Response) => {
 
 apiRouter.get('/auth/profile', (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
+  if (!userId) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
   const user = db.getUser(userId);
   res.json(user);
 });
@@ -189,60 +262,134 @@ apiRouter.delete('/destinations/:id', (req: Request, res: Response) => {
 });
 
 /* ============================================================
+   2.5 EXPLORE POIS & SPATIAL ENGINE
+   ============================================================ */
+
+apiRouter.get('/explore', async (req: Request, res: Response) => {
+  try {
+    const { destinationId, category, search, minPrice, maxPrice, minRating, sortBy, isOffbeat, isPopular } = req.query;
+    const pois = await exploreService.getExplorePOIs({
+      destinationId: typeof destinationId === 'string' ? destinationId : undefined,
+      category: typeof category === 'string' ? category : undefined,
+      search: typeof search === 'string' ? search : undefined,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      minRating: minRating ? Number(minRating) : undefined,
+      sortBy: sortBy as any,
+      isOffbeat: isOffbeat !== undefined ? isOffbeat === 'true' : undefined,
+      isPopular: isPopular !== undefined ? isPopular === 'true' : undefined,
+    });
+    res.json(pois);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch explore POIs' });
+  }
+});
+
+apiRouter.get('/explore/categories', (req: Request, res: Response) => {
+  const categories = [
+    { id: 'all', label: 'All Markers', icon: '📍' },
+    { id: 'Sightseeing', label: '🏛️ Sightseeing', icon: '🏛️' },
+    { id: 'Heritage', label: '⛩️ Heritage & Temples', icon: '⛩️' },
+    { id: 'Nature', label: '🌲 Nature & Parks', icon: '🌲' },
+    { id: 'Beach', label: '🏖️ Beaches', icon: '🏖️' },
+    { id: 'Adventure', label: '🪂 Adventure', icon: '🪂' },
+    { id: 'Food', label: '🍛 Food & Restaurants', icon: '🍛' },
+    { id: 'Hotel', label: '🏨 Hotels & Homestays', icon: '🏨' },
+    { id: 'Craft', label: '🧶 GI Crafts & Artisan Guilds', icon: '🧶' },
+    { id: 'Experience', label: '✨ Local Experiences', icon: '✨' },
+    { id: 'Event', label: '🎉 Cultural Festivals', icon: '🎉' }
+  ];
+  res.json(categories);
+});
+
+apiRouter.get('/explore/whats-famous/:destinationId', (req: Request, res: Response) => {
+  try {
+    const info = exploreService.getWhatsFamousInfo(req.params.destinationId);
+    if (!info) return res.status(404).json({ error: 'Destination details not found' });
+    res.json(info);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+/* ============================================================
    3. PACKAGES
    ============================================================ */
 
-apiRouter.get('/packages', (req: Request, res: Response) => {
-  const { destinationId, theme, maxPrice } = req.query;
-  let list = db.getPackages();
-
-  if (destinationId && typeof destinationId === 'string') {
-    list = list.filter(p => p.destinationId === destinationId);
+apiRouter.get('/packages', async (req: Request, res: Response) => {
+  try {
+    const { destinationId, theme, maxPrice, search, isFeatured } = req.query;
+    const packages = await packageService.getPackages({
+      destinationId: typeof destinationId === 'string' ? destinationId : undefined,
+      theme: typeof theme === 'string' ? theme : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      search: typeof search === 'string' ? search : undefined,
+      isFeatured: isFeatured !== undefined ? isFeatured === 'true' : undefined
+    });
+    res.json(packages);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch packages' });
   }
+});
 
-  if (theme && typeof theme === 'string' && theme !== 'all') {
-    list = list.filter(p => p.theme === theme);
+apiRouter.get('/packages/:id', async (req: Request, res: Response) => {
+  try {
+    const pkg = await packageService.getPackageById(req.params.id);
+    if (!pkg) return res.status(404).json({ error: 'Package not found' });
+    res.json(pkg);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to fetch package' });
   }
+});
 
-  if (maxPrice) {
-    const priceNum = Number(maxPrice);
-    if (!isNaN(priceNum)) {
-      list = list.filter(p => p.startingPrice <= priceNum);
+apiRouter.post('/packages/compare', async (req: Request, res: Response) => {
+  try {
+    const { packageIds } = req.body;
+    if (!Array.isArray(packageIds)) {
+      return res.status(400).json({ error: 'packageIds array required' });
     }
+    const packages = await packageService.comparePackages(packageIds);
+    res.json(packages);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to compare packages' });
   }
-
-  res.json(list);
 });
 
-apiRouter.get('/packages/:id', (req: Request, res: Response) => {
-  const pkg = db.getPackageById(req.params.id);
-  if (!pkg) return res.status(404).json({ error: 'Package not found' });
-  res.json(pkg);
-});
-
-apiRouter.post('/packages/compare', (req: Request, res: Response) => {
-  const { packageIds } = req.body;
-  if (!Array.isArray(packageIds)) {
-    return res.status(400).json({ error: 'packageIds array required' });
+apiRouter.post('/packages', async (req: Request, res: Response) => {
+  try {
+    const newPkg = await packageService.createPackage(req.body);
+    res.status(201).json(newPkg);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to create package' });
   }
-  const packages = packageIds.map(id => db.getPackageById(id)).filter(Boolean);
-  res.json(packages);
 });
 
-apiRouter.post('/packages', (req: Request, res: Response) => {
-  const newPkg = db.createPackage(req.body);
-  res.status(201).json(newPkg);
+apiRouter.put('/packages/:id', async (req: Request, res: Response) => {
+  try {
+    const updated = await packageService.updatePackage(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: 'Package not found' });
+    res.json(updated);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to update package' });
+  }
 });
 
-apiRouter.put('/packages/:id', (req: Request, res: Response) => {
-  const updated = db.updatePackage(req.params.id, req.body);
-  if (!updated) return res.status(404).json({ error: 'Package not found' });
-  res.json(updated);
+apiRouter.delete('/packages/:id', async (req: Request, res: Response) => {
+  try {
+    const deleted = await packageService.deletePackage(req.params.id);
+    res.json({ success: deleted });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to delete package' });
+  }
 });
 
-apiRouter.delete('/packages/:id', (req: Request, res: Response) => {
-  const deleted = db.deletePackage(req.params.id);
-  res.json({ success: deleted });
+apiRouter.post('/packages/seed', async (req: Request, res: Response) => {
+  try {
+    const result = await packageService.seedAllPackages();
+    res.json({ success: true, message: `Seeded ${result.seededCount} packages`, supabaseSynced: result.supabaseSynced });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to seed packages' });
+  }
 });
 
 /* ============================================================
@@ -444,13 +591,13 @@ apiRouter.post('/bookings', (req: Request, res: Response) => {
 
   let discount = 0;
   if (promoCode === 'WANDER20') {
-    discount = Math.min(150, Math.round(totalAmount * 0.2));
+    discount = Math.min(12500, Math.round(totalAmount * 0.2));
   } else if (promoCode === 'AIPEAK10') {
-    discount = Math.min(75, Math.round(totalAmount * 0.1));
+    discount = Math.min(6250, Math.round(totalAmount * 0.1));
   }
 
-  const finalAmount = Math.max(10, totalAmount - discount);
-  const taxes = Math.round(finalAmount * 0.08);
+  const finalAmount = Math.max(830, totalAmount - discount);
+  const taxes = Math.round(finalAmount * 0.18); // 18% GST
   const baseFare = finalAmount - taxes;
 
   const newBooking: Booking = {
@@ -764,6 +911,24 @@ apiRouter.delete('/expenses/groups/:id/expenses/:expId', (req: Request, res: Res
    10. AI TRAVEL ENGINE & INTELLIGENCE
    ============================================================ */
 
+apiRouter.post('/ai/generate-itinerary', async (req: Request, res: Response) => {
+  try {
+    const itinerary = await itineraryService.generateItinerary(req.body);
+    res.json(itinerary);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to generate AI itinerary' });
+  }
+});
+
+apiRouter.post('/ai/validate-itinerary', (req: Request, res: Response) => {
+  try {
+    const result = itineraryValidator.validate(req.body);
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to validate itinerary' });
+  }
+});
+
 apiRouter.post('/ai/chat', async (req: Request, res: Response) => {
   try {
     const userId = getCurrentUserId(req);
@@ -909,7 +1074,7 @@ apiRouter.post('/expenses/groups/:id/settle', (req: Request, res: Response) => {
     splitAmongIds: [creditorId],
     splitType: 'exact',
     date: new Date().toISOString().split('T')[0],
-    notes: 'Direct Wander Wallet peer transfer'
+    notes: 'Direct ExploreX Wallet peer transfer'
   };
 
   const updatedTrip = db.addExpenseToGroup(trip.id, settleExp);
@@ -941,7 +1106,7 @@ apiRouter.post('/ai/demand-balancer', async (req: Request, res: Response) => {
 // 1b. Dynamic Pricing — ML Service (INTEGRATION.md §4)
 apiRouter.get('/destinations/:id/dynamic-price', async (req: Request, res: Response) => {
   try {
-    const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    const ML_URL = ENV.ML_SERVICE_URL;
     const { date } = req.query;
     const response = await fetch(`${ML_URL}/price/predict`, {
       method: 'POST',
@@ -962,7 +1127,7 @@ apiRouter.get('/destinations/:id/dynamic-price', async (req: Request, res: Respo
 // 1c. Itinerary Optimization — ML Service (INTEGRATION.md §6)
 apiRouter.post('/packages/:id/optimize-itinerary', async (req: Request, res: Response) => {
   try {
-    const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    const ML_URL = ENV.ML_SERVICE_URL;
     const pkg = db.getPackageById(req.params.id);
     if (!pkg) return res.status(404).json({ error: 'Package not found' });
 
@@ -1051,7 +1216,12 @@ apiRouter.get('/destinations/:id/local-economy', (req: Request, res: Response) =
 apiRouter.get('/amadeus/flights', searchFlights);
 apiRouter.get('/amadeus/hotels', searchHotels);
 
-// 8. Razorpay Payment Gateway APIs
+// 8. Razorpay Payment Gateway & Server-Side Price Calculation APIs
+apiRouter.post('/payments/create-intent', createPaymentIntentHandler);
+apiRouter.post('/payments/verify', verifyRazorpayPayment);
+apiRouter.post('/payments/webhook', razorpayWebhookHandler);
+
+// Legacy route compatibility
 apiRouter.post('/razorpay/create-order', createRazorpayOrder);
 apiRouter.post('/razorpay/verify-payment', verifyRazorpayPayment);
 

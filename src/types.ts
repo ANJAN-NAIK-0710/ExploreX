@@ -84,6 +84,52 @@ export interface Attraction {
   isOffbeat?: boolean;
 }
 
+export type POICategory = 
+  | 'all'
+  | 'Sightseeing' 
+  | 'Heritage' 
+  | 'Nature' 
+  | 'Beach' 
+  | 'Adventure' 
+  | 'Food' 
+  | 'Hotel' 
+  | 'Cafe' 
+  | 'Experience' 
+  | 'Event' 
+  | 'Craft' 
+  | 'Shopping'
+  | 'Cab'
+  | 'Mobility';
+
+export interface ExplorePOI {
+  id: string;
+  destinationId: string;
+  destinationName: string;
+  name: string;
+  category: POICategory;
+  tagline?: string;
+  description: string;
+  image: string;
+  gallery?: string[];
+  lat: number;
+  lng: number;
+  address?: string;
+  rating: number;
+  reviewCount: number;
+  priceLevel: number; // in USD or local currency
+  openingHours?: string;
+  crowdLevel?: 'Low' | 'Moderate' | 'High' | 'Peak';
+  isOffbeat?: boolean;
+  isPopular?: boolean;
+  famousInfo?: {
+    type?: string;
+    highlights?: string[];
+    mustTryAt?: string;
+    giTagged?: boolean;
+    bestSeason?: string;
+  };
+}
+
 export type ThematicTag = 
   | 'food' 
   | 'culture' 
@@ -431,13 +477,29 @@ export interface Booking {
   totalAmount: number;
   status: 'confirmed' | 'completed' | 'cancelled' | 'pending';
   paymentMethod: 'wallet' | 'card_demo' | 'upi_demo' | 'netbanking_demo';
-  paymentStatus: 'paid' | 'refunded' | 'pending';
+  paymentStatus: 'paid' | 'refunded' | 'pending' | 'failed';
   isSimulation: boolean;
   details: {
     providerName?: string;
+    airline?: string;
     flightNumber?: string;
     trainNumber?: string;
+    trainName?: string;
+    coach?: string;
+    quota?: string;
+    departureStation?: string;
+    arrivalStation?: string;
     busOperator?: string;
+    busType?: string;
+    seatClass?: string;
+    seatNumber?: string;
+    departureTime?: string;
+    arrivalTime?: string;
+    duration?: string;
+    baggage?: string;
+    refundable?: string;
+    originCity?: string;
+    destinationCity?: string;
     hotelName?: string;
     roomType?: string;
     packageId?: string;
@@ -447,6 +509,15 @@ export interface Booking {
     checkOutTime?: string;
     boardingPoint?: string;
     droppingPoint?: string;
+    paymentId?: string;
+    simulateProviderFailure?: boolean;
+    reconciliationRequired?: boolean;
+    reconciliationReason?: string;
+    razorpayPaymentId?: string;
+    razorpayOrderId?: string;
+    amountInINR?: number;
+    currency?: string;
+    [key: string]: any;
   };
   invoice: {
     invoiceNo: string;

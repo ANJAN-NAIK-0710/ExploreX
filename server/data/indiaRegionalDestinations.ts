@@ -88,7 +88,7 @@ export const INDIA_REGIONAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Authentic Chettinad Pepper Chicken', 'Kuzhi Paniyaram', 'Kavuni Arisi (Black Rice Sweet)', 'Vellai Kurma with Idiyappam', 'Seeyam & Murukku', 'Banana Leaf Virundhu'],
-    startingPrice: 130,
+    startingPrice: 7150,
 
     culturalSpecialties: {
       food: [
@@ -264,7 +264,7 @@ export const INDIA_REGIONAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Himachali Siddu with Ghee & Walnut Chutney', 'Fresh Pan-Fried Rainbow Trout', 'Himachali Madra (Chickpeas in Spiced Yogurt)', 'Bhey (Spiced Lotus Stem)', 'Wild Forest Lingad (Fiddlehead Fern Curry)', 'Pahari Rhododendron Juice'],
-    startingPrice: 110,
+    startingPrice: 6050,
 
     culturalSpecialties: {
       food: [
@@ -443,7 +443,7 @@ export const INDIA_REGIONAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Authentic Wood-Baked Chhena Poda', 'Puri Jagannath Mahaprasad (Abhada Thali)', 'Dalma with Aromatic Gobindobhog Rice', 'Chhena Gaja & Khaja', 'Dahi Baigana', 'Maccha Besara (Mustard Fish)'],
-    startingPrice: 85,
+    startingPrice: 5200,
 
     culturalSpecialties: {
       food: [

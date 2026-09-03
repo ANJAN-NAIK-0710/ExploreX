@@ -91,7 +91,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Babi Guling', 'Nasi Goreng Kampung', 'Sate Lilit', 'Ayam Betutu', 'Tropical Dragonfruit Bowls'],
-    startingPrice: 420
+    startingPrice: 42000
   },
   {
     id: 'dest-switzerland',
@@ -166,7 +166,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Traditional Cheese Fondue', 'Raclette', 'Zürcher Geschnetzeltes', 'Rösti', 'Swiss Artisan Chocolates'],
-    startingPrice: 890
+    startingPrice: 95000
   },
   {
     id: 'dest-goa',
@@ -241,7 +241,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Goan Fish Curry Thali', 'Prawn Balchão', 'Bebinca', 'Pork Vindaloo', 'Poi Bread with Xacuti'],
-    startingPrice: 180
+    startingPrice: 14940
   },
   {
     id: 'dest-tokyo',
@@ -316,7 +316,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['A5 Wagyu Sukiyaki', 'Tonkotsu Ramen', 'Fresh Edomae Sushi at Tsukiji', 'Matcha Parfait', 'Yakitori'],
-    startingPrice: 750
+    startingPrice: 78000
   },
   {
     id: 'dest-manali',
@@ -391,7 +391,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Himachali Siddu with Ghee', 'Tudkiya Bhath', 'Dhaam Platter', 'Fresh Himalayan Trout', 'Apple Crumble Tart'],
-    startingPrice: 150
+    startingPrice: 12450
   },
   {
     id: 'dest-paris',
@@ -465,7 +465,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Fresh Butter Croissants', 'Duck Confit', 'Boeuf Bourguignon', 'Crème Brûlée', 'Macarons from Ladurée'],
-    startingPrice: 680
+    startingPrice: 56440
   },
   {
     id: 'dest-jaipur',
@@ -539,7 +539,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Dal Baati Churma', 'Laal Maas', 'Ghevar', 'Pyaz Kachori from Rawat', 'Ker Sangri'],
-    startingPrice: 140
+    startingPrice: 11620
   },
   {
     id: 'dest-maldives',
@@ -598,7 +598,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Fresh Grilled Reef Fish', 'Mas Huni with Fresh Roshi', 'Garudhiya Fish Broth', 'Coconut Biscuits'],
-    startingPrice: 1150
+    startingPrice: 95450
   },
   {
     id: 'dest-dubai',
@@ -672,7 +672,7 @@ export const INITIAL_DESTINATIONS: Destination[] = [
       }
     ],
     localCuisines: ['Al Machboos', 'Shawarma with Garlic Toum', 'Luqaimat Sweet Dumplings', 'Kunafa', 'Camel Milk Gelato'],
-    startingPrice: 590
+    startingPrice: 48970
   }
 ];
 
@@ -685,15 +685,15 @@ export const INITIAL_PACKAGES: TravelPackage[] = [
     tagline: '6 Days of Sacred Temples, Sunset Catamarans, Rice Terraces & Private Pool Villa',
     durationDays: 6,
     durationNights: 5,
-    startingPrice: 650,
+    startingPrice: 53950,
     priceBreakdown: {
-      hotelStay: 300,
-      transport: 120,
-      activities: 140,
-      meals: 90,
-      taxesAndFees: 40,
-      discount: 40,
-      totalPerPerson: 650
+      hotelStay: 24900,
+      transport: 9960,
+      activities: 11620,
+      meals: 7470,
+      taxesAndFees: 3320,
+      discount: 3320,
+      totalPerPerson: 53950
     },
     images: [
       'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80',
@@ -792,15 +792,15 @@ export const INITIAL_PACKAGES: TravelPackage[] = [
     tagline: '7 Days of Glacier Trains, Fairytale Valleys & 4-Star Mountain Chalets',
     durationDays: 7,
     durationNights: 6,
-    startingPrice: 1480,
+    startingPrice: 122840,
     priceBreakdown: {
-      hotelStay: 720,
-      transport: 380,
-      activities: 260,
-      meals: 190,
-      taxesAndFees: 80,
-      discount: 150,
-      totalPerPerson: 1480
+      hotelStay: 59760,
+      transport: 31540,
+      activities: 21580,
+      meals: 15770,
+      taxesAndFees: 6640,
+      discount: 12450,
+      totalPerPerson: 122840
     },
     images: [
       'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=800&q=80',
@@ -907,15 +907,15 @@ export const INITIAL_PACKAGES: TravelPackage[] = [
     tagline: '5 Days of Private South Goa Beaches, Spice Plantations & Catamaran Cruises',
     durationDays: 5,
     durationNights: 4,
-    startingPrice: 280,
+    startingPrice: 23240,
     priceBreakdown: {
-      hotelStay: 130,
-      transport: 50,
-      activities: 60,
-      meals: 45,
-      taxesAndFees: 15,
-      discount: 20,
-      totalPerPerson: 280
+      hotelStay: 10790,
+      transport: 4150,
+      activities: 4980,
+      meals: 3740,
+      taxesAndFees: 1250,
+      discount: 1660,
+      totalPerPerson: 23240
     },
     images: [
       'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80',
@@ -1000,15 +1000,15 @@ export const INITIAL_PACKAGES: TravelPackage[] = [
     tagline: '7 Days of Shinkansen Bullet Trains, teamLab Digital Art, Mt Fuji & Wagyu Feast',
     durationDays: 7,
     durationNights: 6,
-    startingPrice: 1350,
+    startingPrice: 112050,
     priceBreakdown: {
-      hotelStay: 650,
-      transport: 300,
-      activities: 240,
-      meals: 200,
-      taxesAndFees: 60,
-      discount: 100,
-      totalPerPerson: 1350
+      hotelStay: 53950,
+      transport: 24900,
+      activities: 19920,
+      meals: 16600,
+      taxesAndFees: 4980,
+      discount: 8300,
+      totalPerPerson: 112050
     },
     images: [
       'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=800&q=80',
@@ -1105,8 +1105,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer Prime Sedan',
     capacity: '4 Passengers • 2 Bags',
     description: 'Comfortable air-conditioned sedan (Dzire, Honda City, Etios). Perfect for city rides & airport transfers.',
-    baseFare: 4.5,
-    perKmRate: 1.2,
+    baseFare: 50,
+    perKmRate: 14,
     icon: 'Car',
     etaMins: 3
   },
@@ -1115,8 +1115,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer XL SUV',
     capacity: '6 Passengers • 4 Bags',
     description: 'Spacious 6-seater SUV (Innova Crysta, Fortuner). Great for families, extra luggage, and mountain tours.',
-    baseFare: 7.0,
-    perKmRate: 1.8,
+    baseFare: 80,
+    perKmRate: 20,
     icon: 'Truck',
     etaMins: 5
   },
@@ -1125,8 +1125,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer Luxury Executive',
     capacity: '4 Passengers • 3 Bags',
     description: 'Top-tier luxury ride (Mercedes-Benz, Audi, BMW) with complimentary bottled mineral water and Wi-Fi.',
-    baseFare: 15.0,
-    perKmRate: 3.5,
+    baseFare: 150,
+    perKmRate: 40,
     icon: 'Crown',
     etaMins: 7
   },
@@ -1135,8 +1135,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer Eco Auto',
     capacity: '3 Passengers',
     description: 'Quick & breezy 3-wheeler auto-rickshaw. Ideal for navigating narrow bazaar lanes and quick short hops.',
-    baseFare: 2.0,
-    perKmRate: 0.7,
+    baseFare: 25,
+    perKmRate: 10,
     icon: 'Navigation',
     etaMins: 2
   },
@@ -1145,8 +1145,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer Express Bike Taxi',
     capacity: '1 Passenger with Helmet',
     description: 'Zip past rush-hour traffic in record time. Sanitized helmet and hairnet provided.',
-    baseFare: 1.5,
-    perKmRate: 0.5,
+    baseFare: 20,
+    perKmRate: 7,
     icon: 'Bike',
     etaMins: 2
   },
@@ -1155,8 +1155,8 @@ export const EXPLORER_VEHICLES: ExplorerVehicleOption[] = [
     name: 'Explorer E-Scooter Self-Rental',
     capacity: '1-2 Riders • Electric',
     description: 'Unlock smart electric scooter via QR code on app. 45 km range per battery charge. Zero emissions.',
-    baseFare: 1.0,
-    perKmRate: 0.3,
+    baseFare: 15,
+    perKmRate: 4,
     icon: 'Zap',
     etaMins: 1
   }
@@ -1226,7 +1226,7 @@ export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
         groupId: 'grp-goa-2026',
         title: 'Beachside Villa Stay (2 Nights)',
         category: 'Stay',
-        amount: 240,
+        amount: 19920,
         paidById: 'usr-current',
         paidByName: 'You (Traveler)',
         splitAmongIds: ['usr-current', 'mem-rohit', 'mem-neha', 'mem-karan'],
@@ -1239,7 +1239,7 @@ export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
         groupId: 'grp-goa-2026',
         title: 'Seafood Shack Dinner at Fisherman Wharf',
         category: 'Food',
-        amount: 96,
+        amount: 7968,
         paidById: 'mem-rohit',
         paidByName: 'Rohit Verma',
         splitAmongIds: ['usr-current', 'mem-rohit', 'mem-neha', 'mem-karan'],
@@ -1252,7 +1252,7 @@ export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
         groupId: 'grp-goa-2026',
         title: 'Sunset Catamaran Rental & Snorkeling',
         category: 'Activities',
-        amount: 140,
+        amount: 11620,
         paidById: 'mem-neha',
         paidByName: 'Neha Gupta',
         splitAmongIds: ['usr-current', 'mem-rohit', 'mem-neha', 'mem-karan'],
@@ -1264,7 +1264,7 @@ export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
         groupId: 'grp-goa-2026',
         title: 'Explorer Airport XL Cab',
         category: 'Transport',
-        amount: 36,
+        amount: 2988,
         paidById: 'usr-current',
         paidByName: 'You (Traveler)',
         splitAmongIds: ['usr-current', 'mem-rohit', 'mem-neha', 'mem-karan'],
@@ -1277,14 +1277,14 @@ export const INITIAL_GROUP_TRIPS: GroupTrip[] = [
 
 export const INITIAL_USER_PROFILE: UserProfile = {
   id: 'usr-current',
-  email: 'soham@wanderai.com',
+  email: 'soham@explorex.com',
   name: 'Soham Nemade',
-  phone: '+1 (555) 349-8821',
+  phone: '+91 98210 34982',
   avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=240&q=80',
   bio: 'Passionate travel photographer, cultural foodie & mountain enthusiast exploring breathtaking corners of our planet.',
-  homeCity: 'San Francisco, CA',
+  homeCity: 'Mumbai, Maharashtra',
   joinedDate: 'January 2025',
-  walletBalance: 450.00,
+  walletBalance: 37350,
   preferences: {
     vibes: ['mountain', 'beach', 'heritage', 'culinary', 'nature'] as TravelVibe[],
     budgetLevel: 'moderate',

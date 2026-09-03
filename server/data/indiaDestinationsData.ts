@@ -1,7 +1,7 @@
 import { Destination } from '../../src/types';
 
 export const INDIA_EXPANDED_DESTINATIONS: Destination[] = [
-  // 1. MAHARASHTRA: SINDHUDURG & TARKARLI (Alternative to Goa)
+  // 1. MAHARASHTRA: SINDHUDURG & TARKARLI
   {
     id: 'dest-sindhudurg',
     name: 'Sindhudurg & Tarkarli',
@@ -46,13 +46,13 @@ export const INDIA_EXPANDED_DESTINATIONS: Destination[] = [
       daySafety: 98,
       nightSafety: 94,
       emergencyContact: '112 / Sindhudurg Coastal Police (+91 2362 228400)',
-      advisory: 'Extremely peaceful and welcoming coastal villages. Local homestays provide warm hospitality.'
+      advisory: 'Extremely peaceful and welcoming coastal villages.'
     },
     crowdPrediction: {
       currentStatus: 'Low',
-      peakHours: '4:30 PM - 6:30 PM (Sunset at Chivla Beach)',
+      peakHours: '4:30 PM - 6:30 PM',
       quietHours: '6:00 AM - 11:00 AM',
-      recommendation: 'Take morning 7:30 AM boat rides to Sindhudurg Fort for calm waters and dolphin sightings.'
+      recommendation: 'Take morning 7:30 AM boat rides to Sindhudurg Fort.'
     },
     popularAttractions: [
       {
@@ -64,7 +64,7 @@ export const INDIA_EXPANDED_DESTINATIONS: Destination[] = [
         estimatedTime: '2.5 hrs',
         entryFee: 50,
         image: 'https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?auto=format&fit=crop&w=600&q=80',
-        description: 'Iconic fortress built directly on a rocky island by Chhatrapati Shivaji Maharaj in 1664 with 3 km of ramparts.',
+        description: 'Iconic fortress built directly on a rocky island by Chhatrapati Shivaji Maharaj in 1664.',
         lat: 16.0416,
         lng: 73.4589,
         crowdLevel: 'Moderate',
@@ -79,191 +79,226 @@ export const INDIA_EXPANDED_DESTINATIONS: Destination[] = [
         estimatedTime: '3 hrs',
         entryFee: 1200,
         image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
-        description: 'Certified PADI scuba diving center and pristine coral banks with 20ft underwater visibility.',
+        description: 'PADI scuba diving center and pristine coral banks with 20ft underwater visibility.',
         lat: 15.9877,
         lng: 73.4912,
         crowdLevel: 'Low',
         bestTimeToVisit: '8:30 AM - 12:00 PM',
         isOffbeat: true
-      },
-      {
-        id: 'att-sindhu-3',
-        name: 'Sawantwadi Wooden Toys Palace',
-        category: 'Sightseeing',
-        rating: 4.85,
-        reviewCount: 650,
-        estimatedTime: '2 hrs',
-        entryFee: 40,
-        image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80',
-        description: 'Royal palace housing the GI-tagged Sawantwadi Lacquerware wooden toy makers and Ganjifa playing card artisans.',
-        lat: 15.9042,
-        lng: 73.8200,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '10:00 AM - 1:00 PM',
-        isOffbeat: true
       }
     ],
-    localCuisines: ['Malvani Surmai Thali', 'Solkadhi', 'Kombdi Vade', 'Ukdiche Modak', 'Ghavane with Coconut Chutney', 'Amboli'],
-    startingPrice: 120,
-
+    localCuisines: ['Malvani Surmai Thali', 'Solkadhi', 'Kombdi Vade', 'Ukdiche Modak'],
+    startingPrice: 6500,
     culturalSpecialties: {
       food: [
-        { name: 'Malvani Surmai & Prawn Thali', description: 'Fresh Arabian Sea catch shallow-fried in fiery Malvani masala served with spicy Tisrya gravy.', mustTryAt: 'Chaitanya Restaurant, Malvan / Local Khanavals', isVeg: false, tag: 'Signature Seafood' },
-        { name: 'Solkadhi', description: 'Refreshing pink digestive beverage made from freshly pressed coconut milk, wild kokum (Aamsul), garlic, and green chillies.', isVeg: true, tag: 'Traditional Drink' },
-        { name: 'Kombdi Vade', description: 'Fluffy multi-grain fried puris (Vade) paired with traditional slow-cooked Konkani chicken curry.', isVeg: false, tag: 'Festive Classic' },
-        { name: 'Steamed Ukdiche Modak', description: 'Rice flour dumplings filled with fresh grated coconut, organic jaggery, cardamom, and drizzled with pure A2 ghee.', isVeg: true, tag: 'Sacred Sweet' }
+        { name: 'Malvani Surmai & Prawn Thali', description: 'Fresh Arabian Sea catch shallow-fried in fiery Malvani masala.', mustTryAt: 'Chaitanya Restaurant, Malvan', isVeg: false, tag: 'Signature Seafood' },
+        { name: 'Solkadhi', description: 'Digestive beverage made from coconut milk and kokum.', isVeg: true, tag: 'Traditional Drink' }
       ],
-      clothing: [
-        { name: 'Konkani Kashta & Dhoti', description: 'Traditional 9-yard Nauvari saree worn in fisherman Kashta drape for effortless coastal movement.', occasion: 'Festivals & Daily Fishing Traditions', authenticHub: 'Malvan & Kudal' }
-      ],
+      clothing: [],
       handicrafts: [
-        { name: 'Sawantwadi Lacquerware Wooden Toys (GI Tagged)', description: 'Eco-friendly hand-turned wooden fruits, dolls, and kitchen sets lacquered with natural vegetable dyes.', giTagged: true, artisanCommunity: 'Chitari Craftsmen Community of Sawantwadi' },
-        { name: 'Ganjifa Handpainted Cards', description: 'Ancient Persian-Mughal card game preserved in circular hand-painted paper and leather discs depicting Dashavatara.', giTagged: true, artisanCommunity: 'Sawantwadi Royal Guild' }
+        { name: 'Sawantwadi Lacquerware Wooden Toys', description: 'Eco-friendly hand-turned wooden toys.', giTagged: true, artisanCommunity: 'Chitari Guild' }
       ],
-      jewellery: [
-        { name: 'Konkani Thushi & Kolhapuri Saaj', description: 'Traditional gold bead choker necklace and hand-carved leaf amulet pendants.', material: '22K Gold & Silver', traditionalSignificance: 'Heritage marital ornament worn during Konkan festivals' }
-      ],
-      artAndCulture: [
-        { name: 'Dashavatar Folk Theatre', description: '500-year-old night-long open-air folk theatre enacting the 10 incarnations of Lord Vishnu with vibrant costumes and live harmonium rhythms.', type: 'theatre' }
-      ],
-      festivals: [
-        { name: 'Sindhudurg Ganesh Utsav', monthOrSeason: 'September (Bhadrapada)', culturalSignificance: 'The grandest coastal celebration where every ancestral home hosts clay Ganpati with Malvani feasts.', celebrationHighlights: 'Traditional Aarti, Bhajan, and immersion processions at sea.' }
-      ],
-      localShopping: [
-        { product: 'Devgad Alphonso Mangoes (Hapus)', bestMarket: 'Devgad Cooperative Orchards', priceRange: '₹600 - ₹1200 / Dozen (Seasonal)', tip: 'Look for the official GI hologram tag to ensure 100% authentic Devgad origin.' },
-        { product: 'Pure Wild Kokum & Amsul Butter', bestMarket: 'Kankavli Weekly Haat', priceRange: '₹150 - ₹350 / Pack', tip: 'Unsweetened dried rinds are best for culinary curries.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Scuba Diving at Shivaji Sea Fort Ramparts', description: 'Explore shallow reef coral gardens right below the massive stone bastions of Sindhudurg Fort.', bestTime: 'Morning 8:00 AM - 11:00 AM', localImpact: 'Directly supports local certified village scuba instructors and marine preservation.' },
-        { title: 'Devbagh Sangam Kayaking & Dolphin Watch', description: 'Paddle where the Karli River meets the Arabian Sea with zero engine noise to spot playful humpback dolphins.', bestTime: 'Sunrise 6:30 AM', localImpact: 'Run by local fisherman youth cooperative.' }
-      ]
-    },
-
-    alternativeTo: ['Goa', 'dest-goa', 'North Goa', 'Baga'],
-    whyAlternativeBetter: {
-      headline: 'Replace Overcrowded Goa with the Serene, Untouched Soul of Sindhudurg',
-      replacesFamousSpot: 'Goa',
-      crowdReductionPct: 74,
-      costSavingsPct: 45,
-      localAuthenticityScore: 96,
-      keyAdvantage: 'Pristine turquoise waters, zero commercial touts, authentic home-cooked Malvani cuisine, and 89% direct local economic retention.',
-      comparisonHighlights: [
-        { metric: 'Beach Atmosphere', famousSpot: 'Noisy commercial shacks & jet-ski fumes', hiddenGem: 'Pristine white sand, coconut palm canopy & quiet waves' },
-        { metric: 'Underwater Visibility', famousSpot: 'Murky near tourist beaches (2-4 ft)', hiddenGem: 'Crystal clear reefs at Tarkarli (15-20 ft visibility)' },
-        { metric: 'Average Cost / Day', famousSpot: '₹4,500 - ₹8,000 per couple', hiddenGem: '₹2,200 - ₹3,800 per couple in authentic sea-view homestays' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 92,
-      economicRetentionExplainer: '89% of traveler spending directly empowers local fishing families, authentic village homestay hosts, and GI-craft toy woodcarvers.',
-      authenticHomestays: [
-        { name: 'Kinnara Konkan Homestay', hostName: 'Suresh & Shubhangi Pednekar', village: 'Tarkarli Beach Road', pricePerNight: 1800, specialties: ['Beachfront coconut garden', 'Homemade Malvani fish thali', 'Bicycle rentals'], rating: 4.95, contactInfo: '+91 94224 81920' },
-        { name: 'Devbagh Sangam Village Villa', hostName: 'Anil Tandel', village: 'Devbagh Spit', pricePerNight: 2200, specialties: ['River & sea confluence view', 'Private wooden boat rides', 'Fresh crab curry'], rating: 4.9 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Atithi Bamboo Khanaval', signatureDish: 'Surmai Masala Thali with Solkadhi', location: 'Malvan Main Bazaar', avgMealCost: 280, isFamilyRun: true },
-        { name: 'Gajalee Malvan Dhaba', signatureDish: 'Crab Sukka & Amboli', location: 'Chivla Beach', avgMealCost: 320, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Santosh Sawant', expertise: 'Sindhudurg Fort Historian & Marine Naturalist', languages: ['Marathi', 'Hindi', 'English'], badge: 'State Tourism Certified', dailyRate: 1000 },
-        { name: 'Mangesh Tarkar', expertise: 'PADI Scuba Master & Coral Reef Guide', languages: ['Marathi', 'Hindi', 'English'], badge: 'Certified Diver', dailyRate: 1500 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Sawantwadi Lacquered Toys & Ganjifa', guildName: 'Sawantwadi Artisans Guild', village: 'Moti Talav, Sawantwadi', directBuyingContact: '+91 2363 272010' }
-      ],
-      localTransportOptions: [
-        { mode: 'Eco Auto Rickshaw', typicalRoute: 'Malvan Bazaar to Tarkarli / Devbagh', approxFare: '₹120 - ₹180', ecoFriendly: true },
-        { mode: 'Traditional Wooden Ferry', typicalRoute: 'Malvan Jetty to Sindhudurg Fort', approxFare: '₹90 per person return', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Winter & Post-Monsoon (October to March) — Crisp ocean breeze, calm waters for scuba diving, and mild 26°C daytime temperatures.',
-      idealMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
-      timeOfDayGuide: {
-        morning: { hours: '06:00 AM - 10:00 AM', recommendation: 'Boat ride to Shivaji Sea Fort and scuba diving sessions when water is crystal clear and calm.', crowd: 'Low' },
-        afternoon: { hours: '12:00 PM - 03:30 PM', recommendation: 'Indulge in a traditional Malvani seafood thali at a family khanaval followed by a visit to Sawantwadi toy palace.', crowd: 'Low' },
-        evening: { hours: '04:30 PM - 07:00 PM', recommendation: 'Sunset walk at Chivla Beach or Devbagh Sangam sandbar with Solkadhi.', crowd: 'Moderate' },
-        night: { hours: '08:00 PM - 10:30 PM', recommendation: 'Watch village Dashavatar folk theatre or stargaze on quiet beaches.', crowd: 'Low' }
-      },
-      weatherIndexCurrent: 92,
-      weatherForecastNarrative: 'Ideal coastal weather with gentle Arabian Sea winds and negligible rainfall.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 1200, foodPerDay: 500, transitPerDay: 300, totalDaily: 2000 },
-        moderateTier: { stayPerDay: 2500, foodPerDay: 900, transitPerDay: 600, totalDaily: 4000 },
-        luxuryTier: { stayPerDay: 5500, foodPerDay: 1800, transitPerDay: 1200, totalDaily: 8500 }
-      },
-      upcomingEvents: [
-        { name: 'Anganewadi Bharadi Devi Jatra', dateRange: 'February (Annual Fair)', type: 'Pilgrimage Fair', significance: 'Famous coastal temple festival drawing thousands for rural prasad and cultural rituals.' },
-        { name: 'Malvan Scuba & Marine Fest', dateRange: 'November 15 - 20', type: 'Adventure & Eco-tourism', significance: 'Promoting marine biodiversity conservation and local boatman livelihood.' }
-      ]
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
     }
   },
 
-  // 2. MAHARASHTRA: PUNE (Cultural Capital & Heritage Hub)
+  // 2. MAHARASHTRA: MUMBAI (Financial Capital, Colonial Architecture & Street Food)
   {
-    id: 'dest-pune',
-    name: 'Pune',
-    stateOrRegion: 'Western Maharashtra',
+    id: 'dest-mumbai',
+    name: 'Mumbai',
+    stateOrRegion: 'Maharashtra',
     country: 'India',
     isInternational: false,
     state: 'Maharashtra',
-    region: 'Desh / Western Maharashtra',
-    district: 'Pune',
-    thematicTags: ['food', 'culture', 'clothing', 'heritage', 'shopping', 'adventure'],
-    tierCategory: 'Tier-2',
-    popularityTier: 'emerging',
-    carryingCapacityDaily: 25000,
-    currentCapacityLoadPct: 58,
+    region: 'Konkan / West Coast',
+    district: 'Mumbai City',
+    thematicTags: ['heritage', 'food', 'shopping', 'culture', 'beaches'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 50000,
+    currentCapacityLoadPct: 75,
     isOvertouristed: false,
-    localEconomicRetentionPct: 82,
-    sustainabilityScore: 88,
-    affordabilityIndex: 86,
-    tagline: 'The Cultural Epicenter of Maharashtra: Peshwa Heritage, Misal Trails & Sahyadri Forts',
-    description: 'Pune harmoniously blends Maratha and Peshwa imperial heritage, world-renowned street gastronomy, bustling traditional peths for handlooms, and rugged Sahyadri hill fort treks like Sinhagad and Rajgad.',
+    localEconomicRetentionPct: 85,
+    sustainabilityScore: 82,
+    affordabilityIndex: 75,
+    tagline: 'The City of Dreams: Gateway of India, Marine Drive Promenade & Street Gastronomy',
+    description: 'Mumbai is India’s vibrant financial hub and entertainment capital. Home to UNESCO World Heritage Railway Termini, Victorian Gothic architecture, seaside Queens Necklace promenades, and world-class street food.',
     heroImage: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1200&q=80',
     galleryImages: [
-      'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=800&q=80'
     ],
-    vibe: ['heritage', 'culinary', 'urban', 'adventure', 'wellness'],
-    rating: 4.86,
-    reviewCount: 3100,
-    lat: 18.5204,
-    lng: 73.8567,
-    bestMonths: ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February'],
+    vibe: ['urban', 'heritage', 'culinary', 'shopping'],
+    rating: 4.88,
+    reviewCount: 3200,
+    lat: 18.9220,
+    lng: 72.8347,
+    bestMonths: ['November', 'December', 'January', 'February', 'March'],
     currentWeather: {
-      tempC: 25,
-      condition: 'Pleasant & Breezy',
-      icon: 'CloudSun',
-      forecast: 'Mild cool morning with comfortable daytime breeze',
-      airQualityIndex: 58
+      tempC: 29,
+      condition: 'Humid & Sunny',
+      icon: 'Sun',
+      forecast: 'Pleasant evening sea breeze along the coast',
+      airQualityIndex: 45
     },
     safetyScore: {
-      overall: 95,
-      daySafety: 97,
-      nightSafety: 92,
-      emergencyContact: '112 / Pune Police Control Room (+91 20 2612 2880)',
-      advisory: 'One of the safest educational and cultural cities in India. Ideal for solo women and family heritage travelers.'
+      overall: 92,
+      daySafety: 96,
+      nightSafety: 90,
+      emergencyContact: '112 / Mumbai Police (+91 22 2262 1855)',
+      advisory: 'Safe cosmopolitan megacity. Use local cabs or local trains outside peak rush hours.'
     },
     crowdPrediction: {
       currentStatus: 'Moderate',
-      peakHours: '11:00 AM - 1:30 PM (Katta / Food joints), 5:30 PM - 8:30 PM (Laxmi Road)',
-      quietHours: '6:30 AM - 9:30 AM',
-      recommendation: 'Climb Sinhagad Fort early at 6:30 AM for breathtaking cloud inversions and steaming Pithla Bhakri.'
+      peakHours: '8:30 AM - 10:30 AM & 5:30 PM - 8:30 PM (Local Train Rush)',
+      quietHours: '11:00 AM - 4:00 PM',
+      recommendation: 'Walk Marine Drive at sunset and visit Gateway of India in early morning hours.'
+    },
+    popularAttractions: [
+      {
+        id: 'att-mumbai-1',
+        name: 'Gateway of India & Taj Mahal Palace',
+        category: 'Heritage',
+        rating: 4.92,
+        reviewCount: 4500,
+        estimatedTime: '2 hrs',
+        entryFee: 0,
+        image: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80',
+        description: 'Triumphant 26-meter basalt arch facing Mumbai Harbor built for King George V in 1911 alongside the historic Taj Hotel.',
+        lat: 18.9220,
+        lng: 72.8347,
+        crowdLevel: 'High',
+        bestTimeToVisit: '7:00 AM - 9:30 AM'
+      },
+      {
+        id: 'att-mumbai-2',
+        name: 'Marine Drive (Queens Necklace)',
+        category: 'Sightseeing',
+        rating: 4.95,
+        reviewCount: 3800,
+        estimatedTime: '1.5 hrs',
+        entryFee: 0,
+        image: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?auto=format&fit=crop&w=600&q=80',
+        description: '3.6 km C-shaped Boulevard along the Arabian Coast resembling a string of sparkling pearls at night.',
+        lat: 18.9438,
+        lng: 72.8231,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '5:30 PM - 8:00 PM'
+      },
+      {
+        id: 'att-mumbai-3',
+        name: 'Chhatrapati Shivaji Maharaj Terminus (CST)',
+        category: 'Heritage',
+        rating: 4.89,
+        reviewCount: 2900,
+        estimatedTime: '1 hr',
+        entryFee: 0,
+        image: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=600&q=80',
+        description: 'UNESCO World Heritage High Victorian Gothic revival railway station illuminated beautifully every evening.',
+        lat: 18.9398,
+        lng: 72.8355,
+        crowdLevel: 'High',
+        bestTimeToVisit: '7:00 PM - 9:00 PM'
+      },
+      {
+        id: 'att-mumbai-4',
+        name: 'Elephanta Caves (UNESCO Island)',
+        category: 'Heritage',
+        rating: 4.86,
+        reviewCount: 2100,
+        estimatedTime: '4 hrs',
+        entryFee: 40,
+        image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80',
+        description: '5th-century rock-cut cave temples dedicated to Lord Shiva, accessible by a scenic 1-hour ferry ride from Gateway of India.',
+        lat: 18.9633,
+        lng: 72.9315,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '9:00 AM - 1:00 PM'
+      }
+    ],
+    localCuisines: ['Vada Pav', 'Pav Bhaji', 'Bombay Duck Fry', 'Bhel Puri at Juhu', 'Bun Maska Chai'],
+    startingPrice: 7500,
+    culturalSpecialties: {
+      food: [
+        { name: 'Authentic Bombay Vada Pav', description: 'Spiced potato fritter served in soft white bun with garlic coconut chutney.', mustTryAt: 'Ashok Vada Pav, Dadar / Aram Vada Pav, CST', isVeg: true, tag: 'Iconic Street Food' },
+        { name: 'Butter Pav Bhaji', description: 'Mashed spiced vegetable curry cooked on flat iron tawa with toasted butter buns.', mustTryAt: 'Sardar Refreshments, Tardeo / Cannon, CST', isVeg: true, tag: 'Midnight Classic' }
+      ],
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [{ name: 'Ganesh Chaturthi', monthOrSeason: 'August-September', culturalSignificance: 'Grand community festival featuring massive eco-friendly idols and Dhol Tasha drums.', celebrationHighlights: 'Visarjan procession at Girgaon Chowpatty' }],
+      localShopping: [{ product: 'Colaba Causeway Fashion & Antiques', bestMarket: 'Colaba Causeway Market', priceRange: '₹100 - ₹1,500', tip: 'Friendly bargaining recommended' }],
+      uniqueExperiences: []
+    }
+  },
+
+  // 3. MAHARASHTRA: PUNE (Cultural Capital, Maratha Forts & IT Hub)
+  {
+    id: 'dest-pune',
+    name: 'Pune',
+    stateOrRegion: 'Maharashtra',
+    country: 'India',
+    isInternational: false,
+    state: 'Maharashtra',
+    region: 'Western Ghats / Desh',
+    district: 'Pune',
+    thematicTags: ['heritage', 'food', 'nature', 'culture', 'adventure'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 25000,
+    currentCapacityLoadPct: 60,
+    isOvertouristed: false,
+    localEconomicRetentionPct: 88,
+    sustainabilityScore: 89,
+    affordabilityIndex: 86,
+    tagline: 'Cultural Capital of Maharashtra: Shaniwar Wada Palace, Sahyadri Trekking & Misal Pav',
+    description: 'Pune blends rich Maratha empire history with vibrant youth culture and pleasant green weather. Gateway to Sahyadri hill forts, historic Peshwa palaces, and legendary Maharashtrian culinary spots.',
+    heroImage: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80'
+    ],
+    vibe: ['heritage', 'mountain', 'culinary', 'cultural'],
+    rating: 4.87,
+    reviewCount: 2400,
+    lat: 18.5204,
+    lng: 73.8567,
+    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
+    currentWeather: {
+      tempC: 25,
+      condition: 'Pleasant & Breeze',
+      icon: 'Sun',
+      forecast: 'Cool pleasant weather perfect for hill fort treks',
+      airQualityIndex: 30
+    },
+    safetyScore: {
+      overall: 95,
+      daySafety: 98,
+      nightSafety: 92,
+      emergencyContact: '112 / Pune City Police (+91 20 2612 8888)',
+      advisory: 'Extremely safe educational and cultural center.'
+    },
+    crowdPrediction: {
+      currentStatus: 'Low',
+      peakHours: '5:00 PM - 8:00 PM (FC Road Market)',
+      quietHours: '7:00 AM - 11:00 AM',
+      recommendation: 'Visit Shaniwar Wada in early morning for cool weather and heritage photography.'
     },
     popularAttractions: [
       {
         id: 'att-pune-1',
-        name: 'Shaniwar Wada Fort Palace',
+        name: 'Shaniwar Wada Palace Fort',
         category: 'Heritage',
-        rating: 4.82,
-        reviewCount: 2100,
+        rating: 4.88,
+        reviewCount: 3100,
         estimatedTime: '2 hrs',
         entryFee: 25,
-        image: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80',
-        description: 'Seat of the Peshwa rulers of the Maratha Empire built in 1732 with majestic Dilli Darwaza gates.',
+        image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=600&q=80',
+        description: 'Seat of the Maratha Empire Peshwas built in 1732 featuring massive Delhi Gate ramparts.',
         lat: 18.5196,
         lng: 73.8553,
         crowdLevel: 'Moderate',
@@ -271,855 +306,563 @@ export const INDIA_EXPANDED_DESTINATIONS: Destination[] = [
       },
       {
         id: 'att-pune-2',
-        name: 'Sinhagad Fort',
-        category: 'Adventure',
-        rating: 4.92,
-        reviewCount: 2890,
-        estimatedTime: '4 hrs',
-        entryFee: 50,
-        image: 'https://images.unsplash.com/photo-1596401057633-54a8fe8ef647?auto=format&fit=crop&w=600&q=80',
-        description: 'Historic Sahyadri hill fortress associated with Tanaji Malusare, offering sweeping views of Khadakwasla Dam.',
-        lat: 18.3663,
-        lng: 73.7558,
-        crowdLevel: 'Moderate',
-        bestTimeToVisit: '6:30 AM - 10:00 AM'
-      },
-      {
-        id: 'att-pune-3',
-        name: 'Aga Khan Palace & Gandhi Memorial',
+        name: 'Aga Khan Palace',
         category: 'Heritage',
-        rating: 4.8,
-        reviewCount: 1450,
-        estimatedTime: '2 hrs',
+        rating: 4.91,
+        reviewCount: 2100,
+        estimatedTime: '1.5 hrs',
         entryFee: 25,
-        image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&q=80',
-        description: 'Majestic Italian-arched palace where Mahatma Gandhi and Kasturba Gandhi were interned during the Quit India Movement.',
-        lat: 18.5524,
+        image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80',
+        description: 'Italian arches and sprawling lawns where Mahatma Gandhi was incarcerated during the Quit India movement.',
+        lat: 18.5529,
         lng: 73.9015,
         crowdLevel: 'Low',
         bestTimeToVisit: '10:00 AM - 1:00 PM'
+      },
+      {
+        id: 'att-pune-3',
+        name: 'Sinhagad Fort (Lion Fort)',
+        category: 'Adventure',
+        rating: 4.94,
+        reviewCount: 4200,
+        estimatedTime: '4 hrs',
+        entryFee: 50,
+        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+        description: 'Mountaintop fortress 1,300 meters high, famed for Tanaji Malusare’s historic siege and traditional Pithla Bhakri.',
+        lat: 18.3663,
+        lng: 73.7558,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '6:30 AM - 10:30 AM'
       }
     ],
-    localCuisines: ['Puneri Misal Pav', 'Katakirr Misal', 'Chitale Bandhu Bakarwadi', 'Sujata Mastani Ice Cream Milkshake', 'Puran Poli with Ghee', 'Kanda Bhaji at Sinhagad'],
-    startingPrice: 90,
-
+    localCuisines: ['Puneri Misal Pav', 'Bakarwadi', 'Pithla Bhakri at Sinhagad', 'Mango Mastani'],
+    startingPrice: 5500,
     culturalSpecialties: {
       food: [
-        { name: 'Puneri Misal Pav (Spicy Sprouts Curry)', description: 'Iconic spicy sprouted moth bean gravy garnished with crunchy farsan, raw onions, lemon, and served with buttery pav and fiery Tarri.', mustTryAt: 'Katakirr Misal (Karve Road) / Bedekar Tea Stall (Narayan Peth)', isVeg: true, tag: 'World-Famous Street Food' },
-        { name: 'Chitale Bandhu Bakarwadi', description: 'Crispy fried spiral rolls stuffed with spicy-sweet poppy seed, sesame, and dried coconut masala.', mustTryAt: 'Chitale Bandhu, Bajirao Road', isVeg: true, tag: 'Heritage Snack' },
-        { name: 'Sujata Mango Mastani', description: 'Legendary Pune dessert named after Peshwa Mastani Bai — thick Alphonso mango milkshake topped with rich ice cream, dry fruits, and tutty fruity.', mustTryAt: 'Sujata Mastani, Sadashiv Peth', isVeg: true, tag: 'Signature Dessert' },
-        { name: 'Pithla Bhakri & Thecha', description: 'Fresh hot gram-flour curry with jowar flatbread and hand-pounded green chili-garlic chutney served atop Sinhagad Fort.', isVeg: true, tag: 'Fort Culinary Tradition' }
+        { name: 'Puneri Spicy Misal Pav', description: 'Sprouted moth beans curry topped with crunchy farsan, chopped onions, and lemon.', mustTryAt: 'Bedekar Misal / Katairrurr, Sadashiv Peth', isVeg: true, tag: 'Signature Breakfast' },
+        { name: 'Chitale Bakarwadi & Mango Mastani', description: 'Crispy savory rolled pinwheels and thick mango ice-cream shake.', mustTryAt: 'Chitale Bandhu Mithaiwale / Sujata Mastani', isVeg: true, tag: 'Famous Snack' }
       ],
-      clothing: [
-        { name: 'Peshwai Paithani Saree', description: 'Exquisite mulberry silk sarees with pure gold and silver Zari borders featuring peacock (Mor) and parrot (Tota) motifs.', occasion: 'Weddings & Festive Occasions', authenticHub: 'Laxmi Road & Narayan Peth Handloom Houses' },
-        { name: 'Puneri Pagadi & Kurta', description: 'Traditional crimson and gold headgear worn by intellectuals, scholars, and Maratha leaders as a mark of honor.', occasion: 'Cultural Felicitations & Heritage Events', authenticHub: 'Appa Balwant Chowk' }
-      ],
-      handicrafts: [
-        { name: 'Tambat Ali Copper & Brass Craft (GI Heritage)', description: 'Centuries-old beaten copperware (Mathar-kaam) hand-hammered by traditional Tambat coppersmiths in historic alleys.', giTagged: true, artisanCommunity: 'Tambat Ali Coppersmiths of Kasba Peth' }
-      ],
-      jewellery: [
-        { name: 'Peshwai Thushi, Kolhapuri Saaj & Marathi Nath', description: 'Brahmin and Peshwa-style pearl nose ring (Nath) studded with rubies, and handcrafted choker necklace.', material: 'Basra Pearls, Ruby & 22K Gold', traditionalSignificance: 'Emblem of regal Maharashtrian heritage' }
-      ],
-      artAndCulture: [
-        { name: 'Sawai Gandharva Bhimsen Mahotsav', description: 'India’s premier Indian Classical Music festival founded by Bharat Ratna Pandit Bhimsen Joshi.', type: 'music' },
-        { name: 'Powada & Shahiri Heritage', description: 'Traditional ballad poetry and energetic percussion celebrating the bravery of Chhatrapati Shivaji Maharaj.', type: 'folk_dance' }
-      ],
-      festivals: [
-        { name: 'Pune Ganeshotsav', monthOrSeason: 'August / September', culturalSignificance: 'Birthplace of public Ganesh festival started by Lokmanya Tilak in 1893 with the iconic 5 Manache Ganpati.', celebrationHighlights: 'Dhol Tasha Pathaks (traditional percussion troupes) with 500+ synchronized youth drummers.' }
-      ],
-      localShopping: [
-        { product: 'Authentic Chitale Sweets & Amba Barfi', bestMarket: 'Bajirao Road & Deccan Gymkhana', priceRange: '₹300 - ₹800 / kg', tip: 'Arrive before 11:00 AM or after 4:00 PM (traditional afternoon siesta hours!).' },
-        { product: 'Hand-beaten Copper Water Bottles & Vessels', bestMarket: 'Tambat Ali, Kasba Peth', priceRange: '₹500 - ₹2,500', tip: 'Buying directly from Tambat Ali gives 100% earnings to master artisans.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Heritage Peth Walk & 5 Manache Ganpati Trail', description: 'Explore Kasba Peth, Shaniwar Peth, and Narayan Peth on foot with local historians.', bestTime: 'Morning 7:00 AM - 9:30 AM', localImpact: 'Supports local heritage walking guilds and heritage preservation.' },
-        { title: 'Sunrise Trek to Sinhagad with Steaming Matka Dahi', description: 'Hike through Sahyadri morning mist to enjoy fresh clay-pot curd, Pithla Bhakri, and raw onion Thecha from village women.', bestTime: '06:00 AM', localImpact: 'Direct income for local hilltop village households.' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 88,
-      economicRetentionExplainer: '82% of spend stays with local family-run eateries, century-old textile weavers, and mountain village hospitality providers.',
-      authenticHomestays: [
-        { name: 'Peshwa Heritage Wada Retreat', hostName: 'Adv. Raghavendra Joshi', village: 'Near Shaniwar Wada, Kasba Peth', pricePerNight: 2400, specialties: ['Restored 150-year-old wooden Wada', 'Authentic Marathi breakfast', 'Guided Peth walks'], rating: 4.9 },
-        { name: 'Sinhagad Foothills Agro Eco-Stay', hostName: 'Kailas & Sunita Thakar', village: 'Donje, Sinhagad Foothills', pricePerNight: 1600, specialties: ['Organic farm-to-table meals', 'Campfire & astronomy', 'Trek assistance'], rating: 4.88 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Bedekar Tea Stall & Misal', signatureDish: 'Sweet-spicy Puneri Misal with brown bread', location: 'Narayan Peth', avgMealCost: 120, isFamilyRun: true },
-        { name: 'Janseva Dining Hall', signatureDish: 'Grand Maharashtrian Thali with Puran Poli & Aamras', location: 'Garware Bridge, Deccan', avgMealCost: 290, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Dr. Anand Deshmukh', expertise: 'Maratha Fort Architecture & Peshwa Epigraphy', languages: ['Marathi', 'Hindi', 'English'], badge: 'Heritage Scholar', dailyRate: 1200 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Tambat Hand-hammered Copperware', guildName: 'Kasba Tambat Co-op Guild', village: 'Tambat Ali, Pune', directBuyingContact: '+91 20 2445 8810' }
-      ],
-      localTransportOptions: [
-        { mode: 'The Explorer Pune Eco Auto', typicalRoute: 'Pune Station to Deccan / Kothrud', approxFare: '₹80 - ₹160', ecoFriendly: true },
-        { mode: 'Pune Metro Line', typicalRoute: 'Civil Court to Vanaz / PCMC', approxFare: '₹20 - ₹35', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Monsoon & Winter (July to February) — Lush green Sahyadri hills, gushing waterfalls at Sinhagad, and cool 18°C-26°C weather.',
-      idealMonths: ['July', 'August', 'September', 'October', 'November', 'December', 'January', 'February'],
-      timeOfDayGuide: {
-        morning: { hours: '06:30 AM - 10:00 AM', recommendation: 'Early hill trek at Sinhagad Fort or morning walk in historic Kasba Peth.', crowd: 'Low' },
-        afternoon: { hours: '12:00 PM - 03:30 PM', recommendation: 'Visit Raja Dinkar Kelkar Museum and Aga Khan Palace memorial gardens.', crowd: 'Moderate' },
-        evening: { hours: '05:00 PM - 08:30 PM', recommendation: 'Shopping for Paithani sarees on Laxmi Road followed by Sujata Mastani.', crowd: 'High' },
-        night: { hours: '08:30 PM - 10:30 PM', recommendation: 'Dinner at a traditional Khanaval or cultural performance at Bal Gandharva Ranga Mandir.', crowd: 'Moderate' }
-      },
-      weatherIndexCurrent: 94,
-      weatherForecastNarrative: 'Crisp, breezy weather ideal for outdoor cultural walks and hill fortress hiking.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 1000, foodPerDay: 400, transitPerDay: 250, totalDaily: 1650 },
-        moderateTier: { stayPerDay: 2200, foodPerDay: 800, transitPerDay: 500, totalDaily: 3500 },
-        luxuryTier: { stayPerDay: 6000, foodPerDay: 2000, transitPerDay: 1200, totalDaily: 9200 }
-      },
-      upcomingEvents: [
-        { name: 'Pune International Film Festival (PIFF)', dateRange: 'January (Annual)', type: 'Cinema & Arts', significance: 'Global cinematic showcase hosting world-class directors and critics.' },
-        { name: 'Vasant Vyakhyanmala', dateRange: 'April - May', type: 'Intellectual Discourse', significance: '145-year-old lecture series started by Justice Ranade at Tilak Smarak Mandir.' }
-      ]
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
     }
   },
 
-  // 3. MAHARASHTRA: KOLHAPUR (Heritage, Food & GI Crafts)
+  // 4. GOA: BEACHES, CHURCHES & HERITAGE
   {
-    id: 'dest-kolhapur',
-    name: 'Kolhapur',
-    stateOrRegion: 'Western Maharashtra',
+    id: 'dest-goa',
+    name: 'Goa',
+    stateOrRegion: 'Goa',
     country: 'India',
     isInternational: false,
-    state: 'Maharashtra',
-    region: 'South Maharashtra',
-    district: 'Kolhapur',
-    thematicTags: ['heritage', 'food', 'clothing', 'shopping', 'spirituality', 'culture'],
-    tierCategory: 'Tier-2',
-    popularityTier: 'gem',
-    carryingCapacityDaily: 12000,
-    currentCapacityLoadPct: 44,
+    state: 'Goa',
+    region: 'Konkan Coast',
+    district: 'North & South Goa',
+    thematicTags: ['beaches', 'food', 'adventure', 'heritage', 'culture'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 40000,
+    currentCapacityLoadPct: 65,
     isOvertouristed: false,
-    localEconomicRetentionPct: 91,
-    sustainabilityScore: 92,
-    affordabilityIndex: 94,
-    tagline: 'Land of Mahalakshmi, Royal Maratha Chhatrapatis, Tambda-Pandhra Rassa & GI Chappals',
-    description: 'Kolhapur is an ancient cultural citadel founded on the banks of Panchganga River. Famous for the sacred 7th-century Mahalakshmi Temple, New Palace royal museum, authentic red and white mutton broth (Tambda-Pandhra Rassa), and world-famous handcrafted leather Kolhapuri Chappals.',
-    heroImage: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80',
+    localEconomicRetentionPct: 84,
+    sustainabilityScore: 88,
+    affordabilityIndex: 82,
+    tagline: 'Sun-Kissed Beaches, Portuguese Latin Quarter & Tropical Spice Plantations',
+    description: 'Goa features pristine palm-fringed coastlines, UNESCO-listed 16th-century churches of Old Goa, colorful Portuguese heritage quarters in Panjim, water sports, and world-class seafood.',
+    heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80',
     galleryImages: [
-      'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'
     ],
-    vibe: ['heritage', 'culinary', 'spirituality', 'adventure'],
-    rating: 4.88,
-    reviewCount: 1680,
-    lat: 16.7050,
-    lng: 74.2433,
-    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
+    vibe: ['beach', 'adventure', 'culinary', 'heritage'],
+    rating: 4.91,
+    reviewCount: 4800,
+    lat: 15.2993,
+    lng: 74.1240,
+    bestMonths: ['November', 'December', 'January', 'February', 'March'],
     currentWeather: {
-      tempC: 26,
-      condition: 'Sunny & Pleasant',
+      tempC: 28,
+      condition: 'Sunny & Coastal Breeze',
       icon: 'Sun',
-      forecast: 'Clear skies with cool evening breeze around Rankala Lake',
-      airQualityIndex: 34
+      forecast: 'Warm tropical sunshine with pleasant sea breeze',
+      airQualityIndex: 20
     },
     safetyScore: {
-      overall: 96,
-      daySafety: 98,
-      nightSafety: 94,
-      emergencyContact: '112 / Kolhapur District Police (+91 231 266 2222)',
-      advisory: 'Deeply hospitable royal city. Respect temple sanctum dress codes.'
+      overall: 94,
+      daySafety: 97,
+      nightSafety: 91,
+      emergencyContact: '112 / Goa Tourist Police (+91 832 242 8990)',
+      advisory: 'Very friendly tourist state. Follow beach lifeguard flags for swimming.'
     },
     crowdPrediction: {
-      currentStatus: 'Low',
-      peakHours: '10:00 AM - 12:30 PM (Mahalakshmi Temple Darshan)',
-      quietHours: '6:00 AM - 8:30 AM',
-      recommendation: 'Visit Mahalakshmi Temple during early morning Kakad Aarti at 6:00 AM for tranquil Darshan.'
+      currentStatus: 'Moderate',
+      peakHours: '5:00 PM - 8:00 PM (Baga & Calangute Beach Sunset)',
+      quietHours: '7:00 AM - 10:00 AM',
+      recommendation: 'Explore Fontainhas Latin Quarter in early morning for quiet photography.'
     },
     popularAttractions: [
       {
-        id: 'att-kolhapur-1',
-        name: 'Shree Ambabai Mahalakshmi Temple',
-        category: 'Heritage',
-        rating: 4.95,
-        reviewCount: 3200,
-        estimatedTime: '2 hrs',
-        entryFee: 0,
-        image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80',
-        description: '7th-century Chalukyan temple dedicated to Goddess Mahalakshmi; twice a year sun rays illuminate the deity directly (Kiranotsav).',
-        lat: 16.6946,
-        lng: 74.2238,
-        crowdLevel: 'Moderate',
-        bestTimeToVisit: '6:00 AM - 8:30 AM'
-      },
-      {
-        id: 'att-kolhapur-2',
-        name: 'Panhala Fort (The Hill of the Serpent)',
+        id: 'att-goa-1',
+        name: 'Fort Aguada & Lighthouse',
         category: 'Heritage',
         rating: 4.9,
-        reviewCount: 2150,
-        estimatedTime: '3 hrs',
-        entryFee: 30,
-        image: 'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=600&q=80',
-        description: 'Largest fort in the Deccan where Chhatrapati Shivaji spent over 500 days and executed his legendary siege escape to Vishalgad.',
-        lat: 16.8144,
-        lng: 74.1086,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '8:30 AM - 12:00 PM',
-        isOffbeat: true
-      },
-      {
-        id: 'att-kolhapur-3',
-        name: 'Shree Chhatrapati Shahu Museum (New Palace)',
-        category: 'Heritage',
-        rating: 4.84,
-        reviewCount: 1400,
+        reviewCount: 3800,
         estimatedTime: '2 hrs',
         entryFee: 50,
-        image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80',
-        description: 'Victorian-Indo-Saracenic royal black stone palace housing the throne, armory, and memorabilia of Rajarshi Shahu Maharaj.',
-        lat: 16.7196,
-        lng: 74.2386,
+        image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80',
+        description: '17th-century Portuguese fortress standing at Sinquerim Beach overlooking the Arabian Sea.',
+        lat: 15.4920,
+        lng: 73.7737,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '8:30 AM - 11:00 AM'
+      },
+      {
+        id: 'att-goa-2',
+        name: 'Basilica of Bom Jesus (Old Goa)',
+        category: 'Heritage',
+        rating: 4.93,
+        reviewCount: 4100,
+        estimatedTime: '1.5 hrs',
+        entryFee: 0,
+        image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80',
+        description: 'UNESCO World Heritage baroque church housing the sacred mortal remains of St. Francis Xavier.',
+        lat: 15.5009,
+        lng: 73.9116,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '9:00 AM - 12:00 PM'
+      },
+      {
+        id: 'att-goa-3',
+        name: 'Fontainhas (Latin Quarter, Panjim)',
+        category: 'Sightseeing',
+        rating: 4.92,
+        reviewCount: 2900,
+        estimatedTime: '2 hrs',
+        entryFee: 0,
+        image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
+        description: 'Charming Heritage neighborhood with vibrant yellow, blue, and green Portuguese colonial villas.',
+        lat: 15.4989,
+        lng: 73.8311,
         crowdLevel: 'Low',
-        bestTimeToVisit: '10:00 AM - 1:00 PM'
+        bestTimeToVisit: '7:30 AM - 10:00 AM'
       }
     ],
-    localCuisines: ['Tambda Rassa (Fiery Red Mutton Broth)', 'Pandhra Rassa (Silky Coconut-Mutton Broth)', 'Kolhapuri Mutton Sukka', 'Kolhapuri Misal', 'Jowar Bhakri', 'Kolhapuri Jaggery (Gul)'],
-    startingPrice: 85,
-
+    localCuisines: ['Goan Fish Curry Rice', 'Pork Vindaloo', 'Bebinca', 'Goan Feni', 'Poi Bread'],
+    startingPrice: 8500,
     culturalSpecialties: {
       food: [
-        { name: 'Tambda Rassa & Pandhra Rassa Mutton Thali', description: 'The pride of Kolhapur — slow-simmered fiery red broth (Tambda) spiced with Kolhapuri Lavangi chillies, paired with calming white coconut milk broth (Pandhra) infused with whole spices.', mustTryAt: 'Hotel Opal, Hotel Parakh, Dehati Restaurant', isVeg: false, tag: 'Signature Royal Dish' },
-        { name: 'Kolhapuri Misal with Thick Farsan & Curd', description: 'Deep red, smoky-spiced sprout gravy cooked in traditional iron kadhais, eaten with onions and pav.', mustTryAt: 'Phadtare Misal, Bawada Misal, Ahar Misal', isVeg: true, tag: 'Spicy Breakfast' },
-        { name: 'Pure Organic Kolhapuri Jaggery (Gul)', description: 'Chemical-free golden jaggery made from fresh sugarcane juice in traditional Kolhapur boiling vats (Gurhals).', isVeg: true, tag: 'GI Tagged Sweetener' }
+        { name: 'Authentic Goan Fish Curry Rice', description: 'Fresh kingfish cooked in coconut milk, dried red chillies, and kokum.', mustTryAt: 'Fat Fish, Baga / Ritz Classic, Panjim', isVeg: false, tag: 'Iconic Staple' },
+        { name: 'Traditional Bebinca', description: '7-layered coconut milk and egg-yolk baked dessert spiced with cardamom.', isVeg: false, tag: 'Festive Dessert' }
       ],
-      clothing: [
-        { name: 'Kolhapuri Nauvari Saree & Pagote', description: 'Traditional Maratha nine-yard cotton and silk weaves with broad golden temple border, worn with royal Kolhapuri Pagote (turban).', occasion: 'Royal Dussehra & Mahalakshmi Kiranotsav', authenticHub: 'Bhausinghji Road & Gujri Market' }
-      ],
-      handicrafts: [
-        { name: 'Handcrafted Kolhapuri Chappals (GI Tagged)', description: 'World-renowned vegetable-tanned leather footwear hand-braided and stitched with natural cord, zero nails or synthetic adhesives.', giTagged: true, artisanCommunity: 'Subhashnagar & Chappal Line Leather Artisans' }
-      ],
-      jewellery: [
-        { name: 'Kolhapuri Saaj (Sacred 21-Amulet Gold Necklace)', description: 'Ancient royal gold necklace featuring 21 distinct hand-carved leaves depicting avatars of Vishnu and symbols of prosperity.', material: '22K Gold & Precious Stones', traditionalSignificance: 'Heritage marital heirloom of royal Maharashtra' },
-        { name: 'Bugadi, Thushi & Kolhapuri Mohanmal', description: 'Ear top-piercing ornaments and spherical gold-bead strings handmade by local Sonar masters in Gujri.', material: '22K Gold & Silver', traditionalSignificance: 'Traditional Maratha royal jewellery' }
-      ],
-      artAndCulture: [
-        { name: 'Kolhapuri Kushti (Traditional Mud Wrestling)', description: 'Century-old Indian wrestling practiced in sacred red mud pits (Talims) patronized by Rajarshi Shahu Maharaj.', type: 'heritage' }
-      ],
-      festivals: [
-        { name: 'Kolhapur Royal Dussehra (Shilangan)', monthOrSeason: 'October (Ashvin)', culturalSignificance: 'Grand procession of the Kolhapur Royal Family on royal palanquin to Gurumaharaj Palkhi and gold-leaf exchange (Apta leaves).', celebrationHighlights: 'Traditional Maratha warriors, royal elephants, and Talim wrestlers.' }
-      ],
-      localShopping: [
-        { product: 'Authentic Kolhapuri Chappals with Hand-braiding', bestMarket: 'Chappal Line, Mahalakshmi Temple Lane', priceRange: '₹600 - ₹3,500 / Pair', tip: 'Authentic Kolhapuri leather softens and moulds to your foot shape over time.' },
-        { product: 'Kolhapuri Kanda-Lasun Masala (Onion-Garlic Spice Blend)', bestMarket: 'Shahupuri Spice Market', priceRange: '₹200 - ₹450 / 500g', tip: 'Essential secret spice for authentic Tambda Rassa at home.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Visit Live Kushti Wrestling at Motibagh Talim', description: 'Watch young Pehlwans (wrestlers) train in sacred red clay pits with oil massage and traditional gada (mace) swinging.', bestTime: 'Morning 06:30 AM - 08:30 AM', localImpact: 'Directly sustains indigenous wrestling gyms and youth athletes.' },
-        { title: 'Sunset Boating & Chaupati at Rankala Lake', description: 'Stroll around the 1,000-year-old historic stone lake with evening Ragda Patties and view of Sandhya Math.', bestTime: '05:30 PM - 07:30 PM', localImpact: 'Empowers local lakefront small vendors.' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 94,
-      economicRetentionExplainer: '91% of trip funds directly sustain master leather cobbler guilds, hereditary gold craftsmen, and organic jaggery cane farmers.',
-      authenticHomestays: [
-        { name: 'Panhala Hilltop Heritage Homestay', hostName: 'Shivaji & Rohini Patil', village: 'Panhala Fort Hilltop', pricePerNight: 1900, specialties: ['Valley view balcony', 'Home-cooked Tambda-Pandhra Rassa', 'Fort walking guide'], rating: 4.92 },
-        { name: 'Shahupuri Heritage Residence', hostName: 'Abhay Ghatge', village: 'Shahupuri, Kolhapur', pricePerNight: 2300, specialties: ['Maratha heritage architecture', 'Near Mahalakshmi Temple', 'Private courtyard'], rating: 4.89 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Hotel Parakh Kolhapur', signatureDish: 'Grand Mutton Special Thali with Unlimited Rassa', location: 'Old Pune-Bangalore Road', avgMealCost: 340, isFamilyRun: true },
-        { name: 'Phadtare Misal Kendra', signatureDish: 'Special Jain & Kolhapuri Misal', location: 'Udyamnagar', avgMealCost: 110, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Mahesh Kamble', expertise: 'Panhala Fort Military History & Maratha Epics', languages: ['Marathi', 'Hindi', 'English'], badge: 'State Fort Guide', dailyRate: 1000 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Handcrafted Kolhapuri Leather Chappals', guildName: 'Kolhapur Charmakar Audyogik Sahakari Sanstha', village: 'Subhashnagar, Kolhapur', directBuyingContact: '+91 231 264 1205' }
-      ],
-      localTransportOptions: [
-        { mode: 'Kolhapur Eco Auto', typicalRoute: 'Railway Station to Mahalakshmi Temple / Rankala', approxFare: '₹60 - ₹120', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Post-Monsoon & Winter (October to March) — Clear weather, pleasant 20°C-28°C temperatures, and grand Dussehra & Diwali festivities.',
-      idealMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
-      timeOfDayGuide: {
-        morning: { hours: '06:00 AM - 09:30 AM', recommendation: 'Early morning Darshan at Shree Ambabai Temple followed by a visit to a live mud wrestling Talim.', crowd: 'Low' },
-        afternoon: { hours: '12:00 PM - 03:00 PM', recommendation: 'Feast on authentic Tambda-Pandhra Rassa and explore New Palace Royal Museum.', crowd: 'Moderate' },
-        evening: { hours: '04:30 PM - 07:30 PM', recommendation: 'Shop for authentic Kolhapuri Chappals in Chappal Line and enjoy sunset at Rankala Lake.', crowd: 'Moderate' },
-        night: { hours: '08:00 PM - 10:00 PM', recommendation: 'Traditional Kolhapuri Misal or light dinner in historic Shahupuri.', crowd: 'Low' }
-      },
-      weatherIndexCurrent: 91,
-      weatherForecastNarrative: 'Crisp sunny days with cool evenings by the lake.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 900, foodPerDay: 400, transitPerDay: 200, totalDaily: 1500 },
-        moderateTier: { stayPerDay: 2000, foodPerDay: 750, transitPerDay: 450, totalDaily: 3200 },
-        luxuryTier: { stayPerDay: 5000, foodPerDay: 1600, transitPerDay: 1000, totalDaily: 7600 }
-      },
-      upcomingEvents: [
-        { name: 'Mahalakshmi Kiranotsav (Sun Ray Festival)', dateRange: 'November & January 31 - February 2', type: 'Astronomical Temple Phenomenon', significance: 'Setting sun rays pass through temple arches directly touching the deity’s feet, torso, and face.' },
-        { name: 'Kolhapur National Wrestling Championship', dateRange: 'December', type: 'Traditional Sports', significance: 'Top wrestlers across India compete in traditional clay arenas.' }
-      ]
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
     }
   },
 
-  // 4. MAHARASHTRA: SOLAPUR & AKKALKOT (Handloom Hub & Spiritual Sanctuary)
+  // 5. TELANGANA: HYDERABAD (City of Pearls, Charminar & Royal Palaces)
   {
-    id: 'dest-solapur',
-    name: 'Solapur & Akkalkot',
-    stateOrRegion: 'Western Maharashtra',
+    id: 'dest-hyderabad',
+    name: 'Hyderabad',
+    stateOrRegion: 'Telangana',
     country: 'India',
     isInternational: false,
-    state: 'Maharashtra',
-    region: 'South Maharashtra / Marathwada Border',
-    district: 'Solapur',
-    thematicTags: ['clothing', 'shopping', 'spirituality', 'heritage', 'food', 'nature'],
-    tierCategory: 'Tier-2',
-    popularityTier: 'gem',
-    carryingCapacityDaily: 10000,
-    currentCapacityLoadPct: 30,
+    state: 'Telangana',
+    region: 'Deccan Plateau',
+    district: 'Hyderabad',
+    thematicTags: ['heritage', 'food', 'shopping', 'culture'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 30000,
+    currentCapacityLoadPct: 62,
     isOvertouristed: false,
-    localEconomicRetentionPct: 93,
-    sustainabilityScore: 95,
-    affordabilityIndex: 96,
-    tagline: 'Textile Capital of Maharashtra: GI-Tagged Solapuri Chadars, Shenga Chutney & Siddheshwar Lake',
-    description: 'Solapur is world-famous as India’s textile handloom capital, renowned for GI-tagged Solapuri Jacquard Chadars (blankets) and Terry towels. Home to the historic Siddheshwar Lake Temple, Bhuikot Fort, Great Indian Bustard Sanctuary, and sacred Akkalkot Swami Samarth Ashram.',
-    heroImage: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80',
+    localEconomicRetentionPct: 88,
+    sustainabilityScore: 86,
+    affordabilityIndex: 85,
+    tagline: 'City of Pearls: Historic Charminar, Golconda Acoustic Fort & World-Famous Biryani',
+    description: 'Hyderabad combines 400-year-old Qutb Shahi and Nizam royal heritage with a booming IT hub. World-renowned for authentic Hyderabadi Dum Biryani, pearl bazaars, and massive stone fortresses.',
+    heroImage: 'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=1200&q=80',
     galleryImages: [
-      'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=800&q=80'
     ],
-    vibe: ['heritage', 'spirituality', 'culinary', 'nature'],
-    rating: 4.84,
-    reviewCount: 940,
-    lat: 17.6599,
-    lng: 75.9064,
-    bestMonths: ['October', 'November', 'December', 'January', 'February'],
+    vibe: ['heritage', 'culinary', 'urban', 'shopping'],
+    rating: 4.89,
+    reviewCount: 3100,
+    lat: 17.3850,
+    lng: 78.4867,
+    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
     currentWeather: {
       tempC: 28,
-      condition: 'Sunny & Dry',
+      condition: 'Sunny & Clear',
       icon: 'Sun',
-      forecast: 'Clear skies with pleasant morning and evening temperatures',
+      forecast: 'Clear blue skies with warm sunny afternoon',
+      airQualityIndex: 38
+    },
+    safetyScore: {
+      overall: 94,
+      daySafety: 97,
+      nightSafety: 91,
+      emergencyContact: '112 / Hyderabad Police (+91 40 2785 2435)',
+      advisory: 'Extremely safe and hospitable city.'
+    },
+    crowdPrediction: {
+      currentStatus: 'Moderate',
+      peakHours: '6:00 PM - 9:30 PM (Laad Bazaar & Charminar Night Market)',
+      quietHours: '8:00 AM - 11:00 AM',
+      recommendation: 'Visit Golconda Fort at 8:30 AM to experience the acoustic clapping hall in peace.'
+    },
+    popularAttractions: [
+      {
+        id: 'att-hyd-1',
+        name: 'Charminar & Laad Bazaar',
+        category: 'Heritage',
+        rating: 4.92,
+        reviewCount: 5200,
+        estimatedTime: '2 hrs',
+        entryFee: 25,
+        image: 'https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=600&q=80',
+        description: '1591 landmark mosque featuring four ornate 56-meter minarets surrounded by traditional pearl and lac bangle markets.',
+        lat: 17.3616,
+        lng: 78.4747,
+        crowdLevel: 'High',
+        bestTimeToVisit: '8:00 AM - 10:30 AM'
+      },
+      {
+        id: 'att-hyd-2',
+        name: 'Golconda Fort',
+        category: 'Heritage',
+        rating: 4.93,
+        reviewCount: 4100,
+        estimatedTime: '3 hrs',
+        entryFee: 25,
+        image: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=600&q=80',
+        description: 'Imposing medieval fortress with miraculous acoustic architecture where a handclap at the gate reverberates at the hilltop palace 1 km away.',
+        lat: 17.3833,
+        lng: 78.4011,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '8:30 AM - 11:30 AM'
+      }
+    ],
+    localCuisines: ['Hyderabadi Dum Biryani', 'Haleem', 'Double Ka Meetha', 'Osmania Biscuits with Irani Chai'],
+    startingPrice: 8250,
+    culturalSpecialties: {
+      food: [
+        { name: 'Authentic Hyderabadi Dum Biryani', description: 'Fragrant basmati rice slow-cooked on Dum with marinated meat, saffron, and fried onions.', mustTryAt: 'Bawarchi, RTC X Roads / Paradise / Shadab', isVeg: false, tag: 'World Famous' },
+        { name: 'Irani Chai with Osmania Biscuits', description: 'Thick, creamy cardamom tea paired with buttery savory Osmania biscuits.', mustTryAt: 'Nimrah Cafe facing Charminar', isVeg: true, tag: 'Heritage Breakfast' }
+      ],
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
+    }
+  },
+
+  // 6. KARNATAKA: BENGALURU (Garden City, Tech Capital & Craft Breweries)
+  {
+    id: 'dest-bengaluru',
+    name: 'Bengaluru',
+    stateOrRegion: 'Karnataka',
+    country: 'India',
+    isInternational: false,
+    state: 'Karnataka',
+    region: 'Deccan Plateau',
+    district: 'Bengaluru Urban',
+    thematicTags: ['heritage', 'food', 'nature', 'shopping', 'culture'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 45000,
+    currentCapacityLoadPct: 70,
+    isOvertouristed: false,
+    localEconomicRetentionPct: 86,
+    sustainabilityScore: 88,
+    affordabilityIndex: 80,
+    tagline: 'Garden City & Tech Capital: Royal Bangalore Palace, Lalbagh Gardens & Filter Coffee',
+    description: 'Bengaluru features pleasant year-round weather, historic royal palaces, sprawling botanical gardens, iconic South Indian filter coffee joints, and vibrant microbreweries.',
+    heroImage: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80'
+    ],
+    vibe: ['urban', 'nature', 'culinary', 'shopping'],
+    rating: 4.88,
+    reviewCount: 3400,
+    lat: 12.9716,
+    lng: 77.5946,
+    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
+    currentWeather: {
+      tempC: 24,
+      condition: 'Pleasant & Mild',
+      icon: 'Sun',
+      forecast: 'Cool pleasant weather with light afternoon breeze',
       airQualityIndex: 28
     },
     safetyScore: {
       overall: 95,
-      daySafety: 97,
-      nightSafety: 93,
-      emergencyContact: '112 / Solapur Police (+91 217 274 4600)',
-      advisory: 'Calm and family-friendly industrial-heritage destination.'
+      daySafety: 98,
+      nightSafety: 92,
+      emergencyContact: '112 / Bengaluru Police (+91 80 2294 2222)',
+      advisory: 'Extremely safe tech city with welcoming cosmopolitan culture.'
     },
     crowdPrediction: {
-      currentStatus: 'Low',
-      peakHours: '10:00 AM - 1:00 PM (Siddheshwar Temple)',
-      quietHours: '6:00 AM - 9:00 AM',
-      recommendation: 'Visit the handloom weaving cooperative mills in the morning to see master weavers at work.'
+      currentStatus: 'Moderate',
+      peakHours: '8:30 AM - 10:30 AM & 5:30 PM - 8:30 PM (Traffic Peak)',
+      quietHours: '11:00 AM - 3:30 PM',
+      recommendation: 'Visit Lalbagh Botanical Garden at 7:00 AM for fresh air and bird watching.'
     },
     popularAttractions: [
       {
-        id: 'att-solapur-1',
-        name: 'Siddheshwar Temple & Lake Fort',
+        id: 'att-blr-1',
+        name: 'Bangalore Palace',
         category: 'Heritage',
-        rating: 4.9,
-        reviewCount: 1800,
+        rating: 4.89,
+        reviewCount: 2800,
         estimatedTime: '2 hrs',
-        entryFee: 0,
-        image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&q=80',
-        description: 'Sacred island temple dedicated to 12th-century Lingayat saint Siddheshwar, surrounded by tranquil Siddheshwar Lake.',
-        lat: 17.6715,
-        lng: 75.9042,
+        entryFee: 230,
+        image: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=600&q=80',
+        description: '1878 Tudor-style royal palace featuring fortified towers, ornate wood carvings, and royal memorabilia.',
+        lat: 13.0003,
+        lng: 77.5921,
         crowdLevel: 'Moderate',
-        bestTimeToVisit: '6:30 AM - 9:00 AM'
+        bestTimeToVisit: '10:00 AM - 1:00 PM'
       },
       {
-        id: 'att-solapur-2',
-        name: 'Great Indian Bustard Sanctuary (Nannaj)',
+        id: 'att-blr-2',
+        name: 'Lalbagh Botanical Garden & Glass House',
         category: 'Nature',
-        rating: 4.86,
-        reviewCount: 620,
-        estimatedTime: '3.5 hrs',
-        entryFee: 100,
-        image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80',
-        description: 'Grassland wildlife reserve preserving the critically endangered Great Indian Bustard (Maldhok), blackbucks, and Indian wolves.',
-        lat: 17.8285,
-        lng: 75.8712,
+        rating: 4.92,
+        reviewCount: 4100,
+        estimatedTime: '2 hrs',
+        entryFee: 30,
+        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+        description: '240-acre botanical garden commissioned by Hyder Ali in 1760 featuring a historic London-style Glass House.',
+        lat: 12.9507,
+        lng: 77.5848,
         crowdLevel: 'Low',
-        bestTimeToVisit: '6:00 AM - 9:30 AM',
-        isOffbeat: true
+        bestTimeToVisit: '6:30 AM - 9:30 AM'
+      }
+    ],
+    localCuisines: ['Crispy Benne Dosa', 'South Indian Filter Coffee', 'Bisi Bele Bath', 'Rava Idli'],
+    startingPrice: 8800,
+    culturalSpecialties: {
+      food: [
+        { name: 'Malleswaram Butter Masala Dosa & Filter Coffee', description: 'Crispy golden rice crepe smeared with white butter served with frothy decoction filter coffee.', mustTryAt: 'CTR (Shri Sagar), Malleswaram / MTR, Lalbagh', isVeg: true, tag: 'Iconic Breakfast' }
+      ],
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
+    }
+  },
+
+  // 7. DELHI: CAPITAL CITY, MONUMENTS & CHANDNI CHOWK
+  {
+    id: 'dest-delhi',
+    name: 'Delhi',
+    stateOrRegion: 'Delhi NCR',
+    country: 'India',
+    isInternational: false,
+    state: 'Delhi',
+    region: 'North India',
+    district: 'Central & New Delhi',
+    thematicTags: ['heritage', 'food', 'shopping', 'culture'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 60000,
+    currentCapacityLoadPct: 75,
+    isOvertouristed: false,
+    localEconomicRetentionPct: 82,
+    sustainabilityScore: 80,
+    affordabilityIndex: 78,
+    tagline: 'Heart of India: Red Fort, Qutub Minar, Humayun Tomb & Chandni Chowk Food Street',
+    description: 'Delhi showcases 1,000+ years of empire history through UNESCO World Heritage monuments, broad ceremonial boulevards of New Delhi, and ancient labyrinth bazaar streets of Chandni Chowk.',
+    heroImage: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80'
+    ],
+    vibe: ['heritage', 'culinary', 'urban', 'shopping'],
+    rating: 4.88,
+    reviewCount: 5100,
+    lat: 28.6139,
+    lng: 77.2090,
+    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
+    currentWeather: {
+      tempC: 22,
+      condition: 'Sunny & Pleasant',
+      icon: 'Sun',
+      forecast: 'Crisp autumn weather ideal for outdoor monument walks',
+      airQualityIndex: 65
+    },
+    safetyScore: {
+      overall: 88,
+      daySafety: 94,
+      nightSafety: 82,
+      emergencyContact: '112 / Delhi Police (+91 11 2349 0000)',
+      advisory: 'Use metro or verified cabs. Stay on well-lit main boulevards at night.'
+    },
+    crowdPrediction: {
+      currentStatus: 'High',
+      peakHours: '11:00 AM - 4:00 PM (Chandni Chowk Market)',
+      quietHours: '7:00 AM - 10:00 AM',
+      recommendation: 'Visit Qutub Minar at 7:30 AM for quiet morning light and low crowds.'
+    },
+    popularAttractions: [
+      {
+        id: 'att-delhi-1',
+        name: 'Qutub Minar (UNESCO World Heritage)',
+        category: 'Heritage',
+        rating: 4.93,
+        reviewCount: 6100,
+        estimatedTime: '2 hrs',
+        entryFee: 40,
+        image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=600&q=80',
+        description: '73-meter soaring fluted red sandstone minaret built in 1192 alongside the rust-resistant 4th-century Iron Pillar.',
+        lat: 28.5245,
+        lng: 77.1855,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '7:30 AM - 10:30 AM'
       },
       {
-        id: 'att-solapur-3',
-        name: 'Akkalkot Swami Samarth Vatavruksha Mandir',
+        id: 'att-delhi-2',
+        name: 'Humayun’s Tomb (Mughal Precursor to Taj)',
         category: 'Heritage',
-        rating: 4.94,
-        reviewCount: 2400,
-        estimatedTime: '2.5 hrs',
-        entryFee: 0,
+        rating: 4.95,
+        reviewCount: 4800,
+        estimatedTime: '2 hrs',
+        entryFee: 40,
         image: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80',
-        description: 'Ancient banyan tree shrine where the 19th-century saint Shri Swami Samarth Maharaj stayed and blessed devotees.',
-        lat: 17.5255,
-        lng: 76.2045,
+        description: 'Magnificent 1570 garden tomb featuring double domes and Persian charbagh symmetrical water channels.',
+        lat: 28.5933,
+        lng: 77.2507,
         crowdLevel: 'Moderate',
         bestTimeToVisit: '8:00 AM - 11:00 AM'
       }
     ],
-    localCuisines: ['Solapuri Shenga Chutney (Peanut Chutney)', 'Jowar Bhakri with Shengsol Gravy', 'Solapuri Dal Khichdi', 'Shengdana Poli', 'Karda Mutton Thali'],
-    startingPrice: 75,
-
+    localCuisines: ['Delhi Butter Chicken', 'Chandni Chowk Paranthas', 'Chole Bhature', 'Chaat at UPSC'],
+    startingPrice: 10450,
     culturalSpecialties: {
       food: [
-        { name: 'Solapuri Shenga Chutney (GI Renowned)', description: 'Fiery, dry ground peanut chutney roasted with garlic, red chillies, and cumin — unmatched in crunch and depth.', mustTryAt: 'Local Spice Markets & Siddheshwar Haat', isVeg: true, tag: 'Signature Condiment' },
-        { name: 'Jowar Bhakri with Shengsol & Thecha', description: 'Crisp hand-flattened sorghum flatbreads served with garlic peanut gravy and fiery spicy green thecha.', isVeg: true, tag: 'Wholesome Staple' }
+        { name: 'Old Delhi Chole Bhature & Stuffed Paranthas', description: 'Spiced chickpea curry paired with deep-fried bread and hot stuffed paranthas.', mustTryAt: 'Sita Ram Diwan Chand, Paharganj / Paranthe Wali Gali', isVeg: true, tag: 'Legendary Breakfast' }
       ],
-      clothing: [
-        { name: 'Solapuri Handloom Jacquard Chadar (GI Tagged)', description: 'World-famous thick cotton jacquard blankets crafted on handlooms and powerlooms with geometric and floral embossed patterns.', occasion: 'Everyday Comfort & Heritage Gifting', authenticHub: 'Solapur Handloom Weavers Cooperative Hub' },
-        { name: 'Solapuri Terry Cotton Towels (GI Tagged)', description: 'Super-absorbent, ultra-durable handloom combed cotton towels crafted with traditional Jacquard borders.', occasion: 'Daily Luxury', authenticHub: 'Navi Peth & Shukrawar Peth' }
-      ],
-      handicrafts: [
-        { name: 'Padmashali Weavers Handloom Products', description: 'Traditional cotton bedsheets, dhurries, and curtains crafted by master Padmashali weaver community.', giTagged: true, artisanCommunity: 'Solapur Padmashali Handloom Weavers' }
-      ],
-      jewellery: [
-        { name: 'Traditional Lingayat & Maratha Silver Ornaments', description: 'Handcrafted silver amulet pendants, waist cords (Kardhani), and toe rings.', material: 'Pure Silver', traditionalSignificance: 'Spiritual and everyday cultural jewellery' }
-      ],
-      artAndCulture: [
-        { name: 'Gadda Yatra (Siddheshwar Fair)', description: '900-year-old annual fair celebrating the celestial marriage of Saint Siddheshwar with 68 sacred Kathis (decorated flag poles).', type: 'heritage' }
-      ],
-      festivals: [
-        { name: 'Solapur Siddheshwar Gadda Yatra', monthOrSeason: 'January (Makar Sankranti)', culturalSignificance: 'The biggest cultural and commercial fair of South Maharashtra drawing over 1 million devotees for the Homakund holy fire ceremony.', celebrationHighlights: 'Procession of 7 Nandi Dhwajas and 68 holy flag poles.' }
-      ],
-      localShopping: [
-        { product: 'Direct Loom Solapuri Chadars (Blankets)', bestMarket: 'Solapur Zilla Vinkar Sahakari Sangh, Navi Peth', priceRange: '₹350 - ₹1,400 / Piece', tip: 'Check the official GI tag seal on the hem for 100% pure cotton certification.' },
-        { product: 'Freshly Pounded Shenga Chutney Tins', bestMarket: 'Shukrawar Peth Spice Alleys', priceRange: '₹180 - ₹300 / kg', tip: 'Get coarse-ground (Khareda) for the most authentic texture.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Live Weaving Tour at Solapur Handloom Clusters', description: 'Witness master weavers operate giant Jacquard looms to create intricate multi-color relief patterns.', bestTime: '10:00 AM - 1:00 PM', localImpact: 'Direct purchases support weaver families directly without middleman cuts.' },
-        { title: 'Dawn Birding for Great Indian Bustard at Nannaj', description: 'Spot India’s rarest avian giants alongside blackbucks and Indian foxes in golden savannah grasslands.', bestTime: '06:00 AM - 08:30 AM', localImpact: 'Aids grassroots grassland eco-conservation.' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 96,
-      economicRetentionExplainer: '93% of tourist expenses go straight to cooperative handloom weavers, peanut farmers, and grassroots rural homestay families.',
-      authenticHomestays: [
-        { name: 'Akkalkot Swami Heritage Retreat', hostName: 'Gajanan & Meera Kulkarni', village: 'Near Swami Samarth Mandir, Akkalkot', pricePerNight: 1400, specialties: ['Peaceful spiritual ashram ambience', 'Pure vegetarian Maharashtrian meals', 'Temple guidance'], rating: 4.9 },
-        { name: 'Nannaj Grasslands Eco-Stay', hostName: 'Baburao Shinde', village: 'Nannaj Eco-Village', pricePerNight: 1600, specialties: ['Birdwatching naturalist host', 'Organic farm meals', 'Tractor village safari'], rating: 4.88 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Hotel City Park Traditional Khanaval', signatureDish: 'Solapuri Shenga Chutney Thali & Shengdana Poli', location: 'Navi Peth', avgMealCost: 180, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Dattatraya Birajdar', expertise: 'Solapur Handloom Heritage & Siddheshwar History', languages: ['Marathi', 'Kannada', 'Hindi', 'English'], badge: 'Certified Heritage Guide', dailyRate: 900 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Solapuri Chadars & Terry Towels', guildName: 'Solapur Zilla Handloom Weavers Union', village: 'Navi Peth, Solapur', directBuyingContact: '+91 217 272 3490' }
-      ],
-      localTransportOptions: [
-        { mode: 'Local City Auto', typicalRoute: 'Solapur Railway Station to Siddheshwar Temple / Navi Peth', approxFare: '₹50 - ₹100', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Winter (October to February) — Dry, comfortable sunny days with 18°C-28°C temperatures and the vibrant January Gadda Yatra.',
-      idealMonths: ['October', 'November', 'December', 'January', 'February'],
-      timeOfDayGuide: {
-        morning: { hours: '06:00 AM - 09:30 AM', recommendation: 'Morning bird safari at Nannaj Grasslands or peaceful prayers at Siddheshwar Temple.', crowd: 'Low' },
-        afternoon: { hours: '11:00 AM - 03:00 PM', recommendation: 'Explore the Handloom Weavers Co-op and shop for authentic Solapuri Chadars in Navi Peth.', crowd: 'Moderate' },
-        evening: { hours: '04:30 PM - 07:30 PM', recommendation: 'Walk along the Siddheshwar Lake Promenade and try Solapuri street delicacies.', crowd: 'Moderate' },
-        night: { hours: '08:00 PM - 10:00 PM', recommendation: 'Dinner featuring hot Jowar Bhakri, Shengsol, and restful night in a peaceful homestay.', crowd: 'Low' }
-      },
-      weatherIndexCurrent: 90,
-      weatherForecastNarrative: 'Clear, dry and sunny climate ideal for heritage tourism.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 700, foodPerDay: 300, transitPerDay: 180, totalDaily: 1180 },
-        moderateTier: { stayPerDay: 1600, foodPerDay: 600, transitPerDay: 350, totalDaily: 2550 },
-        luxuryTier: { stayPerDay: 3800, foodPerDay: 1200, transitPerDay: 800, totalDaily: 5800 }
-      },
-      upcomingEvents: [
-        { name: 'Siddheshwar Gadda Yatra Holy Fire (Homakund)', dateRange: 'January 12 - 16', type: 'Sacred Mega Festival', significance: 'Lighting of the sacred fire and procession of 68 holy poles.' },
-        { name: 'National Handloom & Textile Expo Solapur', dateRange: 'November', type: 'Handicraft & Textile', significance: 'Exhibition of direct artisan handloom products from across India.' }
-      ]
+      clothing: [],
+      handicrafts: [],
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
     }
   },
 
-  // 5. MAHARASHTRA: RATNAGIRI, GANPATIPULE & VELAS (Konkan Coast & Marine Biodiversity)
+  // 8. RAJASTHAN: JAIPUR (Pink City, Royal Forts & Palaces)
   {
-    id: 'dest-ratnagiri',
-    name: 'Ratnagiri & Ganpatipule',
-    stateOrRegion: 'Konkan',
+    id: 'dest-jaipur',
+    name: 'Jaipur',
+    stateOrRegion: 'Rajasthan',
     country: 'India',
     isInternational: false,
-    state: 'Maharashtra',
-    region: 'Konkan Coast',
-    district: 'Ratnagiri',
-    thematicTags: ['beaches', 'food', 'nature', 'spirituality', 'heritage', 'culture'],
-    tierCategory: 'Tier-3',
-    popularityTier: 'gem',
-    carryingCapacityDaily: 4000,
-    currentCapacityLoadPct: 35,
+    state: 'Rajasthan',
+    region: 'Dhundhar / Royal Rajasthan',
+    district: 'Jaipur',
+    thematicTags: ['heritage', 'food', 'shopping', 'culture'],
+    tierCategory: 'Tier-1',
+    popularityTier: 'popular',
+    carryingCapacityDaily: 35000,
+    currentCapacityLoadPct: 65,
     isOvertouristed: false,
-    localEconomicRetentionPct: 92,
-    sustainabilityScore: 96,
-    affordabilityIndex: 92,
-    tagline: 'King of Alphonso Mangoes, 400-Year Swayambhu Ganpati & Olive Ridley Turtle Shores',
-    description: 'Ratnagiri is the undisputed global home of GI-tagged Alphonso (Hapus) mangoes, dramatic Arabian Sea cliffs, Jaigad lighthouse, the historic Thibaw Palace, the 400-year-old coastal beach shrine of Ganpatipule, and the eco-conservation village of Velas where Olive Ridley sea turtles hatch.',
-    heroImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    localEconomicRetentionPct: 87,
+    sustainabilityScore: 89,
+    affordabilityIndex: 82,
+    tagline: 'The Pink City: Amber Fort, Honeycomb Hawa Mahal & Royal Rajput Palaces',
+    description: 'Jaipur is the royal capital of Rajasthan, world-famed for pink sandstone architecture, hilltop Amber Fort, honeycomb Hawa Mahal facade, and exquisite block-print textiles and gemstone jewelry.',
+    heroImage: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80',
     galleryImages: [
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80'
+      'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80'
     ],
-    vibe: ['beach', 'nature', 'culinary', 'spirituality', 'wellness'],
-    rating: 4.89,
-    reviewCount: 1350,
-    lat: 16.9902,
-    lng: 73.3120,
-    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March', 'April', 'May'],
+    vibe: ['heritage', 'culinary', 'cultural', 'shopping'],
+    rating: 4.92,
+    reviewCount: 4200,
+    lat: 26.9124,
+    lng: 75.7873,
+    bestMonths: ['October', 'November', 'December', 'January', 'February', 'March'],
     currentWeather: {
-      tempC: 27,
-      condition: 'Tropical Coastal Sunshine',
+      tempC: 26,
+      condition: 'Sunny & Warm',
       icon: 'Sun',
-      forecast: 'Clear skies with soothing ocean breeze',
-      airQualityIndex: 20
+      forecast: 'Pleasant desert sunshine with cool evening breezes',
+      airQualityIndex: 32
     },
     safetyScore: {
-      overall: 97,
-      daySafety: 99,
-      nightSafety: 95,
-      emergencyContact: '112 / Ratnagiri Coastal Police (+91 2352 222222)',
-      advisory: 'Unspoiled coastal community with very warm homestay culture.'
-    },
-    crowdPrediction: {
-      currentStatus: 'Low',
-      peakHours: '5:00 PM - 7:00 PM (Ganpatipule Beach Sunset)',
-      quietHours: '6:00 AM - 10:30 AM',
-      recommendation: 'Walk the sacred Pradakshina path around Ganpatipule Hill at 7:00 AM for ocean views.'
-    },
-    popularAttractions: [
-      {
-        id: 'att-ratna-1',
-        name: 'Ganpatipule Swayambhu Beach Temple',
-        category: 'Heritage',
-        rating: 4.94,
-        reviewCount: 2900,
-        estimatedTime: '2 hrs',
-        entryFee: 0,
-        image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
-        description: '400-year-old self-manifested monolith Ganesha idol sitting right on white sand beaches overlooking the Arabian Sea.',
-        lat: 17.1472,
-        lng: 73.2655,
-        crowdLevel: 'Moderate',
-        bestTimeToVisit: '6:30 AM - 9:00 AM'
-      },
-      {
-        id: 'att-ratna-2',
-        name: 'Jaigad Fort & Coastal Lighthouse',
-        category: 'Heritage',
-        rating: 4.88,
-        reviewCount: 950,
-        estimatedTime: '2 hrs',
-        entryFee: 20,
-        image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
-        description: '16th-century clifftop fort where Shastri river meets the Arabian Sea, featuring a working Victorian lighthouse.',
-        lat: 17.3005,
-        lng: 73.2167,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '9:00 AM - 12:00 PM',
-        isOffbeat: true
-      },
-      {
-        id: 'att-ratna-3',
-        name: 'Velas Olive Ridley Turtle Conservation Beach',
-        category: 'Nature',
-        rating: 4.96,
-        reviewCount: 1100,
-        estimatedTime: '3 hrs',
-        entryFee: 50,
-        image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80',
-        description: 'Community-led eco-village where thousands of Olive Ridley turtle hatchlings crawl to the sea during dawn.',
-        lat: 17.9622,
-        lng: 73.0336,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '6:30 AM & 5:30 PM (Hatching release)',
-        isOffbeat: true
-      }
-    ],
-    localCuisines: ['Authentic Ratnagiri Alphonso Mangoes', 'Solkadhi', 'Surmai Rawa Fry', 'Phanas Sukka (Jackfruit Curry)', 'Ukdiche Modak', 'Aamsul Sharbat'],
-    startingPrice: 110,
-
-    culturalSpecialties: {
-      food: [
-        { name: 'Ratnagiri Alphonso Mango Platter (Hapus)', description: 'World’s most aromatic mangoes served fresh-sliced, as thick chilled Aamras, or in organic Shrikhand.', isVeg: true, tag: 'GI Tagged King of Fruits' },
-        { name: 'Konkani Phanas Sukka & Kaju Curry', description: 'Tender raw jackfruit and fresh wet cashews cooked in coconut-roasted Konkani spices.', isVeg: true, tag: 'Vegetarian Delicacy' }
-      ],
-      clothing: [
-        { name: 'Konkan Kashta & Cotton Kurtas', description: 'Lightweight handloom cotton dhotis and Kashtas suited for coastal humid breezes.', occasion: 'Coastal Daily Life & Temple Rituals', authenticHub: 'Ratnagiri Bazaar' }
-      ],
-      handicrafts: [
-        { name: 'Coconut Shell Craft & Coir Weaving', description: 'Lampshades, bowls, and cutlery carved out of natural polished coconut shells by village women self-help groups.', giTagged: false, artisanCommunity: 'Velas & Ganpatipule SHGs' }
-      ],
-      jewellery: [
-        { name: 'Traditional Kolhapuri Saaj & Chinchpeti', description: 'Pearl-encrusted chokers and gold leaf pendants typical of Konkan coastal nobility.', material: 'Gold & Seed Pearls' }
-      ],
-      artAndCulture: [
-        { name: 'Naman Folk Dance & Song', description: 'Traditional ritualistic Konkan folk performance paying homage to village deities at harvest.', type: 'folk_dance' }
-      ],
-      festivals: [
-        { name: 'Velas Turtle Festival', monthOrSeason: 'February to April', culturalSignificance: 'Global eco-tourism milestone celebrating the birth and release of vulnerable Olive Ridley turtle hatchlings into the ocean.', celebrationHighlights: 'Dawn release of baby turtles and community village homestays.' }
-      ],
-      localShopping: [
-        { product: 'GI Certified Ratnagiri Alphonso Mango Boxes', bestMarket: 'Ratnagiri APMC Mango Mandi', priceRange: '₹700 - ₹1,500 / Dozen (April-May)', tip: 'Check the barcode traceability to verify exact orchard of origin.' },
-        { product: 'Cashew Feni & Pure Kokum Syrups', bestMarket: 'Ganpatipule Beach Bazaar', priceRange: '₹120 - ₹280 / Bottle', tip: 'Look for sugar-free pure kokum agal for health benefits.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Witnessing Olive Ridley Baby Turtles Crawling to Sea', description: 'Join village naturalists on Velas beach at sunrise to watch tiny 2-inch hatchlings take their first ocean swim.', bestTime: '06:45 AM (Feb-April)', localImpact: '100% of proceeds fund community-run turtle nest protection.' }
-      ]
-    },
-
-    alternativeTo: ['Goa', 'dest-goa', 'Alibaug'],
-    whyAlternativeBetter: {
-      headline: 'Skip the Commercial Noise of North Goa for the Pristine Sands of Ganpatipule & Velas',
-      replacesFamousSpot: 'Goa',
-      crowdReductionPct: 70,
-      costSavingsPct: 40,
-      localAuthenticityScore: 95,
-      keyAdvantage: 'Tranquil coastal temple beach, Olive Ridley turtle hatcheries, organic mango orchards, and 92% local economic retention.',
-      comparisonHighlights: [
-        { metric: 'Beach Cleanliness', famousSpot: 'Commercial debris & crowded shacks', hiddenGem: 'Pristine golden sands, clean sea waters & temple serenity' },
-        { metric: 'Eco-Conservation', famousSpot: 'Heavy motorized watersports', hiddenGem: 'Protected turtle nesting shores & quiet sailboat ferries' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 92,
-      economicRetentionExplainer: '92% of tourist revenue directly funds turtle conservation village funds, mango farmer families, and local women’s khanavals.',
-      authenticHomestays: [
-        { name: 'Velas Turtle Conservation Homestay', hostName: 'Omkar & Snehal Joshi', village: 'Velas Eco-Village', pricePerNight: 1200, specialties: ['Traditional Konkani home', 'All meals included (farm fresh)', 'Turtle nest naturalist'], rating: 4.96 },
-        { name: 'Ganpatipule Seaview Wadi Stay', hostName: 'Prashant Mayekar', village: 'Ganpatipule Beach Road', pricePerNight: 2100, specialties: ['Coconut grove setting', 'Fresh fish thali', 'Walk to temple'], rating: 4.9 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Sameer Restaurant & Khanaval', signatureDish: 'Fresh Surmai Thali & Solkadhi', location: 'Ganpatipule Temple Arch', avgMealCost: 260, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Mohan Upadhye', expertise: 'Olive Ridley Conservation Pioneer & Marine Guide', languages: ['Marathi', 'Hindi', 'English'], badge: 'Sahyadri Nisarga Mitra Awardee', dailyRate: 800 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Coconut Shell & Coir Handcrafts', guildName: 'Konkan Mahila Bachat Gat', village: 'Ganpatipule', directBuyingContact: '+91 2357 235011' }
-      ],
-      localTransportOptions: [
-        { mode: 'Local Coastal Auto', typicalRoute: 'Ratnagiri Station to Ganpatipule / Jaigad', approxFare: '₹250 - ₹400', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Winter to Spring (October to April) — Gentle sun, calm seas, and the famous Turtle Festival (Feb-April) followed by the Alphonso harvest (April-May).',
-      idealMonths: ['October', 'November', 'December', 'January', 'February', 'March', 'April', 'May'],
-      timeOfDayGuide: {
-        morning: { hours: '06:00 AM - 09:00 AM', recommendation: 'Turtle hatching release at Velas or morning Darshan at Ganpatipule beach temple.', crowd: 'Low' },
-        afternoon: { hours: '12:00 PM - 03:30 PM', recommendation: 'Relax under coconut trees with fresh Aamras-Puri or Solkadhi feast.', crowd: 'Low' },
-        evening: { hours: '04:30 PM - 07:00 PM', recommendation: 'Clifftop sunset at Jaigad Lighthouse or sunset beach walk.', crowd: 'Moderate' },
-        night: { hours: '08:00 PM - 10:00 PM', recommendation: 'Dinner at a village Khanaval and stargazing on unpolluted shores.', crowd: 'Low' }
-      },
-      weatherIndexCurrent: 93,
-      weatherForecastNarrative: 'Warm sunny coastal days with breezy evenings.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 1100, foodPerDay: 450, transitPerDay: 250, totalDaily: 1800 },
-        moderateTier: { stayPerDay: 2200, foodPerDay: 800, transitPerDay: 500, totalDaily: 3500 },
-        luxuryTier: { stayPerDay: 5200, foodPerDay: 1700, transitPerDay: 1100, totalDaily: 8000 }
-      },
-      upcomingEvents: [
-        { name: 'Velas Olive Ridley Turtle Festival', dateRange: 'February 15 - April 10', type: 'Eco-Tourism & Wildlife', significance: 'Annual community-led festival releasing hundreds of baby sea turtles.' },
-        { name: 'Ratnagiri Alphonso Mango Festival', dateRange: 'April 20 - May 5', type: 'Culinary Harvest Fair', significance: 'Orchard tours, mango tasting, and direct farmer purchasing.' }
-      ]
-    }
-  },
-
-  // 6. MAHARASHTRA: SATARA & KAAS PLATEAU (Valley of Flowers Maharashtra)
-  {
-    id: 'dest-satara',
-    name: 'Satara & Kaas Plateau',
-    stateOrRegion: 'Western Maharashtra',
-    country: 'India',
-    isInternational: false,
-    state: 'Maharashtra',
-    region: 'Sahyadri Western Ghats',
-    district: 'Satara',
-    thematicTags: ['nature', 'adventure', 'heritage', 'food', 'culture'],
-    tierCategory: 'Tier-3',
-    popularityTier: 'gem',
-    carryingCapacityDaily: 3000,
-    currentCapacityLoadPct: 38,
-    isOvertouristed: false,
-    localEconomicRetentionPct: 90,
-    sustainabilityScore: 97,
-    affordabilityIndex: 93,
-    tagline: 'UNESCO World Natural Heritage: Plateau of 850 Wildflower Species & Historic Sajjangad',
-    description: 'Satara is nestled in the Sahyadri mountains, crowned by the UNESCO World Heritage Kaas Pathar (Plateau of Flowers) blooming with endemic carnivorous and wildflower carpets. Home to Ajinkyatara Fort, Sajjangad of Samarth Ramdas, Thoseghar Waterfalls, and legendary Satari Kandi Pedha.',
-    heroImage: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80',
-    galleryImages: [
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
-    ],
-    vibe: ['nature', 'heritage', 'adventure', 'wellness'],
-    rating: 4.87,
-    reviewCount: 1120,
-    lat: 17.6805,
-    lng: 73.9997,
-    bestMonths: ['August', 'September', 'October', 'November', 'December', 'January', 'February'],
-    currentWeather: {
-      tempC: 22,
-      condition: 'Misty & Pleasant',
-      icon: 'CloudRain',
-      forecast: 'Cool mountain air with panoramic mist around the plateau',
-      airQualityIndex: 18
-    },
-    safetyScore: {
-      overall: 96,
+      overall: 95,
       daySafety: 98,
-      nightSafety: 94,
-      emergencyContact: '112 / Satara Police (+91 2162 233333)',
-      advisory: 'Strict eco-protection zone. Walking off designated trails on Kaas Plateau is strictly prohibited.'
+      nightSafety: 91,
+      emergencyContact: '112 / Jaipur Tourist Police (+91 141 257 4000)',
+      advisory: 'Extremely safe and hospitable royal heritage destination.'
     },
     crowdPrediction: {
-      currentStatus: 'Low',
-      peakHours: '10:00 AM - 2:00 PM (Kaas Plateau during Bloom Season)',
-      quietHours: '6:30 AM - 9:30 AM',
-      recommendation: 'Pre-book the official forest eco-pass for early 7:00 AM entry to witness dew-drenched flowers without crowds.'
+      currentStatus: 'Moderate',
+      peakHours: '10:00 AM - 1:00 PM (Amber Fort Elephant Gate)',
+      quietHours: '7:30 AM - 9:30 AM',
+      recommendation: 'Visit Amber Fort at 8:00 AM for cool morning light and effortless entry.'
     },
     popularAttractions: [
       {
-        id: 'att-satara-1',
-        name: 'Kaas Pathar (Plateau of Flowers - UNESCO)',
-        category: 'Nature',
-        rating: 4.95,
-        reviewCount: 2200,
-        estimatedTime: '3 hrs',
-        entryFee: 150,
-        image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=600&q=80',
-        description: 'Volcanic laterite plateau blooming with over 850 endemic floral species like Utricularia, Ceropegia, and Mickey Mouse flowers.',
-        lat: 17.7208,
-        lng: 73.8189,
-        crowdLevel: 'Moderate',
-        bestTimeToVisit: '7:00 AM - 10:00 AM',
-        isOffbeat: true
-      },
-      {
-        id: 'att-satara-2',
-        name: 'Thoseghar Giant Waterfalls',
-        category: 'Nature',
-        rating: 4.88,
-        reviewCount: 1350,
-        estimatedTime: '2 hrs',
-        entryFee: 40,
-        image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
-        description: 'Spectacular series of waterfalls cascading over 200 meters into deep wooded gorges of the Sahyadris.',
-        lat: 17.5982,
-        lng: 73.8475,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '9:00 AM - 12:00 PM',
-        isOffbeat: true
-      },
-      {
-        id: 'att-satara-3',
-        name: 'Sajjangad Fort & Temple of Saint Ramdas',
+        id: 'att-jaipur-1',
+        name: 'Amber Fort (Amer Fort)',
         category: 'Heritage',
-        rating: 4.9,
-        reviewCount: 1700,
-        estimatedTime: '2.5 hrs',
-        entryFee: 0,
+        rating: 4.96,
+        reviewCount: 6500,
+        estimatedTime: '3 hrs',
+        entryFee: 100,
         image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&q=80',
-        description: 'Fort of the virtuous where spiritual mentor Samarth Ramdas lived; serves traditional community Mahaprasad to all visitors.',
-        lat: 17.6536,
-        lng: 73.9167,
-        crowdLevel: 'Low',
-        bestTimeToVisit: '8:00 AM - 11:30 AM'
+        description: 'Majestic 1592 hilltop fortress crafted from yellow and pink sandstone featuring the breathtaking Sheesh Mahal (Mirror Palace).',
+        lat: 26.9855,
+        lng: 75.8513,
+        crowdLevel: 'Moderate',
+        bestTimeToVisit: '8:00 AM - 11:00 AM'
+      },
+      {
+        id: 'att-jaipur-2',
+        name: 'Hawa Mahal (Palace of Winds)',
+        category: 'Heritage',
+        rating: 4.91,
+        reviewCount: 5100,
+        estimatedTime: '1 hr',
+        entryFee: 50,
+        image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&q=80',
+        description: '5-story honeycomb facade constructed in 1799 with 953 intricate Jharokha latticed windows.',
+        lat: 26.9239,
+        lng: 75.8267,
+        crowdLevel: 'High',
+        bestTimeToVisit: '8:30 AM - 10:30 AM'
       }
     ],
-    localCuisines: ['Satari Kandi Pedha', 'Pithla Bhakri with Thecha', 'Sajjangad Mahaprasad (Khichdi & Pithla)', 'Gavran Chicken Thali', 'Strawberries of Chalkewadi'],
-    startingPrice: 85,
-
+    localCuisines: ['Dal Baati Churma', 'Gatte Ki Sabzi', 'Pyaaz Kachori', 'Ghevar'],
+    startingPrice: 6800,
     culturalSpecialties: {
       food: [
-        { name: 'Satari Kandi Pedha (GI Heritage Sweet)', description: 'Slow-caramelized milk solids (Khoya) cooked over wood fires into rich brown fudge pedhas sprinkled with pure cardamom.', mustTryAt: 'Modi Sweets / Yashwant Pedha, Satara', isVeg: true, tag: 'Heritage Confectionery' },
-        { name: 'Sajjangad Khichdi Mahaprasad', description: 'Steaming sacred rice and moong dal khichdi served on leaf platters with pure cow ghee and spiced buttermilk.', isVeg: true, tag: 'Sacred Ashram Food' }
+        { name: 'Royal Rajasthani Dal Baati Churma', description: 'Hard wheat balls baked over cow dung embers served with ghee and five-lentil Panchmel dal.', mustTryAt: 'Chokhi Dhani / Laxmi Mishthan Bhandar (LMB)', isVeg: true, tag: 'Royal Feast' }
       ],
-      clothing: [
-        { name: 'Satari Ghongadi (Handwoven Wool Blanket)', description: 'Coarse, warm, water-resistant black sheep wool blanket handwoven by the Dhangar shepherd community.', occasion: 'Monsoon Sahyadri Shepherding', authenticHub: 'Dhangar Weavers of Satara Hills' }
-      ],
+      clothing: [],
       handicrafts: [
-        { name: 'Dhangar Wool Blankets & Bamboo Baskets', description: 'Traditional pastoral crafts woven with indigenous loom techniques.', giTagged: false, artisanCommunity: 'Dhangar Pastoral Guilds' }
+        { name: 'Jaipur Blue Pottery & Block Print (GI Tagged)', description: 'Traditional quartz glaze blue pottery and Sanganeri woodblock textiles.', giTagged: true, artisanCommunity: 'Sanganer Guild' }
       ],
-      jewellery: [
-        { name: 'Kolhapuri Saaj & Bugadi', description: 'Gold ornaments worn by Maratha nobility in Satara royal court.' }
-      ],
-      artAndCulture: [
-        { name: 'Gondhal & Bharud Folk Ballads', description: 'Spiritual narrative folk performance with Sambhal percussion and traditional chanting.', type: 'folk_dance' }
-      ],
-      festivals: [
-        { name: 'Kaas Flower Bloom Season Celebration', monthOrSeason: 'August to October', culturalSignificance: 'Annual natural wonder when the entire plateau turns into pink, purple, and yellow carpets.', celebrationHighlights: 'Eco-nature walks guided by local botanical scholars.' }
-      ],
-      localShopping: [
-        { product: 'Authentic Satari Kandi Pedha Boxes', bestMarket: 'Rajwada Market, Satara', priceRange: '₹320 - ₹600 / kg', tip: 'Look for dark brown wood-fired caramelized variety.' },
-        { product: 'Wild Flora Honey from Kaas Forests', bestMarket: 'Kaas Forest Eco-counter', priceRange: '₹350 - ₹650 / Jar', tip: 'Harvested sustainably by local tribal honey gatherers.' }
-      ],
-      uniqueExperiences: [
-        { title: 'Botanical Walk with Village Naturalists on Kaas Plateau', description: 'Discover tiny insectivorous Sundew plants and rare orchids that only bloom on this plateau.', bestTime: '07:30 AM', localImpact: 'Direct income for certified local village eco-guides.' },
-        { title: 'Chalkewadi Windmill Plateau Sunset', description: 'Stand amidst hundreds of towering giant wind turbines spinning quietly against a Sahyadri mountain sunset.', bestTime: '05:30 PM', localImpact: 'Eco-tourism development in remote mountain hamlets.' }
-      ]
-    },
-
-    alternativeTo: ['Mahabaleshwar', 'dest-mahabaleshwar', 'Lonavala'],
-    whyAlternativeBetter: {
-      headline: 'Replace Overcrowded Mahabaleshwar with UNESCO Wildflower Wonder Kaas & Satara',
-      replacesFamousSpot: 'Mahabaleshwar',
-      crowdReductionPct: 68,
-      costSavingsPct: 38,
-      localAuthenticityScore: 94,
-      keyAdvantage: 'UNESCO botanical biodiversity, pristine waterfalls with zero commercial touts, sacred forts, and authentic Kandi Pedha.',
-      comparisonHighlights: [
-        { metric: 'Nature Experience', famousSpot: 'Heavy bumper-to-bumper car traffic on viewpoint roads', hiddenGem: 'Pristine biodiversity walking trails on blooming laterite plateau' },
-        { metric: 'Eco-Integrity', famousSpot: 'Commercial stalls every 50 meters', hiddenGem: 'Strict plastic-free protected wilderness' }
-      ]
-    },
-
-    localEconomy: {
-      localImpactScore: 93,
-      economicRetentionExplainer: '90% of money spent directly supports Dhangar shepherd weavers, forest eco-guides, and local Satara pedha masters.',
-      authenticHomestays: [
-        { name: 'Kaas Eco-Village Agro Retreat', hostName: 'Sanjay & Sunanda Babar', village: 'Kaas Plateau Foothills', pricePerNight: 1600, specialties: ['Plateau view balcony', 'Home-grown organic vegetables', 'Kaas pass assistance'], rating: 4.93 },
-        { name: 'Sajjangad Mountain Homestay', hostName: 'Prashant Kulkarni', village: 'Sajjangad Foothills', pricePerNight: 1400, specialties: ['Peaceful spiritual stay', 'Satari Pithla Bhakri', 'Fort trekking path'], rating: 4.89 }
-      ],
-      traditionalKhanavals: [
-        { name: 'Rajwada Thali & Khanaval', signatureDish: 'Satari Gavran Chicken & Jowar Bhakri', location: 'Rajwada Chowk, Satara', avgMealCost: 220, isFamilyRun: true }
-      ],
-      communityGuides: [
-        { name: 'Santosh Shinde', expertise: 'Kaas Plateau Endemic Botany & Sahyadri Trekking', languages: ['Marathi', 'Hindi', 'English'], badge: 'Forest Dept Certified Naturalist', dailyRate: 900 }
-      ],
-      artisanCooperatives: [
-        { craft: 'Handwoven Ghongadi Wool Blankets', guildName: 'Satara Dhangar Artisan Samiti', village: 'Satara', directBuyingContact: '+91 2162 245012' }
-      ],
-      localTransportOptions: [
-        { mode: 'The Explorer Eco Cab / Auto', typicalRoute: 'Satara Station to Kaas Pathar / Sajjangad', approxFare: '₹200 - ₹450', ecoFriendly: true }
-      ]
-    },
-
-    bestTimeEngine: {
-      bestSeasonDescription: 'Monsoon & Post-Monsoon (August to November) — Peak flower bloom season on Kaas Plateau, roaring waterfalls, and lush misty valleys.',
-      idealMonths: ['August', 'September', 'October', 'November', 'December', 'January', 'February'],
-      timeOfDayGuide: {
-        morning: { hours: '06:30 AM - 09:30 AM', recommendation: 'Early morning nature trail on Kaas Plateau to see flowers opening in dew light.', crowd: 'Low' },
-        afternoon: { hours: '12:00 PM - 03:00 PM', recommendation: 'Visit Sajjangad Fort for peaceful prayers and traditional Mahaprasad.', crowd: 'Low' },
-        evening: { hours: '04:30 PM - 06:45 PM', recommendation: 'Catch the sunset at Thoseghar Falls viewpoint or Chalkewadi windmill plateau.', crowd: 'Moderate' },
-        night: { hours: '07:30 PM - 09:30 PM', recommendation: 'Dinner in Satara city and buy fresh Satari Kandi Pedha.', crowd: 'Low' }
-      },
-      weatherIndexCurrent: 94,
-      weatherForecastNarrative: 'Cool misty mountain air with refreshing Sahyadri breezes.',
-      budgetEstimator: {
-        budgetTier: { stayPerDay: 900, foodPerDay: 350, transitPerDay: 220, totalDaily: 1470 },
-        moderateTier: { stayPerDay: 1900, foodPerDay: 700, transitPerDay: 450, totalDaily: 3050 },
-        luxuryTier: { stayPerDay: 4500, foodPerDay: 1500, transitPerDay: 900, totalDaily: 6900 }
-      },
-      upcomingEvents: [
-        { name: 'Kaas Endemic Flora Week', dateRange: 'September 10 - 25', type: 'Botanical & Eco Festival', significance: 'Peak bloom period for rare insectivorous and purple bladderwort carpets.' }
-      ]
+      jewellery: [],
+      artAndCulture: [],
+      festivals: [],
+      localShopping: [],
+      uniqueExperiences: []
     }
   }
 ];

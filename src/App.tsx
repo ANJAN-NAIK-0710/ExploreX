@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import { Navbar, NavTab } from './components/Navbar';
@@ -19,13 +19,22 @@ import { MagicMomentsView } from './views/MagicMomentsView';
 import { WalletView } from './views/WalletView';
 import { ProfileView } from './views/ProfileView';
 import { AdminView } from './views/AdminView';
+import { LoginView } from './views/LoginView';
+import { SignupView } from './views/SignupView';
 import { Destination, TravelPackage } from './types';
 
 const MainAppContent: React.FC = () => {
   const { user } = useAuth();
   const { success, error } = useToast();
 
-  const [activeTab, setActiveTab] = useState<NavTab>('home');
+  const [activeTab, setActiveTab] = useState<NavTab>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      if (path === '/login') return 'login';
+      if (path === '/signup') return 'signup';
+    }
+    return 'home';
+  });
   const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
@@ -46,8 +55,31 @@ const MainAppContent: React.FC = () => {
     } else {
       setNavParams({});
     }
+    
+    // Sync browser URL if login/signup or home
+    if (typeof window !== 'undefined' && window.history) {
+      if (tab === 'login') {
+        window.history.pushState({}, '', '/login');
+      } else if (tab === 'signup') {
+        window.history.pushState({}, '', '/signup');
+      } else if (window.location.pathname === '/login' || window.location.pathname === '/signup') {
+        window.history.pushState({}, '', '/');
+      }
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase();
+      if (path === '/login') setActiveTab('login');
+      else if (path === '/signup') setActiveTab('signup');
+      else setActiveTab('home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const handleBookPackage = (pkg: TravelPackage) => {
     setSelectedPkgForBooking(pkg);
@@ -61,7 +93,7 @@ const MainAppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-white text-[#242424] flex flex-col font-sans selection:bg-[#B45F3C] selection:text-white">
       {/* Top Main Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -143,7 +175,15 @@ const MainAppContent: React.FC = () => {
         )}
 
         {activeTab === 'admin' && (
-          <AdminView />
+          <AdminView onNavigate={handleNavigate} />
+        )}
+
+        {activeTab === 'login' && (
+          <LoginView onNavigate={handleNavigate} />
+        )}
+
+        {activeTab === 'signup' && (
+          <SignupView onNavigate={handleNavigate} />
         )}
       </main>
 
@@ -167,18 +207,18 @@ const MainAppContent: React.FC = () => {
           }}
           serviceType="package"
           title={selectedPkgForBooking.title}
-          destinationName={selectedPkgForBooking.title}
+          destinationName={selectedPkgForBooking.destinationName || selectedPkgForBooking.title}
           basePrice={selectedPkgForBooking.startingPrice}
           details={{
             packageId: selectedPkgForBooking.id,
-            duration: selectedPkgForBooking.duration,
-            hotelTier: selectedPkgForBooking.inclusions.hotelTier,
-            transport: selectedPkgForBooking.inclusions.transportType
+            duration: `${selectedPkgForBooking.durationDays} Days / ${selectedPkgForBooking.durationNights} Nights`,
+            hotelTier: selectedPkgForBooking.hotels?.[0]?.name || '5-Star Luxury Resort',
+            transport: 'Private Chauffeured AC Transit & Transfers'
           }}
           onBookingSuccess={(b) => {
-            success('Package Confirmed!', `Booking #${b.id} reserved. Check My Trips for details.`);
-            setActiveTab('bookings');
+            success('Package Confirmed!', `Booking #${b.details?.pnrNumber || b.id} reserved.`);
           }}
+          onNavigateToMyTrips={() => handleNavigate('mytrips')}
         />
       )}
     </div>

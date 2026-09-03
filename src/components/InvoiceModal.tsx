@@ -5,6 +5,7 @@ import { Booking } from '../types';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { formatINR } from '../utils/currency';
 
 interface InvoiceModalProps {
   booking: Booking | null;
@@ -31,7 +32,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
     try {
       const res = await api.cancelBooking(booking.id);
       await refreshProfile();
-      success('Booking Cancelled', `$${res.refundAmount} refunded instantly to your WanderAI Wallet.`);
+      success('Booking Cancelled', `${formatINR(res.refundAmount)} refunded instantly to your ExploreX Wallet.`);
       setShowCancelConfirm(false);
       if (onBookingCancelled) onBookingCancelled();
       onClose();
@@ -84,12 +85,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <div className="flex items-start justify-between border-b border-slate-200 pb-6">
               <div>
                 <h2 className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
-                  <span>Wander</span>
-                  <span className="text-sky-600 font-extrabold">AI</span>
+                  <span>Explore</span>
+                  <span className="text-sky-600 font-extrabold">X</span>
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">AI-Powered Personalized Tourism Platform</p>
                 <div className="mt-2 text-[11px] text-slate-400">
-                  GST / Tax ID: WAI-TAX-9941829 • Support: support@wanderai.com
+                  GST / Tax ID: EX-TAX-9941829 • Support: support@explorex.com
                 </div>
               </div>
               <div className="text-right">
@@ -173,21 +174,21 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <div className="space-y-2 text-xs border-t border-b border-slate-200 py-3">
                 <div className="flex justify-between text-slate-600">
                   <span>Base Fare ({booking.passengersCount} traveler{booking.passengersCount > 1 ? 's' : ''})</span>
-                  <span>${booking.invoice?.baseFare || booking.totalAmount}</span>
+                  <span>{formatINR(booking.invoice?.baseFare ?? booking.totalAmount)}</span>
                 </div>
                 <div className="flex justify-between text-slate-600">
                   <span>Taxes & Tourism Verification (8%)</span>
-                  <span>${booking.invoice?.taxes || 0}</span>
+                  <span>{formatINR(booking.invoice?.taxes ?? 0)}</span>
                 </div>
                 {(booking.invoice?.discounts || 0) > 0 && (
                   <div className="flex justify-between text-emerald-600 font-semibold">
                     <span>Special Offer Discount</span>
-                    <span>-${booking.invoice?.discounts}</span>
+                    <span>-{formatINR(booking.invoice?.discounts ?? 0)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm font-bold text-slate-900 pt-2 border-t border-slate-100">
                   <span>Total Paid ({booking.paymentMethod.replace('_', ' ')})</span>
-                  <span className="text-sky-600">${booking.totalAmount}</span>
+                  <span className="text-sky-600">{formatINR(booking.totalAmount)}</span>
                 </div>
               </div>
             </div>
@@ -196,7 +197,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
             <div className="flex items-center justify-between pt-2">
               <div className="text-[11px] text-slate-500 max-w-sm">
                 <p className="font-semibold text-slate-700">Cancellation Policy:</p>
-                <p>Free instant cancellation up to 24 hours prior to departure. 100% refund credited back to your Wander Wallet balance.</p>
+                <p>Free instant cancellation up to 24 hours prior to departure. 100% refund credited back to your ExploreX Wallet balance.</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center p-1 mx-auto">
@@ -214,7 +215,7 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
                 <div className="flex items-center justify-between w-full gap-3">
                   <div className="text-xs text-rose-700 font-semibold flex items-center gap-1.5">
                     <AlertTriangle className="w-4 h-4 text-rose-600" />
-                    Confirm cancellation? ${booking.totalAmount} will be refunded to your Wander Wallet.
+                    Confirm cancellation? {formatINR(booking.totalAmount)} will be refunded to your ExploreX Wallet.
                   </div>
                   <div className="flex gap-2">
                     <button

@@ -21,6 +21,7 @@ import {
   INITIAL_REVIEWS, 
   INITIAL_GROUP_TRIPS 
 } from './data/initialData';
+import { ALL_PACKAGES } from './data/packagesData';
 import { INDIA_EXPANDED_DESTINATIONS } from './data/indiaDestinationsData';
 import { INDIA_REGIONAL_DESTINATIONS } from './data/indiaRegionalDestinations';
 
@@ -59,71 +60,114 @@ const DB_FILE_PATH = path.join(process.cwd(), 'data_store.json');
 
 const INITIAL_BOOKINGS: Booking[] = [
   {
-    id: 'BKG-2026-8812',
+    id: 'BKG-2026-9812',
     userId: 'usr-current',
-    serviceType: 'package',
-    title: 'Bali Tropical Luxury & Cultural Odyssey',
-    destinationName: 'Bali, Indonesia',
-    bookingDate: '2026-08-25T11:00:00Z',
-    travelDate: '2026-10-05',
-    returnDate: '2026-10-10',
+    serviceType: 'flight',
+    title: 'Air India AI-842: Delhi (DEL) ➔ Goa (GOI)',
+    destinationName: 'Goa, India',
+    bookingDate: '2026-08-28T10:30:00Z',
+    travelDate: '2026-10-15',
+    returnDate: '2026-10-20',
     passengersCount: 2,
     passengerDetails: [
-      { name: 'Soham Nemade', age: 28, gender: 'Male', seatNumber: 'Villa 102' },
-      { name: 'Priya Sharma', age: 27, gender: 'Female', seatNumber: 'Villa 102' }
+      { name: 'Soham Nemade', age: 28, gender: 'Male', seatNumber: '12A' },
+      { name: 'Priya Sharma', age: 27, gender: 'Female', seatNumber: '12B' }
     ],
-    totalAmount: 1300,
+    totalAmount: 16800,
     status: 'confirmed',
-    paymentMethod: 'wallet',
+    paymentMethod: 'card_demo',
     paymentStatus: 'paid',
-    isSimulation: true,
+    isSimulation: false,
     details: {
-      providerName: 'WanderAI Luxury Escapes',
-      packageId: 'pkg-bali-escape',
-      packageDuration: '6 Days / 5 Nights',
-      hotelName: 'The Kayon Jungle Resort & W Seminyak',
-      pnrNumber: 'WAI-BL-99218'
+      flightNumber: 'AI-842',
+      airline: 'Air India',
+      seatClass: 'Economy Prime',
+      departureTime: '09:45 AM',
+      arrivalTime: '12:20 PM',
+      duration: '2h 35m',
+      pnrNumber: 'PNR-AI8923',
+      baggage: '15kg Check-in + 7kg Cabin'
     },
     invoice: {
-      invoiceNo: 'INV-2026-9041',
-      baseFare: 1220,
-      taxes: 120,
-      discounts: 40,
-      grandTotal: 1300,
-      generatedAt: '2026-08-25T11:05:00Z'
+      invoiceNo: 'INV-2026-9812',
+      baseFare: 14237,
+      taxes: 2563,
+      discounts: 0,
+      grandTotal: 16800,
+      generatedAt: '2026-08-28T10:35:00Z'
     }
   },
   {
     id: 'BKG-2026-4401',
     userId: 'usr-current',
-    serviceType: 'hotel',
-    title: 'Victoria-Jungfrau Grand Alpine Suite',
-    destinationName: 'Interlaken, Switzerland',
-    bookingDate: '2026-08-15T09:30:00Z',
-    travelDate: '2026-12-15',
-    returnDate: '2026-12-19',
+    serviceType: 'train',
+    title: 'Vande Bharat Express 20608: Mumbai CSMT ➔ Goa Madgaon',
+    destinationName: 'Goa, India',
+    bookingDate: '2026-08-20T09:30:00Z',
+    travelDate: '2026-11-12',
+    returnDate: '2026-11-17',
     passengersCount: 2,
     passengerDetails: [
-      { name: 'Soham Nemade', age: 28, gender: 'Male' }
+      { name: 'Soham Nemade', age: 28, gender: 'Male', seatNumber: 'Coach C4 - Seat 22' },
+      { name: 'Priya Sharma', age: 27, gender: 'Female', seatNumber: 'Coach C4 - Seat 23' }
     ],
-    totalAmount: 760,
+    totalAmount: 4850,
     status: 'confirmed',
-    paymentMethod: 'card_demo',
+    paymentMethod: 'wallet',
     paymentStatus: 'paid',
-    isSimulation: true,
+    isSimulation: false,
     details: {
-      hotelName: 'Victoria-Jungfrau Grand Hotel & Spa',
-      roomType: 'Superior Alpine View Junior Suite',
-      checkInTime: '15:00',
-      checkOutTime: '11:00'
+      trainNumber: '20608',
+      trainName: 'Vande Bharat Superfast Express',
+      coach: 'Executive Chair Car (EC)',
+      departureStation: 'Mumbai CSMT (05:25 AM)',
+      arrivalStation: 'Madgaon Junction (01:10 PM)',
+      duration: '7h 45m',
+      pnrNumber: 'PNR-VB7741',
+      quota: 'General'
     },
     invoice: {
       invoiceNo: 'INV-2026-4401',
-      baseFare: 700,
-      taxes: 60,
+      baseFare: 4110,
+      taxes: 740,
       discounts: 0,
-      grandTotal: 760,
-      generatedAt: '2026-08-15T09:35:00Z'
+      grandTotal: 4850,
+      generatedAt: '2026-08-20T09:35:00Z'
+    }
+  },
+  {
+    id: 'BKG-2026-3120',
+    userId: 'usr-current',
+    serviceType: 'bus',
+    title: 'Zingbus Electric AC Sleeper: Bangalore ➔ Coorg',
+    destinationName: 'Coorg, Karnataka',
+    bookingDate: '2026-08-10T14:20:00Z',
+    travelDate: '2026-08-22',
+    returnDate: '2026-08-25',
+    passengersCount: 1,
+    passengerDetails: [
+      { name: 'Soham Nemade', age: 28, gender: 'Male', seatNumber: 'Lower Berth L4' }
+    ],
+    totalAmount: 1450,
+    status: 'completed',
+    paymentMethod: 'card_demo',
+    paymentStatus: 'paid',
+    isSimulation: false,
+    details: {
+      busOperator: 'Zingbus Premium Electric',
+      busType: 'Volvo 9600 Multi-Axle AC Sleeper (2+1)',
+      boardingPoint: 'Majestic Terminal 1 (10:30 PM)',
+      droppingPoint: 'Madikeri Private Bus Stand (05:45 AM)',
+      duration: '7h 15m',
+      pnrNumber: 'PNR-ZB9012'
+    },
+    invoice: {
+      invoiceNo: 'INV-2026-3120',
+      baseFare: 1228,
+      taxes: 222,
+      discounts: 0,
+      grandTotal: 1450,
+      generatedAt: '2026-08-10T14:25:00Z'
     }
   }
 ];
@@ -220,7 +264,7 @@ const INITIAL_WALLET_TXNS: WalletTransaction[] = [
   {
     id: 'txn-101',
     userId: 'usr-current',
-    amount: 500,
+    amount: 41500,
     type: 'credit',
     source: 'topup_demo',
     description: 'Instant Wallet Top-up (Demo Mode UPI/Card)',
@@ -231,7 +275,7 @@ const INITIAL_WALLET_TXNS: WalletTransaction[] = [
   {
     id: 'txn-102',
     userId: 'usr-current',
-    amount: 50,
+    amount: 4150,
     type: 'debit',
     source: 'ride_payment',
     description: 'The Explorer Cab ride - Airport transfer',
@@ -246,7 +290,7 @@ const INITIAL_OFFERS = [
     id: 'off-wander20',
     code: 'WANDER20',
     discountPct: 20,
-    maxDiscount: 150,
+    maxDiscount: 12500,
     title: 'First Trip Explorer Welcome',
     description: 'Flat 20% off on all international and domestic holiday packages.',
     validTill: '2026-12-31'
@@ -255,7 +299,7 @@ const INITIAL_OFFERS = [
     id: 'off-aipeak',
     code: 'AIPEAK10',
     discountPct: 10,
-    maxDiscount: 75,
+    maxDiscount: 6250,
     title: 'Smart Autumn Travel Special',
     description: '10% instant discount on flights and verified hotel stays.',
     validTill: '2026-11-30'
@@ -264,9 +308,9 @@ const INITIAL_OFFERS = [
     id: 'off-rideshare',
     code: 'EXPLOREFREE',
     discountPct: 100,
-    maxDiscount: 15,
+    maxDiscount: 1250,
     title: 'Free First Explorer Cab Ride',
-    description: 'Up to $15 off on your first Explorer city ride or e-scooter rental.',
+    description: 'Up to ₹1,250 off on your first Explorer city ride or e-scooter rental.',
     validTill: '2026-12-31'
   }
 ];
@@ -297,7 +341,7 @@ class DatabaseManager {
         return {
           users: parsed.users || { 'usr-current': INITIAL_USER_PROFILE },
           destinations: mergedDestinations,
-          packages: parsed.packages?.length ? parsed.packages : INITIAL_PACKAGES,
+          packages: parsed.packages?.length ? parsed.packages : ALL_PACKAGES,
           bookings: parsed.bookings || INITIAL_BOOKINGS,
           explorerRides: parsed.explorerRides || [],
           magicAlbums: parsed.magicAlbums || INITIAL_MAGIC_ALBUMS,
@@ -315,7 +359,7 @@ class DatabaseManager {
     const defaultDb: AppDatabase = {
       users: { 'usr-current': INITIAL_USER_PROFILE },
       destinations: ALL_COMBINED_INITIAL_DESTINATIONS,
-      packages: INITIAL_PACKAGES,
+      packages: ALL_PACKAGES,
       bookings: INITIAL_BOOKINGS,
       explorerRides: [],
       magicAlbums: INITIAL_MAGIC_ALBUMS,
@@ -345,6 +389,21 @@ class DatabaseManager {
       this.saveDatabase();
     }
     return this.data.users[userId];
+  }
+
+  findUserByEmail(email: string): UserProfile | undefined {
+    const cleanEmail = email.trim().toLowerCase();
+    return Object.values(this.data.users).find(u => u.email.toLowerCase() === cleanEmail);
+  }
+
+  getAllUsers(): UserProfile[] {
+    return Object.values(this.data.users);
+  }
+
+  createUser(user: UserProfile): UserProfile {
+    this.data.users[user.id] = user;
+    this.saveDatabase();
+    return user;
   }
 
   updateUser(userId: string, updates: Partial<UserProfile>): UserProfile {
@@ -441,6 +500,14 @@ class DatabaseManager {
 
   getBookingById(id: string): Booking | undefined {
     return this.data.bookings.find(b => b.id === id);
+  }
+
+  updateBooking(id: string, updates: Partial<Booking>): Booking | null {
+    const idx = this.data.bookings.findIndex(b => b.id === id);
+    if (idx === -1) return null;
+    this.data.bookings[idx] = { ...this.data.bookings[idx], ...updates };
+    this.saveDatabase();
+    return this.data.bookings[idx];
   }
 
   createBooking(booking: Booking): Booking {
@@ -570,6 +637,18 @@ class DatabaseManager {
   deletePhoto(photoId: string, userId: string = 'usr-current'): boolean {
     const photo = this.data.magicPhotos.find(p => p.id === photoId && p.userId === userId);
     if (!photo) return false;
+
+    // Unlink disk file if it was uploaded (not a remote URL)
+    if (photo.url && photo.url.startsWith('/uploads/')) {
+      const diskPath = path.join(process.cwd(), photo.url);
+      try {
+        if (fs.existsSync(diskPath)) {
+          fs.unlinkSync(diskPath);
+        }
+      } catch (unlinkErr) {
+        console.warn(`Could not delete upload file ${diskPath}:`, unlinkErr);
+      }
+    }
 
     const album = this.data.magicAlbums.find(a => a.id === photo.albumId);
     if (album) {

@@ -22,9 +22,16 @@ import { Destination, TravelPackage, Booking } from '../types';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { formatINR } from '../utils/currency';
 
-export const AdminView: React.FC = () => {
-  const { user } = useAuth();
+import { NavTab } from '../components/Navbar';
+
+interface AdminViewProps {
+  onNavigate?: (tab: NavTab) => void;
+}
+
+export const AdminView: React.FC<AdminViewProps> = ({ onNavigate }) => {
+  const { user, isAuthenticated } = useAuth();
   const { success, error } = useToast();
 
   const [stats, setStats] = useState<any>(null);
@@ -38,7 +45,7 @@ export const AdminView: React.FC = () => {
   const [destName, setDestName] = useState('');
   const [destCountry, setDestCountry] = useState('Switzerland');
   const [destTagline, setDestTagline] = useState('Alpine peaks and crystal lakes');
-  const [destPrice, setDestPrice] = useState(750);
+  const [destPrice, setDestPrice] = useState(62500);
   const [destImage, setDestImage] = useState('https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=1000&q=80');
 
   // New Promo Code Form state
@@ -48,6 +55,7 @@ export const AdminView: React.FC = () => {
   const [discountValue, setDiscountValue] = useState(15);
 
   const loadAdminData = async () => {
+    if (!user || user.role !== 'admin') return;
     try {
       const [statData, destList, pkgList, bkgList] = await Promise.all([
         api.getAdminStats(),
@@ -65,8 +73,39 @@ export const AdminView: React.FC = () => {
   };
 
   useEffect(() => {
-    loadAdminData();
-  }, []);
+    if (user?.role === 'admin') {
+      loadAdminData();
+    }
+  }, [user]);
+
+  if (!isAuthenticated || !user || user.role !== 'admin') {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6 bg-white">
+        <div className="w-16 h-16 bg-rose-50 text-rose-700 rounded-2xl flex items-center justify-center mx-auto border border-rose-200 shadow-2xs">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-rose-700 font-bold">
+            Administrative Clearance Required
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-[#242424]">
+            Restricted Command Console
+          </h2>
+          <p className="font-prose text-sm text-[#6B6B67] max-w-md mx-auto italic">
+            Access to platform telemetry, itinerary moderation, and inventory management requires an authenticated Administrator account.
+          </p>
+        </div>
+        <div className="flex justify-center gap-3 pt-2">
+          <button
+            onClick={() => onNavigate ? onNavigate('login') : window.location.reload()}
+            className="px-6 py-2.5 bg-[#242424] hover:bg-[#91482D] text-[#FFFFFF] text-xs font-mono uppercase tracking-wider font-bold rounded-xl shadow-xs transition-colors cursor-pointer"
+          >
+            Sign In as Admin
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateDestination = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,7 +191,7 @@ export const AdminView: React.FC = () => {
             Platform Control & Ops Center
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-            WanderAI Administrative Command Console
+            ExploreX Administrative Command Console
           </h1>
         </div>
 
@@ -195,7 +234,7 @@ export const AdminView: React.FC = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase">Gross Travel GMV</span>
-              <div className="text-2xl font-black text-slate-900">${stats.totalRevenue.toLocaleString()}</div>
+              <div className="text-2xl font-black text-slate-900">{formatINR(stats.totalRevenue || 0)}</div>
               <span className="text-[10px] text-emerald-600 font-bold">● Active Settlement</span>
             </div>
 
@@ -289,7 +328,7 @@ export const AdminView: React.FC = () => {
                     <td className="p-3.5">{d.currentWeather.tempC}°C {d.currentWeather.condition}</td>
                     <td className="p-3.5 capitalize font-semibold">{d.crowdPrediction.currentLevel}</td>
                     <td className="p-3.5 text-emerald-700 font-bold">{d.safetyScore.overall}/100</td>
-                    <td className="p-3.5 font-black text-slate-900">${d.startingPrice}</td>
+                    <td className="p-3.5 font-black text-slate-900">{formatINR(d.startingPrice)}</td>
                     <td className="p-3.5 text-right">
                       <button
                         onClick={() => handleDeleteDestination(d.id)}
@@ -339,7 +378,7 @@ export const AdminView: React.FC = () => {
                         {b.status}
                       </span>
                     </td>
-                    <td className="p-3.5 font-black text-slate-900">${b.totalAmount}</td>
+                    <td className="p-3.5 font-black text-slate-900">{formatINR(b.totalAmount)}</td>
                     <td className="p-3.5 text-right capitalize text-slate-500">{b.paymentMethod}</td>
                   </tr>
                 ))}
@@ -379,7 +418,7 @@ export const AdminView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Starting Price ($)</label>
+                <label className="block font-bold text-slate-700 mb-1">Starting Price (₹)</label>
                 <input
                   type="number"
                   required

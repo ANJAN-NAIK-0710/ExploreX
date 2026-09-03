@@ -21,6 +21,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MapComponent } from '../components/MapComponent';
 import { NavTab } from '../components/Navbar';
+import { formatINR } from '../utils/currency';
 
 interface TheExplorerViewProps {
   initialDestination?: string;
@@ -131,7 +132,7 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
       setActiveRide(null);
       setRidesHistory(prev => prev.map(r => r.id === res.ride.id ? res.ride : r));
       await refreshProfile();
-      success('Ride Cancelled', `$${res.ride.fare} refunded back to your Wander Wallet.`);
+      success('Ride Cancelled', `${formatINR(res.ride.fare)} refunded back to your ExploreX Wallet.`);
     } catch (err: any) {
       error('Cancellation Error', err.message);
     }
@@ -140,26 +141,26 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
   const selectedVehicle = vehicles.find(v => v.type === selectedVehicleType) || vehicles[0];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-16">
+    <div className="page-container space-y-8 pb-16 bg-white">
       {/* Header */}
-      <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E4E4DF] pb-5">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 uppercase tracking-wider">
-            <Car className="w-4 h-4" />
-            The Explorer Micro-Mobility
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-[#B45F3C] font-bold">
+            <Car className="w-3.5 h-3.5" />
+            Cabs & Local Transport
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
-            On-Demand Cabs, Autos, Bikes & E-Scooters
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#242424] tracking-tight mt-0.5">
+            The Explorer: Local Cabs & Rentals
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Transparent per-kilometer rates, zero surge gouging, and verified local drivers.
+          <p className="font-prose text-xs sm:text-sm text-[#6B6B67] mt-0.5">
+            Fixed per-kilometer rates and verified local drivers for sedans, autos, and scooters.
           </p>
         </div>
 
         {activeRide && (
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-2xl text-xs font-bold text-emerald-800">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Active Ride in Progress</span>
+          <div className="flex items-center gap-2 bg-[#EEF2ED] border border-[#5F7564]/20 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#5F7564]">
+            <span className="w-2 h-2 rounded-full bg-[#5F7564] animate-pulse" />
+            <span>Active ride in progress</span>
           </div>
         )}
       </div>
@@ -248,7 +249,7 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
                 onClick={handleCancelRide}
                 className="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-colors"
               >
-                Cancel Ride & Refund ${activeRide.fare}
+                Cancel Ride & Refund {formatINR(activeRide.fare)}
               </button>
             </div>
           ) : (
@@ -304,7 +305,7 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
                       >
                         <div className="text-xl mb-1">{v.icon}</div>
                         <div className="text-xs font-bold text-slate-900 leading-tight">{v.name}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">${v.perKmRate}/km</div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">{formatINR(v.perKmRate)}/km</div>
                         <div className="text-[10px] text-emerald-600 font-semibold mt-1">⚡ {v.etaMins}m ETA</div>
                       </button>
                     );
@@ -329,7 +330,7 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
                   </div>
                   <div className="pt-2 border-t border-slate-200 flex justify-between text-sm font-black text-slate-900">
                     <span>Total Fare</span>
-                    <span className="text-sky-600">${fareEstimate.fare}</span>
+                    <span className="text-sky-600">{formatINR(fareEstimate.fare)}</span>
                   </div>
                 </div>
               )}
@@ -355,8 +356,8 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
           {/* Wallet Balance Banner */}
           <div className="bg-sky-50 p-4 rounded-2xl border border-sky-100 flex items-center justify-between text-xs">
             <div>
-              <span className="text-slate-500 font-medium block">Wander Wallet Balance</span>
-              <span className="text-base font-black text-sky-900">${(user?.walletBalance || 0).toFixed(2)}</span>
+              <span className="text-slate-500 font-medium block">ExploreX Wallet Balance</span>
+              <span className="text-base font-black text-sky-900">{formatINR(user?.walletBalance || 0)}</span>
             </div>
             <button
               onClick={() => onNavigate('wallet')}
@@ -421,7 +422,7 @@ export const TheExplorerView: React.FC<TheExplorerViewProps> = ({ initialDestina
                     </div>
 
                     <div className="text-right">
-                      <span className="text-sm font-black text-slate-900">${r.fare}</span>
+                      <span className="text-sm font-black text-slate-900">{formatINR(r.fare)}</span>
                       <span className="text-[10px] text-slate-400 block font-mono">OTP: {r.otp}</span>
                     </div>
                   </div>

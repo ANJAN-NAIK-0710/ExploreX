@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, ShieldCheck, Heart, Sparkles, MapPin, Phone, Mail, Globe } from 'lucide-react';
+import { Compass, ShieldCheck, Heart, Sparkles, MapPin, Phone, Mail, Globe, Feather } from 'lucide-react';
 import { NavTab } from './Navbar';
 
 interface FooterProps {
@@ -8,75 +8,74 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
+    <footer className="bg-[#242424] text-[#EEEEEE] pt-14 pb-10 border-t border-[#333333]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-10 border-b border-[#333333]">
           {/* Brand Col */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => onSelectTab('home')}>
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
-                W
+          <div className="lg:col-span-2 space-y-3.5">
+            <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => onSelectTab('home')}>
+              <div className="w-7.5 h-7.5 rounded-md bg-white text-[#242424] flex items-center justify-center font-display text-base font-bold shadow-xs">
+                X
               </div>
-              <div className="flex items-center gap-1">
-                <span className="text-xl font-bold text-white tracking-tight">WANDER<span className="text-blue-400">.AI</span></span>
-                <span className="px-1.5 py-0.5 text-[9px] font-bold bg-blue-950 text-blue-300 rounded border border-blue-800 uppercase tracking-wider">
-                  Pro
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-display font-bold text-white tracking-tight">Explore<span className="text-[#B45F3C]">X</span></span>
+                <span className="px-1.5 py-0.5 text-[8px] font-mono tracking-wider uppercase bg-[#333333] text-[#AAAAAA] rounded border border-[#444444]">
+                  JOURNAL
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Next-generation AI-Powered Personalized Tourism & Travel Optimization Platform. Real-time dynamic replanning, integrated micro-mobility, crowd prediction, and seamless group expense settlements.
+            <p className="text-xs text-[#AAAAAA] leading-relaxed max-w-sm">
+              An independent travel atelier and intelligent expedition journal. Connecting conscious travelers to authentic cultural craft, under-visited sanctuaries, and local master guilds.
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              All 11 Core AI Travel Microservices Operational
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#5F7564]/25 border border-[#5F7564]/60 text-white text-[11px] font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5F7564]" />
+              Verified Responsible Tourism Partner
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Explore & Book</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><button onClick={() => onSelectTab('destinations')} className="hover:text-blue-400 transition-colors">Curated Destinations</button></li>
-              <li><button onClick={() => onSelectTab('packages')} className="hover:text-blue-400 transition-colors">Tour Packages & Pricing</button></li>
-              <li><button onClick={() => onSelectTab('bookings')} className="hover:text-blue-400 transition-colors">Multi-Modal Bookings</button></li>
-              <li><button onClick={() => onSelectTab('explore')} className="hover:text-blue-400 transition-colors">Interactive Global Map</button></li>
-              <li><button onClick={() => onSelectTab('explorer')} className="hover:text-blue-400 transition-colors">The Explorer Cabs & Bikes</button></li>
+          <div className="space-y-2.5">
+            <h4 className="text-[10.5px] font-mono font-bold text-white uppercase tracking-wider">Atlas & Itineraries</h4>
+            <ul className="space-y-1.5 text-xs text-[#AAAAAA]">
+              <li><button onClick={() => onSelectTab('destinations')} className="hover:text-white transition-colors cursor-pointer">Curated Sanctuaries</button></li>
+              <li><button onClick={() => onSelectTab('packages')} className="hover:text-white transition-colors cursor-pointer">Bespoke Expeditions</button></li>
+              <li><button onClick={() => onSelectTab('bookings')} className="hover:text-white transition-colors cursor-pointer">Transit & Stays</button></li>
+              <li><button onClick={() => onSelectTab('explore')} className="hover:text-white transition-colors cursor-pointer">Interactive Atlas Map</button></li>
+              <li><button onClick={() => onSelectTab('explorer')} className="hover:text-white transition-colors cursor-pointer">The Explorer Mobility</button></li>
             </ul>
           </div>
 
-          {/* AI Travel Engine */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">AI Intelligence</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><button onClick={() => onSelectTab('ai')} className="hover:text-blue-400 transition-colors">AI Travel Assistant</button></li>
-              <li><button onClick={() => onSelectTab('ai')} className="hover:text-blue-400 transition-colors">AI Trip Autopilot</button></li>
-              <li><button onClick={() => onSelectTab('ai')} className="hover:text-blue-400 transition-colors">What-If Trip Simulator</button></li>
-              <li><button onClick={() => onSelectTab('profile')} className="hover:text-blue-400 transition-colors">Travel DNA Profiler</button></li>
-              <li><button onClick={() => onSelectTab('moments')} className="hover:text-blue-400 transition-colors">Magic Moments (20MB Quota)</button></li>
+          {/* Concierge & Curations */}
+          <div className="space-y-2.5">
+            <h4 className="text-[10.5px] font-mono font-bold text-white uppercase tracking-wider">Concierge Salon</h4>
+            <ul className="space-y-1.5 text-xs text-[#AAAAAA]">
+              <li><button onClick={() => onSelectTab('ai')} className="hover:text-white transition-colors cursor-pointer">Travel Concierge</button></li>
+              <li><button onClick={() => onSelectTab('ai')} className="hover:text-white transition-colors cursor-pointer">Slow Travel Assistant</button></li>
+              <li><button onClick={() => onSelectTab('destinations')} className="hover:text-white transition-colors cursor-pointer">Demand Balancer</button></li>
+              <li><button onClick={() => onSelectTab('profile')} className="hover:text-white transition-colors cursor-pointer">Traveler DNA</button></li>
+              <li><button onClick={() => onSelectTab('moments')} className="hover:text-white transition-colors cursor-pointer">Moments Gallery</button></li>
             </ul>
           </div>
 
-          {/* Account & Administration */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Services & Tools</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li><button onClick={() => onSelectTab('mytrips')} className="hover:text-blue-400 transition-colors">My Trips Dashboard</button></li>
-              <li><button onClick={() => onSelectTab('wallet')} className="hover:text-blue-400 transition-colors">Wander Wallet & Reload</button></li>
-              <li><button onClick={() => onSelectTab('wallet')} className="hover:text-blue-400 transition-colors">Group Expense Splitter</button></li>
-              <li><button onClick={() => onSelectTab('profile')} className="hover:text-blue-400 transition-colors">Profile & Preferences</button></li>
-              <li><button onClick={() => onSelectTab('admin')} className="hover:text-blue-400 transition-colors font-medium text-slate-300">Admin Control Center</button></li>
+          {/* Services & Tools */}
+          <div className="space-y-2.5">
+            <h4 className="text-[10.5px] font-mono font-bold text-white uppercase tracking-wider">Expedition Ledger</h4>
+            <ul className="space-y-1.5 text-xs text-[#AAAAAA]">
+              <li><button onClick={() => onSelectTab('mytrips')} className="hover:text-white transition-colors cursor-pointer">My Journeys & Vouchers</button></li>
+              <li><button onClick={() => onSelectTab('wallet')} className="hover:text-white transition-colors cursor-pointer">In-App Wallet</button></li>
+              <li><button onClick={() => onSelectTab('wallet')} className="hover:text-white transition-colors cursor-pointer">Group Splitter</button></li>
+              <li><button onClick={() => onSelectTab('profile')} className="hover:text-white transition-colors cursor-pointer">Curator Profile</button></li>
             </ul>
           </div>
         </div>
 
         {/* Bottom copyright & disclaimer */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 WanderAI Platform. Built for Next-Generation Tourism Optimization.</p>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-slate-400 cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-slate-400 cursor-pointer">Terms of Service</span>
-            <span className="hover:text-slate-400 cursor-pointer">Safety Guidelines</span>
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#6B6B67]">
+          <p>© 2026 ExploreX Atelier. Designed for conscious exploration.</p>
+          <div className="flex items-center gap-5 font-mono text-[10.5px]">
+            <span className="hover:text-white cursor-pointer">Heritage Accord</span>
+            <span className="hover:text-white cursor-pointer">Privacy Charter</span>
+            <span className="hover:text-white cursor-pointer">Ethics & Safety</span>
           </div>
         </div>
       </div>

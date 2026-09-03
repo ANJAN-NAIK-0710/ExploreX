@@ -1,5 +1,6 @@
 import { 
   Destination, 
+  ExplorePOI,
   TravelPackage, 
   UserProfile, 
   Booking, 
@@ -19,12 +20,27 @@ import {
 
 const API_BASE = '/api/v1';
 
+function getSessionUserId(): string {
+  try {
+    const saved = localStorage.getItem('explorex_session_user');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.id) return parsed.id;
+    }
+  } catch {}
+  return '';
+}
+
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const userId = getSessionUserId();
+  const token = localStorage.getItem('explorex_auth_token');
+
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'x-user-id': 'usr-current',
+      ...(userId ? { 'x-user-id': userId } : {}),
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...(options?.headers || {})
     }
   });
@@ -81,12 +97,43 @@ export const api = {
   deleteDestination: (id: string) => 
     request<{ success: boolean }>(`/destinations/${id}`, { method: 'DELETE' }),
 
+  // Explore POIs & Spatial Engine
+  getExplorePOIs: (params?: {
+    destinationId?: string;
+    category?: string;
+    search?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    minRating?: number;
+    sortBy?: string;
+    isOffbeat?: boolean;
+    isPopular?: boolean;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.destinationId) query.set('destinationId', params.destinationId);
+    if (params?.category && params.category !== 'all') query.set('category', params.category);
+    if (params?.search) query.set('search', params.search);
+    if (params?.minPrice !== undefined) query.set('minPrice', params.minPrice.toString());
+    if (params?.maxPrice !== undefined) query.set('maxPrice', params.maxPrice.toString());
+    if (params?.minRating !== undefined) query.set('minRating', params.minRating.toString());
+    if (params?.sortBy) query.set('sortBy', params.sortBy);
+    if (params?.isOffbeat !== undefined) query.set('isOffbeat', params.isOffbeat.toString());
+    if (params?.isPopular !== undefined) query.set('isPopular', params.isPopular.toString());
+    return request<ExplorePOI[]>(`/explore?${query.toString()}`);
+  },
+  getExploreCategories: () => 
+    request<{ id: string; label: string; icon: string }[]>('/explore/categories'),
+  getWhatsFamous: (destinationId: string) => 
+    request<any>(`/explore/whats-famous/${destinationId}`),
+
   // Packages
-  getPackages: (params?: { destinationId?: string; theme?: string; maxPrice?: number }) => {
+  getPackages: (params?: { destinationId?: string; theme?: string; maxPrice?: number; search?: string; isFeatured?: boolean }) => {
     const query = new URLSearchParams();
     if (params?.destinationId) query.set('destinationId', params.destinationId);
     if (params?.theme && params.theme !== 'all') query.set('theme', params.theme);
     if (params?.maxPrice) query.set('maxPrice', params.maxPrice.toString());
+    if (params?.search) query.set('search', params.search);
+    if (params?.isFeatured !== undefined) query.set('isFeatured', params.isFeatured.toString());
     return request<TravelPackage[]>(`/packages?${query.toString()}`);
   },
   getPackageById: (id: string) => 
@@ -99,6 +146,8 @@ export const api = {
     request<TravelPackage>(`/packages/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
   deletePackage: (id: string) => 
     request<{ success: boolean }>(`/packages/${id}`, { method: 'DELETE' }),
+  seedPackages: () => 
+    request<{ success: boolean; message: string; supabaseSynced: boolean }>('/packages/seed', { method: 'POST' }),
 
   // The Explorer
   getExplorerVehicles: () => 
@@ -207,6 +256,10 @@ export const api = {
     }
     return request<AIChatResponse>('/ai/chat', { method: 'POST', body: JSON.stringify({ message: options, destinationId, history }) });
   },
+  generateItinerary: (params: any) => 
+    request<any>('/ai/generate-itinerary', { method: 'POST', body: JSON.stringify(params) }),
+  validateItinerary: (itinerary: any) => 
+    request<any>('/ai/validate-itinerary', { method: 'POST', body: JSON.stringify(itinerary) }),
   autopilotReplan: (destinationName: string, trigger?: string, currentSchedule?: string[]) => 
     request<any>('/ai/autopilot/replan', { method: 'POST', body: JSON.stringify({ destinationName, trigger, currentSchedule }) }),
   runTripAutopilot: (options: any, trigger?: string, currentSchedule?: string[]) => {
@@ -276,10 +329,24 @@ export const api = {
   optimizeItinerary: (packageId: string, body?: { numDays?: number; maxHoursPerDay?: number; categoryPreferences?: string[] }) =>
     request<OptimizedItineraryResponse>(`/packages/${packageId}/optimize-itinerary`, { method: 'POST', body: JSON.stringify(body || {}) }),
 
-  // Razorpay Integration
+  // Razorpay & Server-Side Payment Integration
+  createPaymentIntent: (params: any) =>
+    request<{
+      success: boolean;
+      bookingId: string;
+      paymentId: string;
+      keyId: string;
+      orderId: string;
+      amountInPaise: number;
+      amountInINR: number;
+      currency: string;
+      grandTotalINR: number;
+    }>('/payments/create-intent', { method: 'POST', body: JSON.stringify(params) }),
+  verifyPaymentIntent: (details: { bookingId: string; razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    request<{ verified: boolean; bookingStatus: 'confirmed' | 'pending_reconciliation' | 'failed'; booking?: any; message: string }>('/payments/verify', { method: 'POST', body: JSON.stringify(details) }),
   createRazorpayOrder: (amount: number, currency = 'INR', receipt?: string) =>
     request<{ success: boolean; keyId: string; order: any }>('/razorpay/create-order', { method: 'POST', body: JSON.stringify({ amount, currency, receipt }) }),
-  verifyRazorpayPayment: (details: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
-    request<{ verified: boolean; message: string; paymentId?: string; orderId?: string }>('/razorpay/verify-payment', { method: 'POST', body: JSON.stringify(details) }),
+  verifyRazorpayPayment: (details: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string; bookingId?: string }) =>
+    request<{ verified: boolean; message: string; paymentId?: string; orderId?: string; bookingStatus?: string }>('/payments/verify', { method: 'POST', body: JSON.stringify(details) }),
 };
 

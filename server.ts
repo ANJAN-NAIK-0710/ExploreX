@@ -4,9 +4,10 @@ import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { apiRouter } from './server/routes/api';
+import { ENV, validateEnvironment } from './server/config/env';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = ENV.PORT;
 
 // Body parsers
 app.use(express.json({ limit: '20mb' }));
@@ -35,7 +36,9 @@ app.use('/api/v1', apiRouter);
 app.use('/api', apiRouter);
 
 async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
+  validateEnvironment();
+
+  if (ENV.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -56,7 +59,7 @@ async function startServer() {
 }
 
 async function checkMLServiceHealth() {
-  const mlUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+  const mlUrl = ENV.ML_SERVICE_URL;
   try {
     const res = await fetch(`${mlUrl}/health`);
     if (res.ok) {

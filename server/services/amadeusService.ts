@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { ENV } from '../config/env';
 
 // Amadeus Self-Service API URLs
 const AMADEUS_TEST_BASE_URL = 'https://test.api.amadeus.com';
@@ -15,8 +16,8 @@ let cachedToken: AmadeusToken | null = null;
  * Returns token string or null if credentials are not configured or invalid.
  */
 async function getAmadeusAccessToken(): Promise<string | null> {
-  const clientId = process.env.AMADEUS_CLIENT_ID;
-  const clientSecret = process.env.AMADEUS_CLIENT_SECRET;
+  const clientId = ENV.AMADEUS_CLIENT_ID;
+  const clientSecret = ENV.AMADEUS_CLIENT_SECRET;
 
   if (!clientId || !clientSecret || clientId.includes('your_amadeus_client_id') || clientId.includes('mock_amadeus')) {
     return null;
