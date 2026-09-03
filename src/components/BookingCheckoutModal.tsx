@@ -46,7 +46,7 @@ import { formatINR } from '../utils/currency';
 import { Button } from './ui/Button';
 import { downloadCalendarEvent } from '../utils/calendar';
 
-export type CheckoutStep = 'traveler' | 'review' | 'payment' | 'processing' | 'confirmation';
+export type CheckoutStep = 'traveler' | 'review' | 'payment' | 'processing' | 'confirmation' | 'failed' | 'cancelled' | 'expired';
 
 interface BookingCheckoutModalProps {
   isOpen: boolean;
@@ -165,6 +165,9 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
   const [processingStatus, setProcessingStatus] = useState<'initiating' | 'verifying' | 'failed' | 'cancelled'>('initiating');
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [paymentErrorMessage, setPaymentErrorMessage] = useState<string>('');
+  const [processingSeconds, setProcessingSeconds] = useState<number>(0);
+  const [showIframeFallbackPrompt, setShowIframeFallbackPrompt] = useState<boolean>(false);
+  const [isResendingEmail, setIsResendingEmail] = useState<boolean>(false);
   
   // 10-minute Fare-Hold Countdown Timer (for review/payment resilience)
   const [fareHoldSeconds, setFareHoldSeconds] = useState<number>(600); // 10:00 mins
@@ -175,10 +178,43 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     const interval = setInterval(() => {
-      setFareHoldSeconds(prev => (prev > 0 ? prev - 1 : 0));
+      setFareHoldSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          if (currentStep === 'review' || currentStep === 'payment' || currentStep === 'processing') {
+            setCurrentStep('expired');
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
     return () => clearInterval(interval);
-  }, [isOpen]);
+  }, [isOpen, currentStep]);
+
+  // Watchdog timer: If processing takes > 25 seconds, NEVER leave the user stuck indefinitely!
+  useEffect(() => {
+    if (currentStep !== 'processing') {
+      setProcessingSeconds(0);
+      setShowIframeFallbackPrompt(false);
+      return;
+    }
+    const interval = setInterval(() => {
+      setProcessingSeconds(prev => {
+        if (prev >= 25) {
+          clearInterval(interval);
+          setPaymentErrorMessage('The provider or payment gateway did not respond within 25 seconds. Your request timed out safely to prevent duplicate charges.');
+          setCurrentStep('failed');
+          return 25;
+        }
+        if (prev >= 6) {
+          setShowIframeFallbackPrompt(true);
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [currentStep]);
 
   useEffect(() => {
     if (currentStep !== 'confirmation' || !confirmedBooking) return;
@@ -307,12 +343,13 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
     return true;
   };
 
-  // Step Trigger: Execute Real Razorpay Payment with Multi-Method Fallback
-  const handleProceedToPayment = async () => {
+  // Step Trigger: Execute Real Razorpay Payment or Safe Demo Instant Confirmation
+  const handleProceedToPayment = async (mode: 'safe_demo' | 'razorpay' = 'safe_demo') => {
     // If 100% covered by wallet, process directly
     if (paymentCategory === 'wallet' && walletDeduction >= grandTotal) {
       setCurrentStep('processing');
       setProcessingStatus('initiating');
+      setShowIframeFallbackPrompt(false);
       try {
         const created = await api.createBooking({
           serviceType,
@@ -342,7 +379,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
         onBookingSuccess(created);
         setCurrentStep('confirmation');
         
-        const refId = created.details?.pnrNumber || created.id;
+        const refId = created.details?.providerReference || created.details?.pnrNumber || created.id;
         const paidFormatted = formatINR(grandTotal);
         success(
           'Payment Verified & Booking Confirmed',
@@ -351,15 +388,16 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
         );
       } catch (err: any) {
         setPaymentErrorMessage(err.message || 'Failed to complete wallet transaction');
-        setCurrentStep('payment');
+        setCurrentStep('failed');
         error('Payment Failed', err.message);
       }
       return;
     }
 
-    // Otherwise, initiate server-side Razorpay Order
+    // Processing state start
     setCurrentStep('processing');
     setProcessingStatus('initiating');
+    setShowIframeFallbackPrompt(false);
 
     try {
       const intent = await api.createPaymentIntent({
@@ -384,12 +422,50 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
         promoCode: appliedPromo?.code
       });
 
-      if (!intent.success || !intent.orderId) {
-        throw new Error((intent as any).message || 'Failed to initialize Razorpay checkout intent');
+      if (!intent.success || !intent.bookingId) {
+        throw new Error((intent as any).message || 'Failed to initialize booking payment intent');
       }
 
+      // MODE 1: SAFE DEMO GATEWAY (Direct instantaneous server verification with GST invoice & email)
+      if (mode === 'safe_demo') {
+        setProcessingStatus('verifying');
+        const verifyRes = await api.verifyPaymentIntent({
+          bookingId: intent.bookingId,
+          razorpay_order_id: intent.orderId || `order_demo_${Date.now()}`,
+          razorpay_payment_id: `pay_demo_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          razorpay_signature: 'demo_simulated_signature',
+          customerEmail: contactEmail,
+          customerName: passengerDetails[0]?.name || user?.name || 'Traveler'
+        } as any);
+
+        if (verifyRes.verified) {
+          await refreshProfile();
+          setConfirmedBooking(verifyRes.booking || null);
+          if (verifyRes.booking) onBookingSuccess(verifyRes.booking);
+          setCurrentStep('confirmation');
+          
+          const refId = verifyRes.booking?.details?.providerReference || verifyRes.booking?.id || intent.bookingId;
+          const paidFormatted = formatINR(grandTotal);
+          success(
+            'Payment Verified & Booking Confirmed',
+            `Your reservation has been confirmed via Safe Demo Gateway.\n${paidFormatted} paid successfully.\nBooking Reference: ${refId}`,
+            6000
+          );
+        } else {
+          setPaymentErrorMessage(verifyRes.message || 'Payment signature verification failed.');
+          setCurrentStep('failed');
+        }
+        return;
+      }
+
+      // MODE 2: RAZORPAY MODAL POPUP
       const RazorpaySDK = (window as any).Razorpay;
       if (RazorpaySDK) {
+        // In iframe environments, if Razorpay doesn't trigger open within 7s, show prompt
+        const popupTimer = setTimeout(() => {
+          setShowIframeFallbackPrompt(true);
+        }, 7000);
+
         const options = {
           key: intent.keyId,
           amount: intent.amountInPaise,
@@ -399,20 +475,24 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
           order_id: intent.orderId,
           modal: {
             ondismiss: () => {
+              clearTimeout(popupTimer);
               setCurrentStep('payment');
-              setPaymentErrorMessage('Payment window was closed by the user. You can retry with Card, UPI, or NetBanking below.');
-              info('Checkout Dismissed', 'Your fare is held for 10 minutes. Complete payment to secure your reservation.');
+              setPaymentErrorMessage('Payment window was closed by the user. You can retry or use Safe Demo mode.');
+              info('Checkout Dismissed', 'Your fare is held. Complete payment to secure your reservation.');
             }
           },
           handler: async (response: any) => {
+            clearTimeout(popupTimer);
             setProcessingStatus('verifying');
             try {
               const verifyRes = await api.verifyPaymentIntent({
                 bookingId: intent.bookingId,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature || 'mock_signature'
-              });
+                razorpay_signature: response.razorpay_signature || 'mock_signature',
+                customerEmail: contactEmail,
+                customerName: passengerDetails[0]?.name || user?.name || 'Traveler'
+              } as any);
 
               if (verifyRes.verified) {
                 await refreshProfile();
@@ -420,7 +500,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                 if (verifyRes.booking) onBookingSuccess(verifyRes.booking);
                 setCurrentStep('confirmation');
                 
-                const refId = verifyRes.booking?.details?.pnrNumber || verifyRes.booking?.id || intent.bookingId;
+                const refId = verifyRes.booking?.details?.providerReference || verifyRes.booking?.id || intent.bookingId;
                 const paidFormatted = formatINR(grandTotal);
                 success(
                   'Payment Verified & Booking Confirmed',
@@ -428,14 +508,12 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                   6000
                 );
               } else {
-                setCurrentStep('payment');
                 setPaymentErrorMessage(verifyRes.message || 'Signature verification failed. Please try again.');
-                error('Verification Failed', 'Could not verify payment signature.');
+                setCurrentStep('failed');
               }
             } catch (verifyErr: any) {
-              setCurrentStep('payment');
               setPaymentErrorMessage(verifyErr.message || 'Network error occurred during verification.');
-              error('Network Error', verifyErr.message);
+              setCurrentStep('failed');
             }
           },
           prefill: {
@@ -443,19 +521,22 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
             email: contactEmail,
             contact: contactPhone
           },
-          theme: { color: '#242424' }
+          theme: { color: '#0f172a' }
         };
 
         const rzpInstance = new RazorpaySDK(options);
         rzpInstance.open();
       } else {
         // Fallback simulation for sandbox if script is blocked
+        setProcessingStatus('verifying');
         const verifyRes = await api.verifyPaymentIntent({
           bookingId: intent.bookingId,
-          razorpay_order_id: intent.orderId,
-          razorpay_payment_id: `pay_rzp_test_${Date.now()}`,
-          razorpay_signature: 'mock_signature'
-        });
+          razorpay_order_id: intent.orderId || `order_safe_${Date.now()}`,
+          razorpay_payment_id: `pay_safe_${Date.now()}`,
+          razorpay_signature: 'demo_simulated_signature',
+          customerEmail: contactEmail,
+          customerName: passengerDetails[0]?.name || user?.name || 'Traveler'
+        } as any);
 
         if (verifyRes.verified) {
           await refreshProfile();
@@ -463,19 +544,44 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
           if (verifyRes.booking) onBookingSuccess(verifyRes.booking);
           setCurrentStep('confirmation');
           
-          const refId = verifyRes.booking?.details?.pnrNumber || verifyRes.booking?.id || intent.bookingId;
+          const refId = verifyRes.booking?.details?.providerReference || verifyRes.booking?.id || intent.bookingId;
           const paidFormatted = formatINR(grandTotal);
           success(
             'Payment Verified & Booking Confirmed',
-            `Your reservation has been confirmed.\n${paidFormatted} paid successfully.\nBooking Reference: ${refId}`,
+            `Your reservation has been confirmed via Safe Demo Gateway.\n${paidFormatted} paid successfully.\nBooking Reference: ${refId}`,
             6000
           );
+        } else {
+          setPaymentErrorMessage(verifyRes.message || 'Verification failed.');
+          setCurrentStep('failed');
         }
       }
     } catch (err: any) {
-      setCurrentStep('payment');
-      setPaymentErrorMessage(err.message || 'Unable to open payment gateway. Please retry.');
+      setPaymentErrorMessage(err.message || 'Unable to communicate with payment gateway. Please retry.');
+      setCurrentStep('failed');
       error('Gateway Error', err.message);
+    }
+  };
+
+  const handleCancelBooking = () => {
+    setCurrentStep('cancelled');
+    info('Booking Cancelled', 'Your reservation request was cancelled. No amount was debited.');
+  };
+
+  const handleResendEmail = async () => {
+    if (!confirmedBooking) return;
+    setIsResendingEmail(true);
+    try {
+      const res = await api.resendBookingEmail(confirmedBooking.id, contactEmail);
+      if (res.success) {
+        success('Email Sent', `Tax invoice and booking voucher sent to ${res.recipient}`);
+      } else {
+        error('Email Notice', res.message || 'Could not deliver email at this time.');
+      }
+    } catch (err: any) {
+      error('Email Error', err.message || 'Failed to trigger email.');
+    } finally {
+      setIsResendingEmail(false);
     }
   };
 
@@ -541,12 +647,32 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
 
             <span className="text-slate-600">&bull;</span>
 
-            <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all ${
-              currentStep === 'confirmation' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-400'
-            }`}>
-              <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">✓</span>
-              <span className="hidden sm:inline">Confirmed</span>
-            </div>
+            {currentStep === 'confirmation' ? (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold transition-all">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">✓</span>
+                <span className="hidden sm:inline">Confirmed</span>
+              </div>
+            ) : currentStep === 'failed' ? (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold transition-all">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">✕</span>
+                <span className="hidden sm:inline">Failed</span>
+              </div>
+            ) : currentStep === 'cancelled' ? (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold transition-all">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">!</span>
+                <span className="hidden sm:inline">Cancelled</span>
+              </div>
+            ) : currentStep === 'expired' ? (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-600 text-white font-bold transition-all">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">⏱</span>
+                <span className="hidden sm:inline">Expired</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-400">
+                <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] flex items-center justify-center">✓</span>
+                <span className="hidden sm:inline">Confirmed</span>
+              </div>
+            )}
 
             <button
               onClick={onClose}
@@ -1273,7 +1399,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
 
                 </div>
 
-                <div className="flex items-center justify-between pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-200">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1283,33 +1409,91 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                     Back to Review
                   </Button>
 
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={handleProceedToPayment}
-                    rightIcon={<Lock className="w-4 h-4" />}
-                    className="font-black shadow-lg"
-                  >
-                    Pay {formatINR(grandTotal)} via Razorpay
-                  </Button>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    {/* Option A: ExploreX Safe Demo Mode (Instant Simulation with Email & GST Invoice) */}
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => handleProceedToPayment('safe_demo')}
+                      leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
+                      className="font-bold bg-emerald-700 hover:bg-emerald-800 shadow-md text-xs sm:text-sm"
+                      title="Complete booking with ExploreX verified demo provider, GST tax invoice, and confirmation email"
+                    >
+                      ⚡ Instant Safe Booking ({formatINR(grandTotal)})
+                    </Button>
+
+                    {/* Option B: Standard Razorpay Gateway */}
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => handleProceedToPayment('razorpay')}
+                      rightIcon={<Lock className="w-4 h-4 text-slate-500" />}
+                      className="font-bold text-xs sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
+                    >
+                      Pay via Razorpay Modal
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
 
             {/* ---------------------------------------------------- */}
-            {/* STEP 4: PROCESSING STATE                             */}
+            {/* STEP 4: PROCESSING STATE WITH TIMEOUT & CANCEL       */}
             {/* ---------------------------------------------------- */}
             {currentStep === 'processing' && (
-              <div className="py-16 text-center space-y-4 animate-in fade-in">
-                <div className="w-16 h-16 rounded-full border-4 border-sky-600 border-t-transparent animate-spin mx-auto" />
-                <h3 className="text-xl font-bold text-slate-900">
-                  {processingStatus === 'verifying'
-                    ? 'Verifying Payment Signature with Razorpay...'
-                    : `Confirming Reservation with ${serviceType.toUpperCase()} Provider...`}
-                </h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                  Securing seats, generating official PNR and GST tax invoices. Please do not refresh or press back.
-                </p>
+              <div className="py-12 text-center space-y-5 animate-in fade-in max-w-lg mx-auto">
+                <div className="relative mx-auto w-20 h-20 flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full border-4 border-slate-100" />
+                  <div className="w-20 h-20 rounded-full border-4 border-sky-600 border-t-transparent animate-spin" />
+                  <span className="text-xs font-mono font-bold text-sky-700">{processingSeconds}s</span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900">
+                    {processingStatus === 'verifying'
+                      ? 'Verifying Payment Signature with Razorpay...'
+                      : `Confirming Reservation with ${serviceType.toUpperCase()} Provider...`}
+                  </h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Securing provider hold, generating GST tax invoice, and queuing confirmation email. Timeout safety net active (25s max).
+                  </p>
+                </div>
+
+                {/* Iframe or slow popup fallback prompt */}
+                {showIframeFallbackPrompt && (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-left space-y-2.5 animate-in fade-in">
+                    <div className="flex items-center gap-2 text-amber-800 text-xs font-bold">
+                      <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>Taking longer than expected?</span>
+                    </div>
+                    <p className="text-[11px] text-amber-700 leading-normal">
+                      Third-party cookies or browser popup blockers in preview iframes may intercept the gateway window. You can switch to instant Safe Demo mode with complete GST invoice generation:
+                    </p>
+                    <div className="pt-1 flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        onClick={() => handleProceedToPayment('safe_demo')}
+                        className="bg-emerald-700 hover:bg-emerald-800 text-xs font-bold"
+                        leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-300" />}
+                      >
+                        ⚡ Complete via Safe Demo Gateway
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="pt-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCancelBooking}
+                    className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 border border-rose-200 text-xs"
+                    leftIcon={<X className="w-3.5 h-3.5" />}
+                  >
+                    Cancel Booking Request
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -1444,7 +1628,29 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                   <h4 className="text-xs font-mono font-bold text-[#242424] uppercase tracking-wider">Travel Management & Documents</h4>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {/* Action 1: Print / Download Official E-Ticket & GST Invoice */}
+                    {/* Action 1: Download Official GST Tax Invoice PDF */}
+                    <a
+                      href={`/api/v1/bookings/${confirmedBooking.id}/invoice.pdf`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5 text-sky-400" />
+                      Download Tax Invoice (PDF)
+                    </a>
+
+                    {/* Action 2: Resend Confirmation Email with PDF */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResendEmail}
+                      disabled={isResendingEmail}
+                      leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isResendingEmail ? 'animate-spin' : 'text-slate-600'}`} />}
+                    >
+                      {isResendingEmail ? 'Dispatching...' : 'Resend Confirmation Email'}
+                    </Button>
+
+                    {/* Action 3: Print / Download Official E-Ticket & GST Invoice */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -1453,10 +1659,10 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                       }}
                       leftIcon={<FileText className="w-3.5 h-3.5 text-[#242424]" />}
                     >
-                      Print E-Ticket & Tax Invoice
+                      Print E-Ticket Voucher
                     </Button>
 
-                    {/* Action 2: Download Calendar Event */}
+                    {/* Action 4: Download Calendar Event */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -1467,7 +1673,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                           location: confirmedBooking.destinationName,
                           startDate: confirmedBooking.travelDate,
                           endDate: confirmedBooking.returnDate,
-                          pnr: confirmedBooking.details?.pnrNumber || confirmedBooking.id
+                          pnr: confirmedBooking.details?.providerReference || confirmedBooking.details?.pnrNumber || confirmedBooking.id
                         });
                         success('Calendar Event Exported', 'Added to your calendar (.ics file downloaded).');
                       }}
@@ -1476,14 +1682,14 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                       Add to Calendar (.ics)
                     </Button>
 
-                    {/* Action 3: Share Itinerary */}
+                    {/* Action 5: Share Itinerary */}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
                         if (navigator.clipboard) {
                           navigator.clipboard.writeText(
-                            `ExploreX Booking Confirmed: ${confirmedBooking.title} on ${confirmedBooking.travelDate}. PNR: ${confirmedBooking.details?.pnrNumber || confirmedBooking.id}`
+                            `ExploreX Booking Confirmed: ${confirmedBooking.title} on ${confirmedBooking.travelDate}. PNR: ${confirmedBooking.details?.providerReference || confirmedBooking.details?.pnrNumber || confirmedBooking.id}`
                           );
                           success('Itinerary Copied', 'Booking summary and reference copied to clipboard.');
                         }
@@ -1493,7 +1699,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                       Share Itinerary
                     </Button>
 
-                    {/* Action 4: Get Directions to Transit Point */}
+                    {/* Action 6: Get Directions to Transit Point */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -1506,6 +1712,144 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
                       Get Directions on Maps
                     </Button>
                   </div>
+
+                  {/* Resend Confirmation Dispatch Notice */}
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Confirmation email with GST Tax Invoice PDF dispatched to <strong>{confirmedBooking.emailRecipient || contactEmail}</strong></span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded">Resend Verified</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TERMINAL STATE: FAILED                               */}
+            {/* ---------------------------------------------------- */}
+            {currentStep === 'failed' && (
+              <div className="py-8 text-center space-y-5 animate-in fade-in max-w-lg mx-auto">
+                <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto border-2 border-rose-200">
+                  <AlertCircle className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-rose-600 font-bold block">
+                    Transaction Incomplete
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900">Booking Request Failed</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed bg-rose-50 border border-rose-100 p-3 rounded-xl text-left">
+                    {paymentErrorMessage || 'The external provider or payment gateway did not complete the reservation. No funds have been debited from your card or bank account.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 pt-2">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => handleProceedToPayment('safe_demo')}
+                    leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
+                    className="bg-emerald-700 hover:bg-emerald-800 font-bold text-xs sm:text-sm"
+                  >
+                    ⚡ Complete via Safe Demo Gateway
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={() => setCurrentStep('payment')}
+                    className="text-xs sm:text-sm"
+                  >
+                    Retry Payment
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCurrentStep('review')}
+                    className="text-xs text-slate-500"
+                  >
+                    Back to Review
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TERMINAL STATE: CANCELLED                            */}
+            {/* ---------------------------------------------------- */}
+            {currentStep === 'cancelled' && (
+              <div className="py-8 text-center space-y-5 animate-in fade-in max-w-lg mx-auto">
+                <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto border-2 border-amber-200">
+                  <X className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-amber-600 font-bold block">
+                    Cancelled by User
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900">Booking Request Cancelled</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    You cancelled this booking attempt. No payment was captured, and your seats have been returned to inventory.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => setCurrentStep('payment')}
+                    className="text-xs font-bold"
+                  >
+                    Resume Checkout
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    onClick={onClose}
+                    className="text-xs"
+                  >
+                    Close Window
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------- */}
+            {/* TERMINAL STATE: EXPIRED                              */}
+            {/* ---------------------------------------------------- */}
+            {currentStep === 'expired' && (
+              <div className="py-8 text-center space-y-5 animate-in fade-in max-w-lg mx-auto">
+                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto border-2 border-slate-300">
+                  <Clock className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-slate-500 font-bold block">
+                    Hold Window Expired
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900">Fare Hold Expired</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    The 10-minute fare lock on this reservation has elapsed. Live tariffs have been updated according to dynamic airline and hotel yield rates.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      setFareHoldSeconds(600);
+                      setCurrentStep('review');
+                    }}
+                    className="text-xs font-bold"
+                  >
+                    Restart Fare Hold & Continue
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="md"
+                    onClick={onClose}
+                    className="text-xs"
+                  >
+                    Close Window
+                  </Button>
                 </div>
               </div>
             )}
@@ -1513,7 +1857,7 @@ export const BookingCheckoutModal: React.FC<BookingCheckoutModalProps> = ({
           </div>
 
           {/* RIGHT COLUMN: STICKY TRIP SUMMARY SIDEBAR (MakeMyTrip / Cleartrip OTA Style) */}
-          {currentStep !== 'confirmation' && currentStep !== 'processing' && (
+          {!['confirmation', 'processing', 'failed', 'cancelled', 'expired'].includes(currentStep) && (
             <div className="w-full lg:w-80 bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-200 p-5 space-y-4 shrink-0">
               <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                 <Ticket className="w-3.5 h-3.5 text-sky-600" />

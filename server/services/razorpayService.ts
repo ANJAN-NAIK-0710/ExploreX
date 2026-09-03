@@ -6,7 +6,7 @@ import { paymentService } from './paymentService';
  */
 export async function createPaymentIntentHandler(req: Request, res: Response) {
   try {
-    const userId = (req.headers['x-user-id'] as string) || 'usr-current';
+    const userId = (req as any).userId || (req.headers['x-user-id'] as string) || 'usr-current';
     const result = await paymentService.createPaymentIntent({
       ...req.body,
       userId
@@ -22,7 +22,7 @@ export async function createPaymentIntentHandler(req: Request, res: Response) {
  */
 export async function createRazorpayOrder(req: Request, res: Response) {
   try {
-    const userId = (req.headers['x-user-id'] as string) || 'usr-current';
+    const userId = (req as any).userId || (req.headers['x-user-id'] as string) || 'usr-current';
     const result = await paymentService.createPaymentIntent({
       userId,
       serviceType: req.body.serviceType || 'package',
@@ -55,7 +55,7 @@ export async function createRazorpayOrder(req: Request, res: Response) {
  */
 export async function verifyRazorpayPayment(req: Request, res: Response) {
   try {
-    const userId = (req.headers['x-user-id'] as string) || 'usr-current';
+    const userId = (req as any).userId || (req.headers['x-user-id'] as string) || 'usr-current';
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id) {
@@ -67,8 +67,10 @@ export async function verifyRazorpayPayment(req: Request, res: Response) {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature: razorpay_signature || 'mock_signature',
-      userId
-    });
+      userId,
+      customerEmail: req.body.customerEmail || (req as any).user?.email,
+      customerName: req.body.customerName || (req as any).user?.name
+    } as any);
 
     if (!result.verified) {
       return res.status(400).json(result);

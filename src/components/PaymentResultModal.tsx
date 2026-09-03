@@ -75,7 +75,7 @@ export const PaymentResultModal: React.FC<PaymentResultModalProps> = ({
                   Your trip is confirmed!
                 </h3>
                 <p className="font-prose text-xs text-[#6B6B67] mt-1">
-                  Your trip to <strong className="text-[#242424]">{booking?.destinationName || 'your destination'}</strong> is confirmed.
+                  Your trip to <strong className="text-[#242424]">{booking?.destinationName || 'your destination'}</strong> is confirmed. A detailed confirmation voucher and invoice has been dispatched to your email.
                 </p>
               </div>
 

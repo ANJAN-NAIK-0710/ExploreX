@@ -170,6 +170,26 @@ async function runAutomatedVerificationSuite() {
   assert(Boolean(loginRes.token), 'Login issued active session token');
   assert(loginRes.user.email === testEmail, 'Authenticated user profile resolved successfully');
 
+  // TEST 10b: Supabase Auth Rejection of Incorrect Password
+  console.log('\n--- 10b. Testing Supabase Auth: Incorrect Password Rejection ---');
+  let rejectedIncorrectPass = false;
+  try {
+    await supabaseAuthService.login(testEmail, 'WrongPassword999!');
+  } catch (err: any) {
+    rejectedIncorrectPass = true;
+  }
+  assert(rejectedIncorrectPass, 'Incorrect password strictly rejected with error');
+
+  // TEST 10c: Supabase Auth Rejection of Non-existent Email
+  console.log('\n--- 10c. Testing Supabase Auth: Non-existent Email Rejection ---');
+  let rejectedNonExistentEmail = false;
+  try {
+    await supabaseAuthService.login(`nonexistent_${Date.now()}@example.com`, 'AnyPassword123!');
+  } catch (err: any) {
+    rejectedNonExistentEmail = true;
+  }
+  assert(rejectedNonExistentEmail, 'Non-existent email strictly rejected with error');
+
   // TEST 11: Session Verification
   console.log('\n--- 11. Testing Supabase Authentication: Session Verification ---');
   const verifiedUser = await supabaseAuthService.verifySession(loginRes.token);

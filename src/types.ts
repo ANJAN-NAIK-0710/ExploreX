@@ -527,6 +527,10 @@ export interface Booking {
     grandTotal: number;
     generatedAt: string;
   };
+  emailStatus?: 'sent' | 'failed' | 'pending';
+  emailRecipient?: string;
+  emailSentAt?: string;
+  emailError?: string;
 }
 
 export interface Review {

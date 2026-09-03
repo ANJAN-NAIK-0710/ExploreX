@@ -20,26 +20,13 @@ import {
 
 const API_BASE = '/api/v1';
 
-function getSessionUserId(): string {
-  try {
-    const saved = localStorage.getItem('explorex_session_user');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed && parsed.id) return parsed.id;
-    }
-  } catch {}
-  return '';
-}
-
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const userId = getSessionUserId();
   const token = localStorage.getItem('explorex_auth_token');
 
   const res = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...(userId ? { 'x-user-id': userId } : {}),
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...(options?.headers || {})
     }
@@ -350,5 +337,7 @@ export const api = {
     request<{ success: boolean; keyId: string; order: any }>('/razorpay/create-order', { method: 'POST', body: JSON.stringify({ amount, currency, receipt }) }),
   verifyRazorpayPayment: (details: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string; bookingId?: string }) =>
     request<{ verified: boolean; message: string; paymentId?: string; orderId?: string; bookingStatus?: string }>('/payments/verify', { method: 'POST', body: JSON.stringify(details) }),
+  resendBookingEmail: (bookingId: string, email?: string) =>
+    request<{ success: boolean; message: string; recipient: string }>(`/bookings/${bookingId}/resend-email`, { method: 'POST', body: JSON.stringify({ email }) }),
 };
 

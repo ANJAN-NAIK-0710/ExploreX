@@ -26,8 +26,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
+      const token = localStorage.getItem('explorex_auth_token');
       const saved = localStorage.getItem('explorex_session_user');
-      return saved ? JSON.parse(saved) : null;
+      if (token && saved) {
+        return JSON.parse(saved);
+      }
+      return null;
     } catch {
       return null;
     }
@@ -46,18 +50,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (session.authenticated && session.user) {
             setUser(session.user);
             localStorage.setItem('explorex_session_user', JSON.stringify(session.user));
+          } else {
+            setUser(null);
+            localStorage.removeItem('explorex_session_user');
+            localStorage.removeItem('explorex_auth_token');
           }
         } catch (err) {
           console.warn('Session verification notice:', err);
+          setUser(null);
+          localStorage.removeItem('explorex_session_user');
+          localStorage.removeItem('explorex_auth_token');
         }
+      } else {
+        setUser(null);
+        localStorage.removeItem('explorex_session_user');
       }
     };
     initSession();
   }, []);
 
   const refreshProfile = useCallback(async () => {
-    const saved = localStorage.getItem('explorex_session_user');
-    if (!saved) {
+    const token = localStorage.getItem('explorex_auth_token');
+    if (!token) {
       setUser(null);
       return;
     }
@@ -84,12 +98,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, pass: string): Promise<boolean> => {
     try {
       const res = await api.login(email, pass);
-      if (res.user) {
+      if (res.user && res.token) {
         setUser(res.user);
         localStorage.setItem('explorex_session_user', JSON.stringify(res.user));
-        if (res.token) localStorage.setItem('explorex_auth_token', res.token);
+        localStorage.setItem('explorex_auth_token', res.token);
         closeAuthModal();
-        success('Welcome back!', `Signed in as ${res.user.name}`);
+        success('Sign in successful', '');
         return true;
       }
       return false;
@@ -102,12 +116,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (name: string, email: string, pass: string): Promise<boolean> => {
     try {
       const res = await api.signup(name, email, pass);
-      if (res.user) {
+      if (res.user && res.token) {
         setUser(res.user);
         localStorage.setItem('explorex_session_user', JSON.stringify(res.user));
-        if (res.token) localStorage.setItem('explorex_auth_token', res.token);
+        localStorage.setItem('explorex_auth_token', res.token);
         closeAuthModal();
-        success('Account Created!', `Welcome to ExploreX, ${name}!`);
+        success('Sign up successful', '');
         return true;
       }
       return false;

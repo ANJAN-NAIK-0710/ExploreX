@@ -115,36 +115,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onNavigate }) => {
           </button>
         </form>
 
-        {/* Quick Demo Fill Helper for evaluation */}
-        <div className="p-3.5 bg-[#F7F7F4] rounded-xl border border-[#E4E4DF] space-y-2">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-[#6B6B67] font-semibold flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-[#91482D]" />
-            <span>Evaluation Quick Fill:</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('traveler@explorex.com');
-                setPassword('password123');
-              }}
-              className="px-2.5 py-1 bg-white hover:bg-[#FFFFFF] text-[#242424] text-[10px] font-mono rounded border border-[#E4E4DF] cursor-pointer"
-            >
-              Traveler User
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEmail('admin@explorex.com');
-                setPassword('admin123');
-              }}
-              className="px-2.5 py-1 bg-white hover:bg-[#FFFFFF] text-[#91482D] text-[10px] font-mono font-bold rounded border border-[#E4E4DF] cursor-pointer"
-            >
-              Platform Admin
-            </button>
-          </div>
-        </div>
-
         {/* Footer switch to sign up */}
         <div className="text-center pt-2 border-t border-[#F7F7F4] text-xs text-[#6B6B67]">
           <span>Don't have an account? </span>

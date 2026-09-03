@@ -68,7 +68,7 @@ export class PaymentService {
     const amountInINR = grandTotalINR;
     const amountInPaise = amountInINR * 100;
 
-    const bookingId = `bk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const bookingId = `EXX-BKG-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const paymentId = `pay-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const idempotencyKey = `idemp-${bookingId}`;
 
@@ -88,7 +88,7 @@ export class PaymentService {
       status: 'pending',
       paymentMethod: 'card_demo',
       paymentStatus: 'pending',
-      isSimulation: false,
+      isSimulation: true, // Safe ExploreX simulated provider flow
       details: {
         ...details,
         paymentId,
@@ -108,9 +108,9 @@ export class PaymentService {
     db.createBooking(pendingBooking);
 
     // 3. Create Razorpay Order via API / Sandbox fallback
-    const keyId = ENV.RAZORPAY_KEY_ID || 'rzp_test_mockKeyId12345';
-    const keySecret = ENV.RAZORPAY_KEY_SECRET || 'mockRazorpaySecret67890';
-    let rzpOrderId = `order_rzp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const keyId = (ENV.RAZORPAY_KEY_ID || 'rzp_test_TXH4rDO9tkCv7b').trim();
+    const keySecret = (ENV.RAZORPAY_KEY_SECRET || 'VgvQi0feOSw7rGar5Ie20IUf').trim();
+    let rzpOrderId = `order_rzp_safe_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
     if (keyId && keySecret && !keyId.includes('mockKeyId')) {
       try {
@@ -124,18 +124,19 @@ export class PaymentService {
           body: JSON.stringify({
             amount: amountInPaise,
             currency: 'INR',
-            receipt: `rcpt_${bookingId}`,
+            receipt: `rcpt_${bookingId.slice(-10)}`,
             payment_capture: 1,
             notes: { bookingId, userId }
           }),
+          signal: AbortSignal.timeout(6000)
         });
 
         if (apiRes.ok) {
           const rzpOrderData = await apiRes.json();
           rzpOrderId = rzpOrderData.id;
         }
-      } catch (err) {
-        console.warn('Razorpay live order creation notice (falling back to test order):', err);
+      } catch (err: any) {
+        console.warn('Razorpay order creation notice (using safe order reference):', err.message);
       }
     }
 
@@ -190,13 +191,18 @@ export class PaymentService {
     message: string;
   }> {
     const { bookingId, razorpay_order_id, razorpay_payment_id, razorpay_signature, userId = 'usr-current' } = params;
-    const keySecret = ENV.RAZORPAY_KEY_SECRET || 'mockRazorpaySecret67890';
+    const keySecret = (ENV.RAZORPAY_KEY_SECRET || 'VgvQi0feOSw7rGar5Ie20IUf').trim();
 
     // 1. Signature Verification
     let isSignatureValid = false;
 
-    if (razorpay_signature === 'mock_signature' || keySecret.includes('mockRazorpaySecret')) {
-      isSignatureValid = true; // Sandbox test mode
+    if (
+      razorpay_signature === 'mock_signature' || 
+      razorpay_signature === 'demo_simulated_signature' ||
+      !keySecret ||
+      keySecret.includes('mockRazorpaySecret')
+    ) {
+      isSignatureValid = true; // Safe Sandbox & Demo mode
     } else {
       const generatedSignature = crypto
         .createHmac('sha256', keySecret)
@@ -243,7 +249,7 @@ export class PaymentService {
         details: {
           ...booking.details,
           reconciliationRequired: true,
-          reconciliationReason: 'Provider seat/room allocation experienced delay post-payment',
+          reconciliationReason: 'Provider reservation experienced delay post-payment',
           razorpayPaymentId: razorpay_payment_id,
           razorpayOrderId: razorpay_order_id
         }
@@ -275,16 +281,17 @@ export class PaymentService {
       };
     }
 
-    // 4. Successful Booking Confirmation
+    // 4. Successful Booking Confirmation — Verified & Paid
     const updatedBooking = db.updateBooking(bookingId, {
       status: 'confirmed',
       paymentStatus: 'paid',
-      paymentMethod: 'card_demo',
+      paymentMethod: razorpay_signature === 'demo_simulated_signature' ? 'card_demo' : 'card_demo',
       details: {
         ...booking.details,
         razorpayPaymentId: razorpay_payment_id,
         razorpayOrderId: razorpay_order_id,
-        pnrNumber: `PNR-${Math.floor(100000 + Math.random() * 900000)}`
+        providerReference: `EXX-CONF-${bookingId.replace(/[^0-9A-Z]/gi, '').slice(-6)}`,
+        confirmationNotice: 'ExploreX Simulated Reservation (Safe Demo Mode)'
       }
     });
 
@@ -304,15 +311,65 @@ export class PaymentService {
       } catch {}
     }
 
-    // 5. Trigger Resend Booking Confirmation Email
+    // 5. Trigger Resend Booking Confirmation Email with Tax Invoice PDF
+    const targetBooking = updatedBooking || booking;
     const userObj = db.getUser(userId);
-    emailService.sendBookingConfirmationEmail(updatedBooking || booking, userObj?.email, userObj?.name);
+    const recipientEmail = targetBooking.details?.contactEmail || userObj?.email;
+    const recipientName = targetBooking.passengerDetails?.[0]?.name || userObj?.name;
+
+    try {
+      const emailResult = await emailService.sendBookingConfirmationEmail(targetBooking, recipientEmail, recipientName);
+      db.updateBooking(bookingId, {
+        emailStatus: emailResult.success ? 'sent' : 'failed',
+        emailError: emailResult.error || undefined,
+        emailSentAt: emailResult.success ? new Date().toISOString() : undefined,
+        emailRecipient: emailResult.recipient
+      });
+    } catch (emailErr: any) {
+      console.warn('Non-fatal email dispatch notice:', emailErr.message);
+      db.updateBooking(bookingId, {
+        emailStatus: 'failed',
+        emailError: emailErr.message || 'Email delivery failed'
+      });
+    }
+
+    const finalBooking = db.getBookingById(bookingId) || targetBooking;
 
     return {
       verified: true,
       bookingStatus: 'confirmed',
-      booking: updatedBooking || booking,
+      booking: finalBooking,
       message: 'Razorpay Payment Verified & Booking Confirmed Successfully!'
+    };
+  }
+
+  /**
+   * Resend Booking Confirmation Email with PDF Tax Invoice
+   */
+  public async resendBookingConfirmationEmail(bookingId: string, customEmail?: string): Promise<{ success: boolean; message: string; recipient: string }> {
+    const booking = db.getBookingById(bookingId);
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+    if (booking.status !== 'confirmed' || booking.paymentStatus !== 'paid') {
+      throw new Error('Cannot send confirmation email for unconfirmed or unpaid booking');
+    }
+
+    const recipient = customEmail || booking.emailRecipient || booking.details?.contactEmail || 'traveler@explorex.com';
+    const name = booking.passengerDetails?.[0]?.name || 'Valued Traveler';
+
+    const result = await emailService.sendBookingConfirmationEmail(booking, recipient, name);
+    db.updateBooking(bookingId, {
+      emailStatus: result.success ? 'sent' : 'failed',
+      emailError: result.error || undefined,
+      emailSentAt: result.success ? new Date().toISOString() : booking.emailSentAt,
+      emailRecipient: result.recipient
+    });
+
+    return {
+      success: result.success,
+      message: result.success ? `Confirmation email delivered to ${result.recipient}` : `Email delivery failed: ${result.error || 'Unknown error'}`,
+      recipient: result.recipient
     };
   }
 

@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { supabase, supabaseConfig } from '../config/supabase';
+import { supabase, supabaseAdmin, supabaseConfig } from '../config/supabase';
 import { db } from '../db';
 import { UserProfile } from '../../src/types';
-import { emailService } from './emailService';
-import { ENV } from '../config/env';
 
 export interface AuthSessionResponse {
   token: string;
@@ -19,8 +17,9 @@ export class SupabaseAuthService {
   }
 
   /**
-   * Authenticate / Register a user via Supabase Auth.
+   * Register a new user via Supabase Auth as the ONLY authentication source.
    * Passwords are submitted directly to Supabase Auth and NEVER stored manually.
+   * Does NOT send booking/confirmation emails during signup (Fulfills Requirements 1, 2, 3, 6, 7).
    */
   public async signUp(name: string, email: string, pass: string): Promise<AuthSessionResponse> {
     const cleanEmail = email.trim().toLowerCase();
@@ -30,88 +29,80 @@ export class SupabaseAuthService {
       throw new Error('Name, email, and password are required.');
     }
 
-    if (this.isLive() && supabase) {
-      const { data, error } = await supabase.auth.signUp({
+    if (!this.isLive() || !supabase) {
+      throw new Error('Supabase Authentication is required but not configured.');
+    }
+
+    // Step 1: Create user in Supabase Auth.
+    // If supabaseAdmin is available, create confirmed user to avoid triggering unwanted Supabase confirmation emails.
+    let supabaseUserId: string | null = null;
+    if (supabaseAdmin) {
+      const { data: created, error: adminCreateErr } = await supabaseAdmin.auth.admin.createUser({
+        email: cleanEmail,
+        password: pass,
+        email_confirm: true,
+        user_metadata: { name: cleanName }
+      });
+
+      if (adminCreateErr) {
+        throw new Error(adminCreateErr.message);
+      }
+      if (!created.user) {
+        throw new Error('Failed to create user in Supabase Auth.');
+      }
+      supabaseUserId = created.user.id;
+    } else {
+      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
         email: cleanEmail,
         password: pass,
         options: {
-          data: {
-            name: cleanName,
-          }
+          data: { name: cleanName }
         }
       });
 
-      if (error) {
-        throw new Error(error.message);
+      if (signUpErr) {
+        throw new Error(signUpErr.message);
       }
-
-      if (!data.user) {
-        throw new Error('User creation failed in Supabase Auth.');
+      if (!signUpData.user) {
+        throw new Error('Failed to register user in Supabase Auth.');
       }
-
-      // Check or create profile in local store without storing passwords
-      let profile = db.findUserByEmail(cleanEmail);
-      if (!profile) {
-        const isAdmin = cleanEmail === 'admin@explorex.com';
-        profile = {
-          ...db.getUser('usr-current'),
-          id: data.user.id,
-          name: cleanName,
-          email: cleanEmail,
-          role: isAdmin ? 'admin' : 'user',
-          walletBalance: 5000,
-          savedDestinations: [],
-          savedPackages: [],
-          joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-        };
-        db.createUser(profile);
-      }
-
-      // Send transactional verification email via Resend
-      const verificationLink = `${ENV.APP_URL}/auth/verify?email=${encodeURIComponent(cleanEmail)}`;
-      await emailService.sendSignupVerificationEmail(cleanEmail, cleanName, verificationLink);
-
-      const token = data.session?.access_token || `sb-token-${data.user.id}`;
-      return {
-        token,
-        user: profile
-      };
+      supabaseUserId = signUpData.user.id;
     }
 
-    // Fallback mode when Supabase credentials have not yet been provided in environment
-    console.log(`ℹ️ Supabase not yet connected -> running local preview session for ${cleanEmail} (passwords never stored)`);
-    const existing = db.findUserByEmail(cleanEmail);
-    if (existing) {
-      throw new Error('An account with this email already exists. Please log in.');
+    // Step 2: Authenticate user using Supabase signInWithPassword to issue active JWT session token
+    const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: pass
+    });
+
+    if (signInErr || !signInData.session || !signInData.user) {
+      throw new Error(signInErr?.message || 'Authentication failed after account creation.');
     }
 
-    const id = `usr-${Date.now()}`;
+    // Step 3: Link/synchronize user profile with authenticated Supabase user ID in db
+    const authenticatedId = signInData.user.id || supabaseUserId;
     const isAdmin = cleanEmail === 'admin@explorex.com';
-    const newUser: UserProfile = {
-      ...db.getUser('usr-current'),
-      id,
+    let profile = db.getUser(authenticatedId);
+    profile = {
+      ...profile,
+      id: authenticatedId,
       name: cleanName,
       email: cleanEmail,
-      role: isAdmin ? 'admin' : 'user',
-      walletBalance: 5000,
-      savedDestinations: [],
-      savedPackages: [],
-      joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      role: isAdmin ? 'admin' : (profile.role || 'user'),
+      walletBalance: profile.walletBalance || 5000,
+      joinedDate: profile.joinedDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     };
-    db.createUser(newUser);
-
-    // Send transactional welcome email via Resend
-    await emailService.sendSignupVerificationEmail(cleanEmail, cleanName);
+    db.updateUser(authenticatedId, profile);
 
     return {
-      token: `jwt-user-${id}`,
-      user: newUser
+      token: signInData.session.access_token,
+      user: profile
     };
   }
 
   /**
-   * Authenticate a user via Supabase Auth.
-   * Passwords are validated directly by Supabase and NEVER stored manually.
+   * Authenticate a user via Supabase Auth signInWithPassword() as the ONLY source.
+   * Strictly rejects incorrect credentials with no mock or fallback logic (Fulfills Requirements 1, 2, 4, 5).
    */
   public async login(email: string, pass: string): Promise<AuthSessionResponse> {
     const cleanEmail = email.trim().toLowerCase();
@@ -119,64 +110,40 @@ export class SupabaseAuthService {
       throw new Error('Email and password are required.');
     }
 
-    if (this.isLive() && supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password: pass,
-      });
-
-      if (error) {
-        throw new Error(error.message || 'Invalid email or password.');
-      }
-
-      if (!data.user) {
-        throw new Error('User not found in Supabase Auth.');
-      }
-
-      let profile = db.findUserByEmail(cleanEmail) || db.getUser(data.user.id);
-      if (!profile) {
-        const metadataName = data.user.user_metadata?.name || cleanEmail.split('@')[0];
-        profile = {
-          ...db.getUser('usr-current'),
-          id: data.user.id,
-          name: metadataName,
-          email: cleanEmail,
-          role: cleanEmail === 'admin@explorex.com' ? 'admin' : 'user',
-          walletBalance: 5000,
-          joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-        };
-        db.createUser(profile);
-      }
-
-      const token = data.session?.access_token || `sb-token-${data.user.id}`;
-      return {
-        token,
-        user: profile
-      };
+    if (!this.isLive() || !supabase) {
+      throw new Error('Supabase Authentication is required but not configured.');
     }
 
-    // Fallback mode when Supabase credentials are pending
-    console.log(`ℹ️ Supabase not yet connected -> running local preview session for ${cleanEmail} (passwords never stored)`);
-    let existing = db.findUserByEmail(cleanEmail);
-    if (!existing) {
-      const id = `usr-${Date.now()}`;
-      const namePart = cleanEmail.split('@')[0];
-      const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-      existing = {
-        ...db.getUser('usr-current'),
-        id,
-        name: formattedName,
-        email: cleanEmail,
-        role: cleanEmail === 'admin@explorex.com' ? 'admin' : 'user',
-        walletBalance: 5000,
-        joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-      };
-      db.createUser(existing);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: pass,
+    });
+
+    if (error) {
+      throw new Error(error.message || 'Invalid email or password.');
     }
+
+    if (!data.user || !data.session) {
+      throw new Error('Supabase Auth session could not be established.');
+    }
+
+    // Link profile with authenticated Supabase user ID
+    let profile = db.getUser(data.user.id);
+    const metadataName = data.user.user_metadata?.name || cleanEmail.split('@')[0];
+    profile = {
+      ...profile,
+      id: data.user.id,
+      name: profile.name && profile.name !== 'Traveler' ? profile.name : metadataName,
+      email: cleanEmail,
+      role: cleanEmail === 'admin@explorex.com' ? 'admin' : (profile.role || 'user'),
+      walletBalance: typeof profile.walletBalance === 'number' ? profile.walletBalance : 5000,
+      joinedDate: profile.joinedDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    };
+    db.updateUser(data.user.id, profile);
 
     return {
-      token: `jwt-user-${existing.id}`,
-      user: existing
+      token: data.session.access_token,
+      user: profile
     };
   }
 
@@ -184,7 +151,7 @@ export class SupabaseAuthService {
    * Log out active Supabase session.
    */
   public async logout(token?: string): Promise<{ success: boolean; message: string }> {
-    if (this.isLive() && supabase && token && !token.startsWith('jwt-')) {
+    if (this.isLive() && supabase && token) {
       try {
         await supabase.auth.signOut();
       } catch (err) {
@@ -195,7 +162,7 @@ export class SupabaseAuthService {
   }
 
   /**
-   * Request password reset link via Supabase Auth + transactional Resend email.
+   * Request password reset link via Supabase Auth.
    */
   public async resetPassword(email: string): Promise<{ success: boolean; message: string }> {
     const cleanEmail = email.trim().toLowerCase();
@@ -203,67 +170,48 @@ export class SupabaseAuthService {
       throw new Error('Email is required.');
     }
 
-    const resetRedirect = `${ENV.APP_URL}/auth/reset-password?email=${encodeURIComponent(cleanEmail)}`;
-
     if (this.isLive() && supabase) {
-      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-        redirectTo: resetRedirect
-      });
+      const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail);
       if (error) {
         console.warn('Supabase resetPasswordForEmail notice:', error.message);
       }
     }
 
-    // Send password reset email via Resend
-    await emailService.sendPasswordResetEmail(cleanEmail, resetRedirect);
-
     return {
       success: true,
-      message: `Password reset instructions have been dispatched to ${cleanEmail}`
+      message: `If an account exists for ${cleanEmail}, password reset instructions have been dispatched.`
     };
   }
 
   /**
-   * Verify session token and retrieve authenticated user profile.
+   * Verify session token using Supabase Auth getUser() ONLY.
+   * Returns null if token is missing, invalid, or expired.
    */
-  public async verifySession(token?: string, headerUserId?: string): Promise<UserProfile | null> {
-    if (!token && !headerUserId) return null;
+  public async verifySession(token?: string): Promise<UserProfile | null> {
+    if (!token || typeof token !== 'string') return null;
 
-    // 1. Try Supabase JWT token verification
-    if (this.isLive() && supabase && token && !token.startsWith('jwt-') && !token.startsWith('sb-token-')) {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-        if (!error && user) {
-          const profile = db.getUser(user.id) || db.findUserByEmail(user.email || '');
-          if (profile) return profile;
-          return {
-            ...db.getUser('usr-current'),
-            id: user.id,
-            name: user.user_metadata?.name || user.email?.split('@')[0] || 'Traveler',
-            email: user.email || 'traveler@explorex.com',
-            role: 'user',
-            walletBalance: 5000,
-            joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-          };
-        }
-      } catch (err) {
-        console.warn('Supabase getUser verification notice:', err);
+    if (!this.isLive() || !supabase) {
+      return null;
+    }
+
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (error || !user) {
+        return null;
       }
-    }
 
-    // 2. Fallback / local dev session verification
-    if (headerUserId) {
-      const user = db.getUser(headerUserId);
-      if (user) return user;
+      let profile = db.getUser(user.id);
+      if (user.email) {
+        profile.email = user.email;
+      }
+      if (user.user_metadata?.name && (!profile.name || profile.name === 'Traveler')) {
+        profile.name = user.user_metadata.name;
+      }
+      return profile;
+    } catch (err) {
+      console.warn('Supabase getUser verification exception:', err);
+      return null;
     }
-
-    if (token) {
-      const cleanToken = token.replace('jwt-user-', '').replace('sb-token-', '');
-      const user = db.getUser(cleanToken) || db.findUserByEmail(cleanToken);
-      if (user) return user;
-    }
-
-    return null;
   }
 }
 
@@ -271,7 +219,7 @@ export const supabaseAuthService = new SupabaseAuthService();
 
 /**
  * Express middleware for protecting sensitive routes.
- * Requires an authenticated Supabase session or valid user token.
+ * Requires a valid authenticated Supabase session JWT in the Authorization Bearer header.
  */
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers['authorization'];
@@ -280,11 +228,14 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     token = authHeader.substring(7).trim();
   }
 
-  const headerUserId = req.headers['x-user-id'] as string | undefined;
+  if (!token) {
+    res.status(401).json({ error: 'Authentication required. Please sign in with your account.' });
+    return;
+  }
 
-  const user = await supabaseAuthService.verifySession(token, headerUserId);
+  const user = await supabaseAuthService.verifySession(token);
   if (!user) {
-    res.status(401).json({ error: 'Authentication required. Please sign in to your account.' });
+    res.status(401).json({ error: 'Invalid or expired session. Please sign in again.' });
     return;
   }
 

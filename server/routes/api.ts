@@ -14,6 +14,9 @@ import { exploreService } from '../services/exploreService';
 import { itineraryService } from '../services/itineraryService';
 import { itineraryValidator } from '../services/itineraryValidator';
 import { supabaseAuthService, requireAuth } from '../services/supabaseAuthService';
+import { emailService } from '../services/emailService';
+import { paymentService } from '../services/paymentService';
+import { PdfInvoiceService } from '../services/pdfInvoiceService';
 import { ENV } from '../config/env';
 
 export const apiRouter = Router();
@@ -40,10 +43,50 @@ const upload = multer({
   limits: { fileSize: 15 * 1024 * 1024 } // 15MB single file limit
 });
 
+// Extract bearer token on all API routes to attach authenticated Supabase user if present
+apiRouter.use(async (req: Request, res: Response, next) => {
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.substring(7).trim();
+    try {
+      const user = await supabaseAuthService.verifySession(token);
+      if (user) {
+        (req as any).user = user;
+        (req as any).userId = user.id;
+      }
+    } catch {
+      // Non-fatal for unauthenticated or public routes
+    }
+  }
+  next();
+});
+
 // Helper for getting current user ID
 const getCurrentUserId = (req: Request): string => {
-  return (req as any).userId || (req.headers['x-user-id'] as string) || 'usr-current';
+  return (req as any).userId || (req as any).user?.id || (req.headers['x-user-id'] as string) || 'usr-current';
 };
+
+// System status and health metrics
+apiRouter.get('/status', (_req: Request, res: Response) => {
+  res.json({
+    status: 'online',
+    platform: 'ExploreX - Smart Tourism Platform',
+    version: '2.4.0',
+    auth: {
+      provider: 'Supabase Auth',
+      configured: supabaseAuthService.isLive()
+    },
+    payments: {
+      provider: 'Razorpay',
+      configured: Boolean(ENV.RAZORPAY_KEY_ID && ENV.RAZORPAY_KEY_SECRET)
+    },
+    email: {
+      provider: 'Resend',
+      configured: emailService.isConfigured()
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 /* ============================================================
    1. AUTH & PROFILE ROUTES (Supabase Auth & User Sessions)
@@ -96,10 +139,12 @@ apiRouter.post('/auth/forgot-password', async (req: Request, res: Response) => {
 apiRouter.get('/auth/session', async (req: Request, res: Response) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7).trim() : undefined;
-  const headerUserId = req.headers['x-user-id'] as string | undefined;
-  const user = await supabaseAuthService.verifySession(token, headerUserId);
-  if (!user) {
+  if (!token) {
     return res.status(401).json({ authenticated: false, user: null });
+  }
+  const user = await supabaseAuthService.verifySession(token);
+  if (!user) {
+    return res.status(401).json({ authenticated: false, user: null, error: 'Session expired or invalid' });
   }
   res.json({ authenticated: true, user });
 });
@@ -553,7 +598,7 @@ apiRouter.post('/bookings', (req: Request, res: Response) => {
   const baseFare = finalAmount - taxes;
 
   const newBooking: Booking = {
-    id: `BKG-${Date.now().toString().slice(-6)}`,
+    id: `EXX-BKG-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
     userId,
     serviceType: serviceType || 'hotel',
     title: title || 'Custom Travel Booking',
@@ -568,7 +613,11 @@ apiRouter.post('/bookings', (req: Request, res: Response) => {
     paymentMethod: paymentMethod || 'wallet',
     paymentStatus: 'paid',
     isSimulation: true, // Transparent simulation indicator per requirements
-    details: details || {},
+    details: {
+      ...details,
+      providerReference: `EXX-CONF-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      confirmationNotice: 'ExploreX Simulated Reservation (Safe Demo Mode)'
+    },
     invoice: {
       invoiceNo: `INV-${Math.floor(100000 + Math.random() * 900000)}`,
       baseFare,
@@ -580,7 +629,55 @@ apiRouter.post('/bookings', (req: Request, res: Response) => {
   };
 
   const created = db.createBooking(newBooking);
+
+  // Trigger Resend confirmation email if booking is confirmed and paid (e.g. via wallet)
+  if (created.status === 'confirmed' && created.paymentStatus === 'paid') {
+    const userObj = (req as any).user || db.getUser(userId);
+    const recipient = userObj?.email || created.details?.contactEmail || 'traveler@explorex.com';
+    const name = userObj?.name || created.passengerDetails?.[0]?.name || 'Valued Traveler';
+
+    emailService.sendBookingConfirmationEmail(created, recipient, name)
+      .then(result => {
+        db.updateBooking(created.id, {
+          emailStatus: result.success ? 'sent' : 'failed',
+          emailError: result.error || undefined,
+          emailSentAt: result.success ? new Date().toISOString() : undefined,
+          emailRecipient: result.recipient
+        });
+      })
+      .catch(err => {
+        console.warn('Wallet booking email dispatch notice (non-fatal):', err);
+        db.updateBooking(created.id, {
+          emailStatus: 'failed',
+          emailError: err.message || 'Email delivery failed'
+        });
+      });
+  }
+
   res.status(201).json(created);
+});
+
+apiRouter.post('/bookings/:id/resend-email', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const result = await paymentService.resendBookingConfirmationEmail(req.params.id, email);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Failed to resend confirmation email' });
+  }
+});
+
+apiRouter.get('/bookings/:id/invoice.pdf', (req: Request, res: Response) => {
+  const bkg = db.getBookingById(req.params.id);
+  if (!bkg) return res.status(404).json({ error: 'Booking not found' });
+  try {
+    const pdfBuf = PdfInvoiceService.generateInvoicePdf(bkg);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="ExploreX-Tax-Invoice-${bkg.id}.pdf"`);
+    res.send(pdfBuf);
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to generate invoice PDF: ' + err.message });
+  }
 });
 
 apiRouter.post('/bookings/:id/cancel', (req: Request, res: Response) => {
