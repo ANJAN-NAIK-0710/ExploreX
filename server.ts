@@ -9,8 +9,13 @@ import { ENV, validateEnvironment } from './server/config/env';
 const app = express();
 const PORT = ENV.PORT;
 
-// Body parsers
-app.use(express.json({ limit: '20mb' }));
+// Body parsers with raw body preservation for cryptographic signature verification
+app.use(express.json({
+  limit: '20mb',
+  verify: (req: any, _res, buf) => {
+    req.rawBody = buf.toString('utf8');
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // Static uploads directory for Magic Moments

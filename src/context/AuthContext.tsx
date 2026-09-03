@@ -37,6 +37,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'forgot'>('login');
   const { success, error } = useToast();
 
+  useEffect(() => {
+    const initSession = async () => {
+      const token = localStorage.getItem('explorex_auth_token');
+      if (token) {
+        try {
+          const session = await api.getSession();
+          if (session.authenticated && session.user) {
+            setUser(session.user);
+            localStorage.setItem('explorex_session_user', JSON.stringify(session.user));
+          }
+        } catch (err) {
+          console.warn('Session verification notice:', err);
+        }
+      }
+    };
+    initSession();
+  }, []);
+
   const refreshProfile = useCallback(async () => {
     const saved = localStorage.getItem('explorex_session_user');
     if (!saved) {

@@ -317,20 +317,177 @@ export class PaymentService {
   }
 
   /**
-   * WEBHOOK SIGNATURE VERIFICATION & IDEMPOTENT EVENT HANDLING
+   * SECURE HMAC-SHA256 WEBHOOK SIGNATURE VERIFICATION
+   * Verifies the X-Razorpay-Signature header against the raw webhook body.
    */
-  public verifyWebhookSignature(payload: string, signature: string): boolean {
-    const secret = ENV.RAZORPAY_WEBHOOK_SECRET || 'mockWebhookSecret123';
-    if (signature === 'mock_webhook_signature' || secret.includes('mockWebhookSecret')) return true;
+  public verifyWebhookSignature(payload: string | Buffer, signature: string, customSecret?: string): boolean {
+    const secret = customSecret || ENV.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!secret || !signature || !payload) {
+      return false;
+    }
 
     try {
+      const payloadString = typeof payload === 'string' ? payload : payload.toString('utf8');
       const expectedSignature = crypto
         .createHmac('sha256', secret)
-        .update(payload)
+        .update(payloadString)
         .digest('hex');
-      return expectedSignature === signature;
-    } catch {
+
+      const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+      const signatureBuffer = Buffer.from(signature.trim(), 'utf8');
+
+      if (expectedBuffer.length !== signatureBuffer.length) {
+        return false;
+      }
+
+      return crypto.timingSafeEqual(expectedBuffer, signatureBuffer);
+    } catch (err) {
+      console.error('Error during webhook signature verification:', err);
       return false;
+    }
+  }
+
+  /**
+   * Helper to generate HMAC-SHA256 signature for test validation or webhooks
+   */
+  public generateWebhookSignature(payload: string | Buffer, customSecret?: string): string {
+    const secret = customSecret || ENV.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_WEBHOOK_SECRET || '';
+    const payloadString = typeof payload === 'string' ? payload : payload.toString('utf8');
+    return crypto
+      .createHmac('sha256', secret)
+      .update(payloadString)
+      .digest('hex');
+  }
+
+  /**
+   * IDEMPOTENT WEBHOOK EVENT PROCESSOR
+   * Handles payment.captured, payment.failed, order.paid, and refund events safely.
+   */
+  public async processWebhookEvent(event: string, payload: any): Promise<{
+    processed: boolean;
+    event: string;
+    bookingId?: string;
+    message: string;
+  }> {
+    if (!payload || !event) {
+      return { processed: false, event: event || 'unknown', message: 'Empty payload or event' };
+    }
+
+    try {
+      const paymentEntity = payload.payment?.entity;
+      const orderEntity = payload.order?.entity;
+      const refundEntity = payload.refund?.entity;
+
+      const orderId = paymentEntity?.order_id || orderEntity?.id;
+      const paymentId = paymentEntity?.id;
+      const notesBookingId = paymentEntity?.notes?.bookingId || orderEntity?.notes?.bookingId;
+
+      // Locate target booking
+      let booking = notesBookingId ? db.getBookingById(notesBookingId) : undefined;
+      if (!booking && orderId) {
+        const all = db.getAllBookings();
+        booking = all.find(b => b.details?.razorpayOrderId === orderId);
+      }
+
+      switch (event) {
+        case 'payment.captured':
+        case 'order.paid': {
+          if (booking) {
+            const updated = db.updateBooking(booking.id, {
+              status: 'confirmed',
+              paymentStatus: 'paid',
+              details: {
+                ...booking.details,
+                razorpayPaymentId: paymentId || booking.details?.razorpayPaymentId,
+                razorpayOrderId: orderId || booking.details?.razorpayOrderId,
+                pnrNumber: booking.details?.pnrNumber || `PNR-${Math.floor(100000 + Math.random() * 900000)}`
+              }
+            });
+
+            // Send transactional confirmation email via Resend if not already sent
+            if (booking.status !== 'confirmed') {
+              const userObj = db.getUser(booking.userId);
+              emailService.sendBookingConfirmationEmail(updated || booking, userObj?.email, userObj?.name);
+            }
+
+            return {
+              processed: true,
+              event,
+              bookingId: booking.id,
+              message: `Booking #${booking.id} payment confirmed via webhook (${event})`
+            };
+          }
+          return {
+            processed: true,
+            event,
+            message: `Event ${event} verified; no matching pending booking found for order ${orderId || 'unknown'}`
+          };
+        }
+
+        case 'payment.failed': {
+          if (booking) {
+            db.updateBooking(booking.id, {
+              paymentStatus: 'failed',
+              status: 'cancelled',
+              details: {
+                ...booking.details,
+                failureReason: paymentEntity?.error_description || 'Payment failed'
+              }
+            });
+            return {
+              processed: true,
+              event,
+              bookingId: booking.id,
+              message: `Booking #${booking.id} marked as payment failed via ${event}`
+            };
+          }
+          return {
+            processed: true,
+            event,
+            message: `Payment failure recorded for order ${orderId || paymentId || 'unknown'}`
+          };
+        }
+
+        case 'refund.processed':
+        case 'refund.created': {
+          if (booking) {
+            db.updateBooking(booking.id, {
+              paymentStatus: 'refunded',
+              status: 'cancelled',
+              details: {
+                ...booking.details,
+                refundId: refundEntity?.id,
+                refundAmount: refundEntity?.amount ? refundEntity.amount / 100 : undefined
+              }
+            });
+            return {
+              processed: true,
+              event,
+              bookingId: booking.id,
+              message: `Booking #${booking.id} marked as refunded via ${event}`
+            };
+          }
+          return {
+            processed: true,
+            event,
+            message: `Refund event ${event} recorded`
+          };
+        }
+
+        default:
+          return {
+            processed: true,
+            event,
+            message: `Webhook event ${event} acknowledged and verified`
+          };
+      }
+    } catch (err: any) {
+      console.error(`Error processing webhook event ${event}:`, err);
+      return {
+        processed: false,
+        event,
+        message: err.message || 'Error processing webhook event'
+      };
     }
   }
 }

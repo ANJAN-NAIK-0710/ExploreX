@@ -8,12 +8,12 @@ import { Booking, ExplorerRide, MagicMomentAlbum, MagicMomentPhoto, Review, Grou
 import { EXPLORER_VEHICLES } from '../data/initialData';
 import { balanceTourismDemand, balanceTourismDemandML } from '../services/demandBalancerService';
 import { searchCulturalSpecialties, getAlternativeRecommendations, getIndiaExplorerHierarchy } from '../services/culturalService';
-import { searchFlights, searchHotels } from '../services/amadeusService';
 import { createRazorpayOrder, verifyRazorpayPayment, createPaymentIntentHandler, razorpayWebhookHandler } from '../services/razorpayService';
 import { packageService } from '../services/packageService';
 import { exploreService } from '../services/exploreService';
 import { itineraryService } from '../services/itineraryService';
 import { itineraryValidator } from '../services/itineraryValidator';
+import { supabaseAuthService, requireAuth } from '../services/supabaseAuthService';
 import { ENV } from '../config/env';
 
 export const apiRouter = Router();
@@ -41,141 +41,93 @@ const upload = multer({
 });
 
 // Helper for getting current user ID
-const getCurrentUserId = (req: Request): string | null => {
-  return (req.headers['x-user-id'] as string) || null;
+const getCurrentUserId = (req: Request): string => {
+  return (req as any).userId || (req.headers['x-user-id'] as string) || 'usr-current';
 };
 
 /* ============================================================
-   1. AUTH & PROFILE ROUTES
+   1. AUTH & PROFILE ROUTES (Supabase Auth & User Sessions)
    ============================================================ */
 
-apiRouter.post('/auth/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
-
-  const cleanEmail = email.trim().toLowerCase();
-  
-  // Check if admin credentials
-  if (cleanEmail === 'admin@explorex.com' || cleanEmail.startsWith('admin@')) {
-    let adminUser = db.findUserByEmail('admin@explorex.com');
-    if (!adminUser) {
-      adminUser = {
-        ...db.getUser('usr-current'),
-        id: 'usr-admin-1',
-        name: 'ExploreX Platform Admin',
-        email: 'admin@explorex.com',
-        role: 'admin',
-        walletBalance: 75000
-      };
-      db.createUser(adminUser);
+apiRouter.post('/auth/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
     }
-    return res.json({
-      token: 'jwt-admin-session-token',
-      user: adminUser
-    });
+    const result = await supabaseAuthService.login(email, password);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Invalid credentials' });
   }
-
-  // Find existing user by email
-  let existingUser = db.findUserByEmail(cleanEmail);
-  
-  if (!existingUser) {
-    // Generate new account for this email
-    const id = `usr-${Date.now()}`;
-    const namePart = cleanEmail.split('@')[0];
-    const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    existingUser = {
-      ...db.getUser('usr-current'),
-      id,
-      name: formattedName,
-      email: cleanEmail,
-      role: 'user',
-      walletBalance: 5000,
-      joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    };
-    db.createUser(existingUser);
-  }
-
-  res.json({
-    token: `jwt-user-${existingUser.id}`,
-    user: existingUser
-  });
 });
 
-apiRouter.post('/auth/signup', (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: 'Name, email, and password are required' });
+apiRouter.post('/auth/signup', async (req: Request, res: Response) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: 'Name, email, and password are required' });
+    }
+    const result = await supabaseAuthService.signUp(name, email, password);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Could not register user' });
   }
+});
 
-  const cleanEmail = email.trim().toLowerCase();
-  const cleanName = name.trim();
+apiRouter.post('/auth/logout', async (req: Request, res: Response) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7).trim() : undefined;
+  const result = await supabaseAuthService.logout(token);
+  res.json(result);
+});
 
-  // Check if account already exists
-  const existing = db.findUserByEmail(cleanEmail);
-  if (existing) {
-    return res.status(400).json({ error: 'An account with this email already exists. Please sign in.' });
+apiRouter.post('/auth/forgot-password', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    const result = await supabaseAuthService.resetPassword(email);
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message || 'Failed to process password reset' });
   }
-
-  // Create new unique user
-  const id = `usr-${Date.now()}`;
-  const isAdmin = cleanEmail === 'admin@explorex.com';
-
-  const newUser: UserProfile = {
-    ...db.getUser('usr-current'),
-    id,
-    name: cleanName,
-    email: cleanEmail,
-    role: isAdmin ? 'admin' : 'user',
-    walletBalance: 5000,
-    savedDestinations: [],
-    savedPackages: [],
-    joinedDate: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-  };
-
-  db.createUser(newUser);
-
-  res.json({
-    token: `jwt-user-${id}`,
-    user: newUser
-  });
 });
 
-apiRouter.post('/auth/logout', (req: Request, res: Response) => {
-  res.json({ success: true, message: 'Logged out successfully' });
+apiRouter.get('/auth/session', async (req: Request, res: Response) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7).trim() : undefined;
+  const headerUserId = req.headers['x-user-id'] as string | undefined;
+  const user = await supabaseAuthService.verifySession(token, headerUserId);
+  if (!user) {
+    return res.status(401).json({ authenticated: false, user: null });
+  }
+  res.json({ authenticated: true, user });
 });
 
-apiRouter.post('/auth/forgot-password', (req: Request, res: Response) => {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ error: 'Email is required' });
-  res.json({ success: true, message: `Reset link and verification OTP sent to ${email}` });
-});
-
-apiRouter.get('/auth/profile', (req: Request, res: Response) => {
+apiRouter.get('/auth/profile', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
-  if (!userId) {
-    return res.status(401).json({ error: 'Not authenticated' });
+  const user = (req as any).user || db.getUser(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
   }
-  const user = db.getUser(userId);
   res.json(user);
 });
 
-apiRouter.put('/auth/profile', (req: Request, res: Response) => {
+apiRouter.put('/auth/profile', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   const updates = req.body;
   const updated = db.updateUser(userId, updates);
   res.json(updated);
 });
 
-apiRouter.post('/auth/preferences', (req: Request, res: Response) => {
+apiRouter.post('/auth/preferences', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   const { preferences } = req.body;
   const user = db.updateUser(userId, { preferences });
   res.json(user);
 });
 
-apiRouter.post('/auth/toggle-save-destination', (req: Request, res: Response) => {
+apiRouter.post('/auth/toggle-save-destination', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   const { destinationId } = req.body;
   const user = db.getUser(userId);
@@ -189,7 +141,7 @@ apiRouter.post('/auth/toggle-save-destination', (req: Request, res: Response) =>
   res.json(updated);
 });
 
-apiRouter.post('/auth/toggle-save-package', (req: Request, res: Response) => {
+apiRouter.post('/auth/toggle-save-package', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   const { packageId } = req.body;
   const user = db.getUser(userId);
@@ -203,7 +155,7 @@ apiRouter.post('/auth/toggle-save-package', (req: Request, res: Response) => {
   res.json(updated);
 });
 
-apiRouter.delete('/auth/account', (req: Request, res: Response) => {
+apiRouter.delete('/auth/account', requireAuth, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   db.deleteUser(userId);
   res.json({ success: true, message: 'Account permanently deleted.' });
@@ -684,7 +636,7 @@ apiRouter.get('/moments/usage', (req: Request, res: Response) => {
   res.json(db.getUserStorageUsage(userId));
 });
 
-apiRouter.post('/moments/upload', upload.single('file'), (req: Request, res: Response) => {
+apiRouter.post('/moments/upload', upload.single('file') as any, (req: Request, res: Response) => {
   const userId = getCurrentUserId(req);
   const { albumId, caption, locationName, tags, directUrl } = req.body;
 
@@ -1212,11 +1164,7 @@ apiRouter.get('/destinations/:id/local-economy', (req: Request, res: Response) =
   });
 });
 
-// 7. Amadeus Travel Search APIs (Flights & Hotels)
-apiRouter.get('/amadeus/flights', searchFlights);
-apiRouter.get('/amadeus/hotels', searchHotels);
-
-// 8. Razorpay Payment Gateway & Server-Side Price Calculation APIs
+// 7. Razorpay Payment Gateway & Server-Side Price Calculation APIs
 apiRouter.post('/payments/create-intent', createPaymentIntentHandler);
 apiRouter.post('/payments/verify', verifyRazorpayPayment);
 apiRouter.post('/payments/webhook', razorpayWebhookHandler);
@@ -1224,6 +1172,7 @@ apiRouter.post('/payments/webhook', razorpayWebhookHandler);
 // Legacy route compatibility
 apiRouter.post('/razorpay/create-order', createRazorpayOrder);
 apiRouter.post('/razorpay/verify-payment', verifyRazorpayPayment);
+apiRouter.post('/razorpay/webhook', razorpayWebhookHandler);
 
 
 

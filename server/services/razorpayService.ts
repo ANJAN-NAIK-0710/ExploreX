@@ -82,23 +82,58 @@ export async function verifyRazorpayPayment(req: Request, res: Response) {
 
 /**
  * Razorpay Webhook Receiver Handler
+ * Securely verifies the X-Razorpay-Signature HMAC-SHA256 digest using the raw request body.
  */
 export async function razorpayWebhookHandler(req: Request, res: Response) {
   try {
-    const signature = (req.headers['x-razorpay-signature'] as string) || 'mock_webhook_signature';
-    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    const signature = (req.headers['x-razorpay-signature'] as string) || (req.get('X-Razorpay-Signature') as string) || '';
+    
+    // Obtain raw body string captured before JSON mutation
+    const rawBody = (req as any).rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+
+    if (!signature) {
+      console.warn('⚠️ Razorpay Webhook received without X-Razorpay-Signature header');
+      return res.status(400).json({
+        error: 'Missing X-Razorpay-Signature header',
+        code: 'MISSING_SIGNATURE'
+      });
+    }
+
+    if (!rawBody) {
+      console.warn('⚠️ Razorpay Webhook received with empty request body');
+      return res.status(400).json({
+        error: 'Missing webhook payload body',
+        code: 'EMPTY_PAYLOAD'
+      });
+    }
 
     const isValid = paymentService.verifyWebhookSignature(rawBody, signature);
     if (!isValid) {
-      return res.status(400).json({ error: 'Invalid Webhook Signature' });
+      console.warn('⚠️ Razorpay Webhook authentication failed: HMAC-SHA256 signature mismatch');
+      return res.status(400).json({
+        error: 'Invalid Razorpay webhook signature',
+        code: 'INVALID_SIGNATURE',
+        verified: false
+      });
     }
 
     const event = req.body?.event;
-    console.log(`📡 Razorpay Webhook Event Received: ${event}`);
+    console.log(`📡 Razorpay Webhook Verified: Event "${event}"`);
 
-    // Always respond 200 OK to webhook provider
-    res.json({ status: 'ok', eventReceived: event });
+    const result = await paymentService.processWebhookEvent(event, req.body?.payload);
+
+    // Return 200 OK as required by Razorpay webhook contract
+    return res.status(200).json({
+      status: 'ok',
+      verified: true,
+      event,
+      result
+    });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.error('❌ Razorpay Webhook handling exception:', err);
+    return res.status(500).json({
+      error: err.message || 'Internal webhook handling error',
+      code: 'INTERNAL_ERROR'
+    });
   }
 }

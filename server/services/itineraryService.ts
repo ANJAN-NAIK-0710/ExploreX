@@ -21,6 +21,7 @@ export interface ItineraryGenerationParams {
   transportPreference?: 'private_cab' | 'public' | 'rental' | 'walking';
   pace?: 'relaxed' | 'moderate' | 'fast_paced';
   specialRequirements?: string;
+  skipAi?: boolean;
 }
 
 export class ItineraryService {
@@ -171,20 +172,24 @@ export class ItineraryService {
       whatsFamous = exploreService.getWhatsFamousInfo(dest.id);
     }
 
-    // 2. Try Gemini LLM Generation if Key Available
-    const ai = this.getAiClient();
+    // 2. Try Gemini LLM Generation if Key Available and not skipped
+    const ai = params.skipAi ? null : this.getAiClient();
     let rawItinerary: GeneratedItinerary | null = null;
 
     if (ai) {
       try {
-        rawItinerary = await this.generateWithGemini(ai, params, dest, resolvedName, destPois, whatsFamous, resolution.isExternalFallback);
+        const timeoutPromise = new Promise<null>((_, reject) =>
+          setTimeout(() => reject(new Error('Gemini itinerary generation timeout (falling back to constraint solver)')), 7000)
+        );
+        const geminiPromise = this.generateWithGemini(ai, params, dest, resolvedName, destPois, whatsFamous, resolution.isExternalFallback);
+        rawItinerary = await Promise.race([geminiPromise, timeoutPromise]);
       } catch (err) {
-        console.warn('Gemini Itinerary Generation notice (falling back to constraint solver):', err);
+        console.warn('Gemini Itinerary Generation notice (falling back to constraint solver):', err instanceof Error ? err.message : err);
       }
     }
 
-    // 3. Fallback to Algorithmic Constraint Solver if no LLM
-    if (!rawItinerary) {
+    // 3. Fallback to Algorithmic Constraint Solver if no LLM or if Gemini returned incomplete days
+    if (!rawItinerary || !rawItinerary.days || rawItinerary.days.length === 0) {
       rawItinerary = this.generateWithAlgorithmicSolver(params, dest, resolvedName, destPois, whatsFamous, resolution.isExternalFallback);
     }
 
@@ -292,7 +297,8 @@ Return valid JSON adhering to this EXACT structure:
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
-        temperature: 0.4
+        temperature: 0.4,
+        maxOutputTokens: 2048
       }
     });
 
